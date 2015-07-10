@@ -1,0 +1,5 @@
+# Vim
+.*.sw?
+
+# Binaries
+lib/snowman
