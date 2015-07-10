@@ -257,6 +257,8 @@ Cat program (exits on empty input):
 
     (:vGsp;bD
 
-FizzBuzz:
+FizzBuzz (newlines are extraneous):
 
-    )1vn100nR:du*_/3NmO0eq)(#5NmO0eq}~(~%@bo(%nO?_/)#%@{%@tS?)aRsP@@"Fizz"_aRsP\"Buzz"aRsP;aM
+    )1vn100nR:du*_/3NmO0eq)(#5NmO0eq
+    }~(~%@bo(%nO?_/)#%@{%@tS?)aRsP@@
+    "Fizz"_aRsP\"Buzz"aRsP;aM
