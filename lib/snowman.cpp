@@ -31,7 +31,9 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 tokens.push_back(token);
                 token = "";
             } else {
-                // ERROR TODO
+                std::cerr << "panic at tokenize: letter operator terminated "
+                    "prematurely?" << std::endl;
+                exit(1);
             }
         } else if (token[0] >= 'A' && token[0] <= 'Z') {
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
@@ -41,7 +43,9 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                     token = "";
                 }
             } else {
-                // ERROR TODO
+                std::cerr << "panic at tokenize: letter operator terminated "
+                    "prematurely?" << std::endl;
+                exit(1);
             }
         } else if (token[0] == '"') {
             token += c;
@@ -49,9 +53,26 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 tokens.push_back(token);
                 token = "";
             }
+        } else if (token[0] == ':') {
+            token += c;
+            int nest_depth = 0;
+            // TODO handle colons/semicolons in strings
+            for (char& tc : token) {
+                if (tc == ':') ++nest_depth;
+                else if (tc == ';') {
+                    if (nest_depth == 0) {
+                        std::cerr << "panic at tokenize: invalid block "
+                            "nesting?" << std::endl;
+                    } else --nest_depth;
+                }
+            }
+            if (nest_depth == 0) {
+                tokens.push_back(token);
+                token = "";
+            }
         } else if (token.length() == 0) {
             if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
-                    (c >= 'A' && c <= 'Z') || (c == '"')) {
+                    (c >= 'A' && c <= 'Z') || (c == '"') || (c == ':')) {
                 token += c;
                 // allow token to continue to be added to
             } else if (c >= '!' && c <= '~') {
@@ -62,7 +83,9 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 // ignore
             }
         } else {
-            // ERROR TODO
+            std::cerr << "panic at tokenize: token started with unknown value?"
+                << std::endl;
+            exit(1);
         }
     }
     if (token.length() != 0) tokens.push_back(token);
