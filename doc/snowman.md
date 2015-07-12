@@ -32,7 +32,9 @@ These are operators that have to do with manipulating the 8 variables in
 Snowman. They are all ASCII characters that are not upper- or lowercase
 letters.
 
-The following operators rotate variables; for example, `/` switches the `c` variable with the `f` variable. They are all symbols that consist of only straight lines that can be drawn in one stroke.
+The following operators rotate variables; for example, `/` switches the `c`
+variable with the `f` variable. They are all symbols that consist of only
+straight lines that can be drawn in one stroke.
 
     a b c
     d   e
@@ -77,7 +79,8 @@ lines.
 - `$`: save current state
 - `&`: restore saved state
 
-The following operators have to do with permavars. These are variables that you can freely store to / retrieve from.
+The following operators have to do with permavars. These are variables that you
+can freely store to / retrieve from.
 
 Note: in the following documentation, "store" is defined as follows: place in
 first undefined active variable slot. A "store" operation does nothing if all
@@ -101,8 +104,8 @@ The following operators have to do with literals:
   codes)
 - (one or more digits): store literal number
 
-Literal arrays don't exist. You can create an array and push to them with
-letter operators.
+Literal arrays don't exist. You can create empty arrays with `""` and push to
+them with letter operators.
 
 ## Letter operators
 
@@ -235,7 +238,6 @@ TODO: unfold?
 ### Void
 
 - `vn` (-) -> -: no-op (do nothing)
-- `va` (-) -> a: create an empty array
 - `vg` (-) -> a: get line of input (as an array-"string")
 - `vr` (-) -> n: random number [0,1)
 
