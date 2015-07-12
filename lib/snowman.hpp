@@ -17,6 +17,14 @@ struct Variable {
     void set(double x) { type = NUM; numVal = x; }
     void set(std::vector<Variable> x) { type = ARRAY; arrayVal = x; }
     void set(std::string x) { type = BLOCK; blockVal = x; }
+    void set(Variable v) {
+        switch (v.type) {
+        case UNDEFINED: set(v.undefinedVal);
+        case NUM: set(v.numVal);
+        case ARRAY: set(v.arrayVal);
+        case BLOCK: set(v.blockVal);
+        }
+    }
     enum { UNDEFINED, NUM, ARRAY, BLOCK } type;
     union {
         bool undefinedVal;
@@ -36,6 +44,7 @@ class Snowman {
         ~Snowman();
         void run(std::string code);
         Variable vars[8];
+        bool activeVars[8];
 };
 
 #endif

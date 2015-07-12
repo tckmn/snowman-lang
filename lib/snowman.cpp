@@ -2,7 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 
-Snowman::Snowman() {
+Snowman::Snowman(): activeVars{false} {
+    activeVars[0] = true; // TODO this is debug code, remove
     // nothing
 }
 
@@ -130,6 +131,10 @@ void Snowman::eval_token(std::string token) {
     }
 }
 
-void Snowman::store(Variable v) {
-    // TODO
+void Snowman::store(Variable val) {
+    for (int i = 0; i < 8; ++i) {
+        if (activeVars[i] && vars[i].type == Variable::UNDEFINED) {
+            vars[i].set(val);
+        }
+    }
 }
