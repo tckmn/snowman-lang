@@ -56,14 +56,17 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
         } else if (token[0] == ':') {
             token += c;
             int nest_depth = 0;
+            bool string_mode = false;
             // TODO handle colons/semicolons in strings
             for (char& tc : token) {
-                if (tc == ':') ++nest_depth;
-                else if (tc == ';') {
+                if (tc == ':' && !string_mode) ++nest_depth;
+                else if (tc == ';' && !string_mode) {
                     if (nest_depth == 0) {
                         std::cerr << "panic at tokenize: invalid block "
                             "nesting?" << std::endl;
                     } else --nest_depth;
+                } else if (tc == '"') {
+                    string_mode = !string_mode;
                 }
             }
             if (nest_depth == 0) {
