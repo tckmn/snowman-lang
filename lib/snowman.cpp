@@ -11,13 +11,21 @@ Snowman::~Snowman() {
 
 void Snowman::run(std::string code) {
     std::vector<std::string> tokens = Snowman::tokenize(code);
+    for (std::string s : tokens) std::cout << s << std::endl;
 }
 
 std::vector<std::string> Snowman::tokenize(std::string code) {
     std::vector<std::string> tokens;
     std::string token;
     for (char& c : code) {
-        if (token[0] >= 'a' && token[0] <= 'z') {
+        if (token[0] >= '0' && token[0] <= '9' && !(c >= '0' && c <= '9')) {
+            tokens.push_back(token);
+            token = "";
+        }
+        if (token[0] >= '0' && token[0] <= '9') {
+            // c is guaranteed to be a digit
+            token += c;
+        } else if (token[0] >= 'a' && token[0] <= 'z') {
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
                 token += c;
                 tokens.push_back(token);
@@ -42,18 +50,21 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 token = "";
             }
         } else if (token.length() == 0) {
-            token += c;
-            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '"')) {
+            if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
+                    (c >= 'A' && c <= 'Z') || (c == '"')) {
+                token += c;
                 // allow token to continue to be added to
             } else if (c >= '!' && c <= '~') {
+                token += c;
                 tokens.push_back(token);
                 token = "";
             } else {
-                // ERROR TODO
+                // ignore
             }
         } else {
             // ERROR TODO
         }
     }
+    if (token.length() != 0) tokens.push_back(token);
     return tokens;
 }
