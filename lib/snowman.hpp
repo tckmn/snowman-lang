@@ -6,9 +6,17 @@
 
 struct Variable {
     Variable(): undefinedVal(true) { type = UNDEFINED; }
+    Variable(bool x): undefinedVal(x) { type = UNDEFINED; }
+    Variable(double x): numVal(x) { type = NUM; }
+    Variable(std::vector<Variable> x): arrayVal(x) { type = ARRAY; }
+    Variable(std::string x): blockVal(x) { type = BLOCK; }
     Variable(const Variable& v) {}
     Variable& operator=(const Variable& v) {}
     ~Variable() {}
+    void set(bool x) { type = UNDEFINED; undefinedVal = x; }
+    void set(double x) { type = NUM; numVal = x; }
+    void set(std::vector<Variable> x) { type = ARRAY; arrayVal = x; }
+    void set(std::string x) { type = BLOCK; blockVal = x; }
     enum { UNDEFINED, NUM, ARRAY, BLOCK } type;
     union {
         bool undefinedVal;
@@ -22,6 +30,7 @@ class Snowman {
     private:
         static std::vector<std::string> tokenize(std::string code);
         void eval_token(std::string token);
+        void store(Variable v);
     public:
         Snowman();
         ~Snowman();

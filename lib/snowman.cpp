@@ -1,5 +1,6 @@
 #include "snowman.hpp"
 #include <iostream>
+#include <stdexcept>
 
 Snowman::Snowman() {
     // nothing
@@ -97,19 +98,38 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
 
 void Snowman::eval_token(std::string token) {
     if (token[0] >= '0' && token[0] <= '9') {
-        // TODO
+        int num;
+        try {
+            num = std::stoi(token);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "panic at eval_token: invalid number?" << std::endl;
+            exit(1);
+        } catch (const std::out_of_range& e) {
+            std::cerr << "panic at eval_token: number out of range?"
+                << std::endl;
+            exit(1);
+        }
+        store(Variable((double)num));
     } else if (token.length() == 2 && token[0] >= 'a' && token[0] <= 'z') {
         // TODO
     } else if (token.length() == 3 && token[0] >= 'A' && token[0] <= 'Z') {
         // TODO
     } else if (token.length() >= 2 && token[0] == '"') {
-        // TODO
+        std::vector<Variable> vec(token.length() - 2);
+        for (int i = 1; i < token.length() - 1; ++i) {
+            vec[i-1] = Variable((double)token[i]);
+        }
+        store(Variable(vec));
     } else if (token.length() >= 2 && token[0] == ':') {
-        // TODO
+        store(Variable(token.substr(1, token.length() - 2)));
     } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
         // TODO
     } else {
         std::cerr << "panic at eval_token: bad token?" << std::endl;
         exit(1);
     }
+}
+
+void Snowman::store(Variable v) {
+    // TODO
 }
