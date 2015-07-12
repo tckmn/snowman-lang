@@ -11,7 +11,7 @@ Snowman::~Snowman() {
 
 void Snowman::run(std::string code) {
     std::vector<std::string> tokens = Snowman::tokenize(code);
-    for (std::string s : tokens) std::cout << s << std::endl;
+    for (std::string s : tokens) eval_token(s);
 }
 
 std::vector<std::string> Snowman::tokenize(std::string code) {
@@ -93,4 +93,23 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
     }
     if (token.length() != 0) tokens.push_back(token);
     return tokens;
+}
+
+void Snowman::eval_token(std::string token) {
+    if (token[0] >= '0' && token[0] <= '9') {
+        // TODO
+    } else if (token.length() == 2 && token[0] >= 'a' && token[0] <= 'z') {
+        // TODO
+    } else if (token.length() == 3 && token[0] >= 'A' && token[0] <= 'Z') {
+        // TODO
+    } else if (token.length() >= 2 && token[0] == '"') {
+        // TODO
+    } else if (token.length() >= 2 && token[0] == ':') {
+        // TODO
+    } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
+        // TODO
+    } else {
+        std::cerr << "panic at eval_token: bad token?" << std::endl;
+        exit(1);
+    }
 }

@@ -21,6 +21,7 @@ struct Variable {
 class Snowman {
     private:
         static std::vector<std::string> tokenize(std::string code);
+        void eval_token(std::string token);
     public:
         Snowman();
         ~Snowman();
