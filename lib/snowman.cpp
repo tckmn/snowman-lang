@@ -275,7 +275,7 @@ void Snowman::eval_token(std::string token) {
         store(stringarr(line));
         break;
     }
-    case HSH2('v','r'):
+    case HSH2('v','r'): // (-) -> n: random number [0,1)
         store(Variable((double)rand() / RAND_MAX));
         break;
     default:
