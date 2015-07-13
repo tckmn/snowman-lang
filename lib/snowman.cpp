@@ -8,6 +8,9 @@
 #define HSH2(a,b) (((long)a)*256 + ((long)b))
 #define HSH3(a,b,c) (((long)a)*256*256 + ((long)b)*256 + ((long)c))
 
+#define ROT2(a,b) v = vars[a]; vars[a] = vars[b]; vars[b] = v;
+#define ROT3(a,b,c) v = vars[a]; vars[a] = vars[b]; vars[b] = vars[c]; vars[c] = v;
+
 #define TOG_ACT(n) activeVars[n] = !activeVars[n]
 
 // constructor/destructor are boring
@@ -188,28 +191,47 @@ void Snowman::eval_token(std::string token) {
 
     // huge switch statement (this contains all operators, letter or otherwise)
     std::vector<Variable> vec; // for convenience with retrieve()
+    Variable v; // for variable operators (ROT2, ROT3)
     switch (token_hsh) {
+    case HSH1('/'): // cf
+        ROT2(2, 5); break;
+    case HSH1('\\'): // ah
+        ROT2(0, 7); break;
+    case HSH1('_'): // fh
+        ROT2(5, 7); break;
+    case HSH1('|'): // bg
+        ROT2(1, 6); break;
+    case HSH1('-'): // de
+        ROT2(3, 4); break;
+    case HSH1('\''): // bd
+        ROT2(1, 3); break;
+    case HSH1('`'): // be
+        ROT2(1, 4); break;
+    case HSH1(','): // eg
+        ROT2(4, 6); break;
+    case HSH1('.'): // dg
+        ROT2(3, 6); break;
+    case HSH1('^'): // dbe
+        ROT3(1, 3, 4); break;
+    case HSH1('>'): // aef
+        ROT3(0, 4, 5); break;
+    case HSH1('<'): // cdh
+        ROT3(2, 3, 7); break;
     case HSH1('('): // af
-        TOG_ACT(0); TOG_ACT(5);
-        break;
+        TOG_ACT(0); TOG_ACT(5); break;
     case HSH1(')'): // ch
-        TOG_ACT(2); TOG_ACT(7);
-        break;
+        TOG_ACT(2); TOG_ACT(7); break;
     case HSH1('{'): // bdg
-        TOG_ACT(1); TOG_ACT(3); TOG_ACT(6);
-        break;
+        TOG_ACT(1); TOG_ACT(3); TOG_ACT(6); break;
     case HSH1('}'): // beg
-        TOG_ACT(1); TOG_ACT(4); TOG_ACT(6);
-        break;
+        TOG_ACT(1); TOG_ACT(4); TOG_ACT(6); break;
     case HSH1('~'): // invert all (abcdefgh)
         TOG_ACT(0); TOG_ACT(1); TOG_ACT(2); TOG_ACT(3); TOG_ACT(4); TOG_ACT(5);
-        TOG_ACT(6); TOG_ACT(7);
-        break;
+        TOG_ACT(6); TOG_ACT(7); break;
     case HSH1('?'): // mark all as inactive
         activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
-            false;
-        break;
+            false; break;
     case HSH3('N','D','E'): // (n) -> n: decrement
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal - 1));

@@ -66,9 +66,9 @@ straight lines that can be drawn in one stroke.
 
 *(`[` and `]` do not currently do anything)*
 
-Rotation is done clockwise. For example, `>` causes the `e` variable to take on
-the previous value of the `a` variable, `f` becomes what `e` was, and `a`
-becomes what `f` was.
+Rotation is done counterclockwise. For example, `>` causes the `a` variable to
+take on the previous value of the `e` variable, `e` becomes what `f` was, and
+`f` becomes what `a` was.
 
 The following operators toggle which variables are marked as "active;" for
 example, `(` will mark variables `a` and `f` as active if they are currently
