@@ -1,6 +1,8 @@
 #include "snowman.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <ctime>
+#include <cstdlib>
 
 #define HSH1(a) ((long)a)
 #define HSH2(a,b) (((long)a)*256 + ((long)b))
@@ -9,7 +11,7 @@
 #define TOG_ACT(n) activeVars[n] = !activeVars[n]
 
 // constructor/destructor are boring
-Snowman::Snowman(): activeVars{false} {}
+Snowman::Snowman(): activeVars{false} { srand(time(nullptr)); }
 Snowman::~Snowman() {}
 
 // execute string of code
@@ -264,6 +266,17 @@ void Snowman::eval_token(std::string token) {
             store(stringarr(*vec[0].blockVal));
             break;
         }
+        break;
+    case HSH2('v','n'): // (-) -> -: no-op (do nothing)
+        break;
+    case HSH2('v','g'): { // (-) -> a: get line of input (as an array-"string")
+        std::string line;
+        std::getline(std::cin, line);
+        store(stringarr(line));
+        break;
+    }
+    case HSH2('v','r'):
+        store(Variable((double)rand() / RAND_MAX));
         break;
     default:
         std::cerr << "panic at eval_token: unknown token?" << std::endl;
