@@ -2,8 +2,11 @@
 #include <iostream>
 #include <stdexcept>
 
+#define HSH1(a) ((long)a)
+#define HSH2(a,b) (((long)a)*256 + ((long)b))
+#define HSH3(a,b,c) (((long)a)*256*256 + ((long)b)*256 + ((long)c))
+
 Snowman::Snowman(): activeVars{false} {
-    activeVars[0] = true; // TODO this is debug code, remove
     // nothing
 }
 
@@ -98,6 +101,7 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
 }
 
 void Snowman::eval_token(std::string token) {
+    bool consume;
     if (token[0] >= '0' && token[0] <= '9') {
         int num;
         try {
@@ -111,22 +115,69 @@ void Snowman::eval_token(std::string token) {
             exit(1);
         }
         store(Variable((double)num));
+        return;
     } else if (token.length() == 2 && token[0] >= 'a' && token[0] <= 'z') {
-        // TODO
+        if (token[1] >= 'A' && token[1] <= 'Z') {
+            consume = true;
+            // convert to lowercase
+            token[1] = token[1] + ('a' - 'A');
+        } else {
+            consume = false;
+        }
+        // handled further below
     } else if (token.length() == 3 && token[0] >= 'A' && token[0] <= 'Z') {
-        // TODO
+        if ((token[1] >= 'a' && token[1] <= 'z') &&
+                (token[2] >= 'A' && token[2] <= 'Z')) {
+            consume = true;
+            // convert to all uppercase
+            token[1] = token[1] - ('a' - 'A');
+        } else if ((token[1] >= 'A' && token[1] <= 'Z') &&
+                (token[2] >= 'a' && token[2] <= 'z')) {
+            consume = false;
+            // convert to all uppercase
+            token[2] = token[2] - ('a' - 'A');
+        } else {
+            std::cerr << "panic at eval_token: bad letter function "
+                "capitalization?" << std::endl;
+            exit(1);
+        }
+        // handled further below
     } else if (token.length() >= 2 && token[0] == '"') {
-        std::vector<Variable> vec(token.length() - 2);
+        auto vec = new std::vector<Variable>(token.length() - 2);
         for (int i = 1; i < token.length() - 1; ++i) {
-            vec[i-1] = Variable((double)token[i]);
+            (*vec)[i-1] = Variable((double)token[i]);
         }
         store(Variable(vec));
+        return;
     } else if (token.length() >= 2 && token[0] == ':') {
-        store(Variable(token.substr(1, token.length() - 2)));
+        auto str = new std::string(token.substr(1, token.length() - 2));
+        store(Variable(str));
+        return;
     } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
-        // TODO
+        // handled below
     } else {
         std::cerr << "panic at eval_token: bad token?" << std::endl;
+        exit(1);
+    }
+
+    long token_hsh = 0;
+    for (char& ch : token) {
+        token_hsh *= 256;
+        token_hsh += ch;
+    }
+
+    std::vector<Variable> vec; // for convenience with retrieve()
+    switch (token_hsh) {
+    case HSH1('('):
+        activeVars[0] = !activeVars[0];
+        activeVars[5] = !activeVars[5];
+        break;
+    case HSH2('s','p'):
+        vec = retrieve(Variable::ARRAY);
+        std::cout << arrstring(vec[0]) << std::endl;
+        break;
+    default:
+        std::cerr << "panic at eval_token: unknown token?" << std::endl;
         exit(1);
     }
 }
@@ -135,6 +186,46 @@ void Snowman::store(Variable val) {
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i] && vars[i].type == Variable::UNDEFINED) {
             vars[i].set(val);
+            return;
         }
     }
+}
+
+std::vector<Variable> Snowman::retrieve(int type, int count) {
+    std::vector<Variable> vec;
+    for (int i = 0; i < 8; ++i) {
+        if (activeVars[i]) {
+            if ((vars[i].type != Variable::UNDEFINED) &&
+                    (type == -1 || vars[i].type == type)) {
+                vec.push_back(vars[i]);
+                vars[i] = Variable(); // set to undefined
+                if (vec.size() == count) return vec;
+            } else {
+                std::cerr << "panic at retrieve: wrong type?" << std::endl;
+                exit(1);
+            }
+        }
+    }
+    if (vec.size() < count) {
+        std::cerr << "panic at retrieve: not enough variables?" << std::endl;
+        exit(1);
+    }
+    return vec;
+}
+
+std::string Snowman::arrstring(Variable arr) {
+    if (arr.type != Variable::ARRAY) {
+        std::cerr << "panic at arrstring: bad argument?" << std::endl;
+        exit(1);
+    }
+    std::string s;
+    for (Variable v : *arr.arrayVal) {
+        if (v.type == Variable::NUM) {
+            s += (char)v.numVal;
+        } else {
+            std::cerr << "panic at arrstring: bad argument?" << std::endl;
+            exit(1);
+        }
+    }
+    return s;
 }

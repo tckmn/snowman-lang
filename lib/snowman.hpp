@@ -8,29 +8,27 @@ struct Variable {
     Variable(): undefinedVal(true) { type = UNDEFINED; }
     Variable(bool x): undefinedVal(x) { type = UNDEFINED; }
     Variable(double x): numVal(x) { type = NUM; }
-    Variable(std::vector<Variable> x): arrayVal(x) { type = ARRAY; }
-    Variable(std::string x): blockVal(x) { type = BLOCK; }
-    Variable(const Variable& v) {}
-    Variable& operator=(const Variable& v) {}
+    Variable(std::vector<Variable>* x): arrayVal(x) { type = ARRAY; }
+    Variable(std::string* x): blockVal(x) { type = BLOCK; }
     ~Variable() {}
     void set(bool x) { type = UNDEFINED; undefinedVal = x; }
     void set(double x) { type = NUM; numVal = x; }
-    void set(std::vector<Variable> x) { type = ARRAY; arrayVal = x; }
-    void set(std::string x) { type = BLOCK; blockVal = x; }
-    void set(Variable v) {
+    void set(std::vector<Variable>* x) { type = ARRAY; arrayVal = x; }
+    void set(std::string* x) { type = BLOCK; blockVal = x; }
+    void set(Variable& v) {
         switch (v.type) {
-        case UNDEFINED: set(v.undefinedVal);
-        case NUM: set(v.numVal);
-        case ARRAY: set(v.arrayVal);
-        case BLOCK: set(v.blockVal);
+        case UNDEFINED: set(v.undefinedVal); break;
+        case NUM: set(v.numVal); break;
+        case ARRAY: set(v.arrayVal); break;
+        case BLOCK: set(v.blockVal); break;
         }
     }
     enum { UNDEFINED, NUM, ARRAY, BLOCK } type;
     union {
         bool undefinedVal;
         double numVal;
-        std::vector<Variable> arrayVal;
-        std::string blockVal;
+        std::vector<Variable>* arrayVal;
+        std::string* blockVal;
     };
 };
 
@@ -39,6 +37,8 @@ class Snowman {
         static std::vector<std::string> tokenize(std::string code);
         void eval_token(std::string token);
         void store(Variable v);
+        std::vector<Variable> retrieve(int type, int count = 1);
+        static std::string arrstring(Variable arr);
     public:
         Snowman();
         ~Snowman();
