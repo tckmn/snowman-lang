@@ -190,8 +190,25 @@ void Snowman::eval_token(std::string token) {
         activeVars[5] = !activeVars[5];
         break;
     case HSH2('s','p'): // (a) -> -: print an array-"string"
-        vec = retrieve(Variable::ARRAY);
+        vec = retrieve(Variable::ARRAY, 1, consume);
         std::cout << arrstring(vec[0]) << std::endl;
+        break;
+    case HSH2('t','s'): // (*) -> a: to array-"string"
+        vec = retrieve(-1, 1, consume);
+        switch (vec[0].type) {
+        case Variable::UNDEFINED:
+            store(stringarr(""));
+            break;
+        case Variable::NUM:
+            store(stringarr(std::to_string(vec[0].numVal)));
+            break;
+        case Variable::ARRAY:
+            store(vec[0]);
+            break;
+        case Variable::BLOCK:
+            store(stringarr(*vec[0].blockVal));
+            break;
+        }
         break;
     default:
         std::cerr << "panic at eval_token: unknown token?" << std::endl;
@@ -209,7 +226,7 @@ void Snowman::store(Variable val) {
     }
 }
 
-std::vector<Variable> Snowman::retrieve(int type, int count) {
+std::vector<Variable> Snowman::retrieve(int type, int count, bool consume) {
     // for definition of "retrieve", see doc/snowman.md
     // (this implementation is a bit different, because it's also used for
     // gathering letter operator arguments)
@@ -220,7 +237,7 @@ std::vector<Variable> Snowman::retrieve(int type, int count) {
             if ((vars[i].type != Variable::UNDEFINED) &&
                     (type == -1 || vars[i].type == type)) {
                 vec.push_back(vars[i]);
-                vars[i] = Variable(); // set to undefined
+                if (consume) vars[i] = Variable(); // set to undefined
                 if (vec.size() == count) return vec;
             } else {
                 std::cerr << "panic at retrieve: wrong type?" << std::endl;
@@ -251,4 +268,12 @@ std::string Snowman::arrstring(Variable arr) {
         }
     }
     return s;
+}
+
+Variable Snowman::stringarr(std::string str) {
+    auto vec = new std::vector<Variable>;
+    for (char& c : str) {
+        vec->push_back(Variable((double)c));
+    }
+    return Variable(vec);
 }

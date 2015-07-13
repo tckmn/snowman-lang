@@ -43,8 +43,10 @@ class Snowman {
         static std::vector<std::string> tokenize(std::string code);
         void eval_token(std::string token);
         void store(Variable v);
-        std::vector<Variable> retrieve(int type, int count = 1);
+        std::vector<Variable> retrieve(int type, int count = 1, bool consume =
+            true);
         static std::string arrstring(Variable arr);
+        static Variable stringarr(std::string str);
     public:
         Snowman();
         ~Snowman();
