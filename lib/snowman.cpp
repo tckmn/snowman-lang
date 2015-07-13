@@ -203,44 +203,44 @@ void Snowman::eval_token(std::string token) {
         TOG_ACT(0); TOG_ACT(1); TOG_ACT(2); TOG_ACT(3); TOG_ACT(4); TOG_ACT(5);
         TOG_ACT(6); TOG_ACT(7);
         break;
-    case HSH1('?'):
+    case HSH1('?'): // mark all as inactive
         activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
             false;
         break;
-    case HSH3('N','D','E'):
+    case HSH3('N','D','E'): // (n) -> n: decrement
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal - 1));
         break;
-    case HSH3('N','I','N'):
+    case HSH3('N','I','N'): // (n) -> n: increment
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal + 1));
         break;
-    case HSH3('N','A','B'):
+    case HSH3('N','A','B'): // (n) -> n: absolute value
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal < 0 ? -vec[0].numVal : vec[0].numVal));
         break;
-    case HSH2('n','a'):
+    case HSH2('n','a'): // (nn) -> n: addition
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal + vec[1].numVal));
         break;
-    case HSH2('n','s'):
+    case HSH2('n','s'): // (nn) -> n: subtraction
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal - vec[1].numVal));
         break;
-    case HSH2('n','m'):
+    case HSH2('n','m'): // (nn) -> n: multiplication
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal * vec[1].numVal));
         break;
-    case HSH2('n','d'):
+    case HSH2('n','d'): // (nn) -> n: division
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal / vec[1].numVal));
         break;
-    case HSH2('n','l'):
+    case HSH2('n','l'): // (nn) -> n: less than
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double)(vec[0].numVal < vec[1].numVal)));
         break;
-    case HSH2('n','g'):
+    case HSH2('n','g'): // (nn) -> n: greater than
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double)(vec[0].numVal > vec[1].numVal)));
         break;
