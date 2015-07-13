@@ -208,6 +208,42 @@ void Snowman::eval_token(std::string token) {
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
             false;
         break;
+    case HSH3('N','D','E'):
+        vec = retrieve(Variable::NUM, 1, consume);
+        store(Variable(vec[0].numVal - 1));
+        break;
+    case HSH3('N','I','N'):
+        vec = retrieve(Variable::NUM, 1, consume);
+        store(Variable(vec[0].numVal + 1));
+        break;
+    case HSH3('N','A','B'):
+        vec = retrieve(Variable::NUM, 1, consume);
+        store(Variable(vec[0].numVal < 0 ? -vec[0].numVal : vec[0].numVal));
+        break;
+    case HSH2('n','a'):
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable(vec[0].numVal + vec[1].numVal));
+        break;
+    case HSH2('n','s'):
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable(vec[0].numVal - vec[1].numVal));
+        break;
+    case HSH2('n','m'):
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable(vec[0].numVal * vec[1].numVal));
+        break;
+    case HSH2('n','d'):
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable(vec[0].numVal / vec[1].numVal));
+        break;
+    case HSH2('n','l'):
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable((double)(vec[0].numVal < vec[1].numVal)));
+        break;
+    case HSH2('n','g'):
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable((double)(vec[0].numVal > vec[1].numVal)));
+        break;
     case HSH2('s','p'): // (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY, 1, consume);
         std::cout << arrstring(vec[0]) << std::endl;
@@ -258,6 +294,7 @@ std::vector<Variable> Snowman::retrieve(int type, int count, bool consume) {
                 vec.push_back(vars[i]);
                 if (consume) vars[i] = Variable(); // set to undefined
                 if (vec.size() == count) return vec;
+                // TODO should trailing non-undefined's be ok?
             } else {
                 std::cerr << "panic at retrieve: wrong type?" << std::endl;
                 exit(1);
