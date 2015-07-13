@@ -3,6 +3,17 @@
 This is the documentation page for the Snowman
 [esoteric programming language](http://esolangs.org).
 
+## Design goals
+
+- Be as confusing as possible.<sup>1</sup>
+
+<sup>1: while still being feasible to learn and write a simple program in a few
+minutes.</sup>
+
+Snowman was named as such because it has 8 variables, and a snowman looks like
+an 8. (It's also a golf term, and I was introduced to esolangs via [Programming
+Puzzles & Code Golf Stack Exchange](http://codegolf.stackexchange.com).)
+
 ## Variables
 
 Snowman has eight "normal" variables. They can be visualized as follows:
