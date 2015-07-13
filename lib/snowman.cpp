@@ -6,6 +6,8 @@
 #define HSH2(a,b) (((long)a)*256 + ((long)b))
 #define HSH3(a,b,c) (((long)a)*256*256 + ((long)b)*256 + ((long)c))
 
+#define TOG_ACT(n) activeVars[n] = !activeVars[n]
+
 // constructor/destructor are boring
 Snowman::Snowman(): activeVars{false} {}
 Snowman::~Snowman() {}
@@ -186,8 +188,25 @@ void Snowman::eval_token(std::string token) {
     std::vector<Variable> vec; // for convenience with retrieve()
     switch (token_hsh) {
     case HSH1('('): // af
-        activeVars[0] = !activeVars[0];
-        activeVars[5] = !activeVars[5];
+        TOG_ACT(0); TOG_ACT(5);
+        break;
+    case HSH1(')'): // ch
+        TOG_ACT(2); TOG_ACT(7);
+        break;
+    case HSH1('{'): // bdg
+        TOG_ACT(1); TOG_ACT(3); TOG_ACT(6);
+        break;
+    case HSH1('}'): // beg
+        TOG_ACT(1); TOG_ACT(4); TOG_ACT(6);
+        break;
+    case HSH1('~'): // invert all (abcdefgh)
+        TOG_ACT(0); TOG_ACT(1); TOG_ACT(2); TOG_ACT(3); TOG_ACT(4); TOG_ACT(5);
+        TOG_ACT(6); TOG_ACT(7);
+        break;
+    case HSH1('?'):
+        activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
+            activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
+            false;
         break;
     case HSH2('s','p'): // (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY, 1, consume);
