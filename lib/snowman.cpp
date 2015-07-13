@@ -6,19 +6,18 @@
 #define HSH2(a,b) (((long)a)*256 + ((long)b))
 #define HSH3(a,b,c) (((long)a)*256*256 + ((long)b)*256 + ((long)c))
 
-Snowman::Snowman(): activeVars{false} {
-    // nothing
-}
+// constructor/destructor are boring
+Snowman::Snowman(): activeVars{false} {}
+Snowman::~Snowman() {}
 
-Snowman::~Snowman() {
-    // nothing
-}
-
+// execute string of code
 void Snowman::run(std::string code) {
     std::vector<std::string> tokens = Snowman::tokenize(code);
     for (std::string s : tokens) eval_token(s);
 }
 
+// static method to convert string of code into tokens (individual
+// instructions)
 std::vector<std::string> Snowman::tokenize(std::string code) {
     std::vector<std::string> tokens;
     std::string token;
@@ -27,10 +26,12 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
             tokens.push_back(token);
             token = "";
         }
+
         if (token[0] >= '0' && token[0] <= '9') {
             // c is guaranteed to be a digit
             token += c;
         } else if (token[0] >= 'a' && token[0] <= 'z') {
+            // two-letter operator in progress
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
                 token += c;
                 tokens.push_back(token);
@@ -41,6 +42,7 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 exit(1);
             }
         } else if (token[0] >= 'A' && token[0] <= 'Z') {
+            // three-letter operator in progress
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
                 token += c;
                 if (token.length() == 3) {
@@ -53,12 +55,15 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 exit(1);
             }
         } else if (token[0] == '"') {
+            // string literal in progress
+            // TODO handle escaping (here and below)
             token += c;
             if (c == '"') {
                 tokens.push_back(token);
                 token = "";
             }
         } else if (token[0] == ':') {
+            // block literal in progress
             token += c;
             int nest_depth = 0;
             bool string_mode = false;
@@ -79,16 +84,19 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 token = "";
             }
         } else if (token.length() == 0) {
+            // nothing currently in progress; start new token
             if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
                     (c >= 'A' && c <= 'Z') || (c == '"') || (c == ':')) {
+                // some token that is longer than one character
                 token += c;
                 // allow token to continue to be added to
             } else if (c >= '!' && c <= '~') {
+                // single character token
                 token += c;
                 tokens.push_back(token);
                 token = "";
             } else {
-                // ignore
+                // ignore (whitespace or non-printable ASCII)
             }
         } else {
             std::cerr << "panic at tokenize: token started with unknown value?"
@@ -100,9 +108,11 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
     return tokens;
 }
 
+// execute an individual token (called in a loop over all tokens)
 void Snowman::eval_token(std::string token) {
-    bool consume;
+    bool consume; // used for letter operators, 2nd and 3rd if blocks below
     if (token[0] >= '0' && token[0] <= '9') {
+        // store literal number
         int num;
         try {
             num = std::stoi(token);
@@ -117,6 +127,7 @@ void Snowman::eval_token(std::string token) {
         store(Variable((double)num));
         return;
     } else if (token.length() == 2 && token[0] >= 'a' && token[0] <= 'z') {
+        // two-letter operator
         if (token[1] >= 'A' && token[1] <= 'Z') {
             consume = true;
             // convert to lowercase
@@ -126,6 +137,7 @@ void Snowman::eval_token(std::string token) {
         }
         // handled further below
     } else if (token.length() == 3 && token[0] >= 'A' && token[0] <= 'Z') {
+        // three-letter operator
         if ((token[1] >= 'a' && token[1] <= 'z') &&
                 (token[2] >= 'A' && token[2] <= 'Z')) {
             consume = true;
@@ -143,6 +155,7 @@ void Snowman::eval_token(std::string token) {
         }
         // handled further below
     } else if (token.length() >= 2 && token[0] == '"') {
+        // store literal string-array
         auto vec = new std::vector<Variable>(token.length() - 2);
         for (int i = 1; i < token.length() - 1; ++i) {
             (*vec)[i-1] = Variable((double)token[i]);
@@ -150,6 +163,7 @@ void Snowman::eval_token(std::string token) {
         store(Variable(vec));
         return;
     } else if (token.length() >= 2 && token[0] == ':') {
+        // store literal block
         auto str = new std::string(token.substr(1, token.length() - 2));
         store(Variable(str));
         return;
@@ -160,19 +174,22 @@ void Snowman::eval_token(std::string token) {
         exit(1);
     }
 
+    // compute a hash for each token, so that we can use a switch statement
+    // below. see also #define'd HSH1, HSH2, and HSH3
     long token_hsh = 0;
     for (char& ch : token) {
         token_hsh *= 256;
         token_hsh += ch;
     }
 
+    // huge switch statement (this contains all operators, letter or otherwise)
     std::vector<Variable> vec; // for convenience with retrieve()
     switch (token_hsh) {
-    case HSH1('('):
+    case HSH1('('): // af
         activeVars[0] = !activeVars[0];
         activeVars[5] = !activeVars[5];
         break;
-    case HSH2('s','p'):
+    case HSH2('s','p'): // (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY);
         std::cout << arrstring(vec[0]) << std::endl;
         break;
@@ -183,6 +200,7 @@ void Snowman::eval_token(std::string token) {
 }
 
 void Snowman::store(Variable val) {
+    // for definition of "store", see doc/snowman.md
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i] && vars[i].type == Variable::UNDEFINED) {
             vars[i].set(val);
@@ -192,6 +210,10 @@ void Snowman::store(Variable val) {
 }
 
 std::vector<Variable> Snowman::retrieve(int type, int count) {
+    // for definition of "retrieve", see doc/snowman.md
+    // (this implementation is a bit different, because it's also used for
+    // gathering letter operator arguments)
+    // default value of count is 1
     std::vector<Variable> vec;
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i]) {
@@ -214,6 +236,7 @@ std::vector<Variable> Snowman::retrieve(int type, int count) {
 }
 
 std::string Snowman::arrstring(Variable arr) {
+    // convert std::vector<Variable[.type==Variable::NUM]> to std::string
     if (arr.type != Variable::ARRAY) {
         std::cerr << "panic at arrstring: bad argument?" << std::endl;
         exit(1);

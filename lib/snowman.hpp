@@ -5,12 +5,17 @@
 #include <string>
 
 struct Variable {
+    // constructors
     Variable(): undefinedVal(true) { type = UNDEFINED; }
     Variable(bool x): undefinedVal(x) { type = UNDEFINED; }
     Variable(double x): numVal(x) { type = NUM; }
     Variable(std::vector<Variable>* x): arrayVal(x) { type = ARRAY; }
     Variable(std::string* x): blockVal(x) { type = BLOCK; }
+
+    // destructor
     ~Variable() {}
+
+    // essentially operator='s, except specialer
     void set(bool x) { type = UNDEFINED; undefinedVal = x; }
     void set(double x) { type = NUM; numVal = x; }
     void set(std::vector<Variable>* x) { type = ARRAY; arrayVal = x; }
@@ -23,6 +28,7 @@ struct Variable {
         case BLOCK: set(v.blockVal); break;
         }
     }
+
     enum { UNDEFINED, NUM, ARRAY, BLOCK } type;
     union {
         bool undefinedVal;

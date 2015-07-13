@@ -37,17 +37,7 @@ int main(int argc, char *argv[]) {
                         "parameter (ID)" << std::endl;
                     return 1;
                 }
-                try {
-                    id = std::stoi(argv[i]);
-                } catch (const std::invalid_argument& e) {
-                    std::cerr << "Parameter `" << argv[i] << "' for argument `"
-                        << arg << "' is not a number" << std::endl;
-                    return 1;
-                } catch (const std::out_of_range& e) {
-                    std::cerr << "Parameter `" << argv[i] << "' for argument `"
-                        << arg << "' is out of range" << std::endl;
-                    return 1;
-                }
+                id = argv[i];
                 break;*/
             case 'h':
                 std::cout << "Usage: " << argv[0] << " [OPTION]... [FILENAME]\n" <<
@@ -72,6 +62,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // retrieve code to run
     std::string code;
     if (filename == "") {
         std::string line;
@@ -88,6 +79,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // run code
     Snowman sm = Snowman();
     sm.run(code);
 }
