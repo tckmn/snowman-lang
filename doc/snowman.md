@@ -185,7 +185,7 @@ operator), undefined behavior is invoked.
 - `nl` (nn) -> n: less than
 - `ng` (nn) -> n: greater than
 - `nr` (nn) -> a: range
-- `np` (nn) -> a: power
+- `np` (nn) -> n: power
 - `nb` (nn) -> a: to base
 
 ### Arrays
