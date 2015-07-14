@@ -97,9 +97,9 @@ Note: in the following documentation, "store" is defined as follows: place in
 first undefined active variable slot. A "store" operation does nothing if all
 active variables are full or there are no active variables.
 
-Similarly, a "retrieve" does the opposite. It selects the first non-undefined
-active variable in the same way, sets it to undefined, and returns what its
-value was.
+Similarly, a "retrieve" does the opposite. It selects the first active
+variable, and errors if it's undefined. Otherwise it sets it to undefined and
+returns what its value was.
 
 - `*`: retrieve a value, set the current permavar's value to this
 - `#`: store the current permavar's value

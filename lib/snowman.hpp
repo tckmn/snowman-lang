@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 struct Variable {
     // constructors
@@ -55,6 +56,8 @@ class Snowman {
         void run(std::string code);
         Variable vars[8];
         bool activeVars[8];
+        std::map<int, Variable> permavars;
+        int activePermavar;
 };
 
 #endif

@@ -234,6 +234,13 @@ void Snowman::eval_token(std::string token) {
         activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
             false; break;
+    case HSH1('*'): // retrieve a value, set the current permavar's value to this
+        vec = retrieve(-1);
+        permavars[activePermavar] = vec[0];
+        break;
+    case HSH1('#'): // store the current permavar's value
+        store(permavars[activePermavar]);
+        break;
     case HSH3('N','D','E'): // (n) -> n: decrement
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal - 1));
@@ -399,8 +406,7 @@ void Snowman::store(Variable val) {
 
 std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int skip) {
     // for definition of "retrieve", see doc/snowman.md
-    // (this implementation is a bit different, because it's also used for
-    // gathering letter operator arguments)
+    // (also used for gathering letter operator arguments)
     // default value of count is 1
     // default value of consume is true
     // default value of skip is 0
