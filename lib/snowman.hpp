@@ -47,6 +47,7 @@ class Snowman {
             true);
         static std::string arrstring(Variable arr);
         static Variable stringarr(std::string str);
+        static std::string inspect(Variable str);
     public:
         Snowman();
         ~Snowman();

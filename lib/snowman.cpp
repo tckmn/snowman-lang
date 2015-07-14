@@ -306,20 +306,12 @@ void Snowman::eval_token(std::string token) {
         break;
     case HSH2('t','s'): // (*) -> a: to array-"string"
         vec = retrieve(-1, 1, consume);
-        switch (vec[0].type) {
-        case Variable::UNDEFINED:
-            store(stringarr(""));
-            break;
-        case Variable::NUM:
-            store(stringarr(std::to_string(vec[0].numVal)));
-            break;
-        case Variable::ARRAY:
-            store(vec[0]); // TODO handle non-array-strings
-            break;
-        case Variable::BLOCK:
-            store(stringarr(*vec[0].blockVal));
-            break;
-        }
+        store(stringarr(Snowman::inspect(vec[0])));
+        break;
+    case HSH2('d','u'): // (*) -> **: duplicate
+        vec = retrieve(-1, 1, consume);
+        store(vec[0]);
+        store(vec[0]);
         break;
     case HSH2('v','n'): // (-) -> -: no-op (do nothing)
         break;
@@ -399,4 +391,22 @@ Variable Snowman::stringarr(std::string str) {
         vec->push_back(Variable((double)c));
     }
     return Variable(vec);
+}
+
+std::string Snowman::inspect(Variable v) {
+    switch (v.type) {
+    case Variable::UNDEFINED:
+        return "";
+    case Variable::NUM:
+        return std::to_string(v.numVal);
+    case Variable::ARRAY: {
+        std::string s;
+        for (Variable v2 : *v.arrayVal) {
+            s += Snowman::inspect(v2); // TODO: have a separator or something?
+        }
+        return s;
+    }
+    case Variable::BLOCK:
+        return *v.blockVal;
+    }
 }
