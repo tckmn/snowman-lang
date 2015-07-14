@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <ctime>
 #include <cstdlib>
+#include <cmath>
+#include <numeric>
 
 #define HSH1(a) ((long)a)
 #define HSH2(a,b) (((long)a)*256 + ((long)b))
@@ -244,6 +246,18 @@ void Snowman::eval_token(std::string token) {
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal < 0 ? -vec[0].numVal : vec[0].numVal));
         break;
+    case HSH2('n','f'): // (n) -> n: floor
+        vec = retrieve(Variable::NUM, 1, consume);
+        store(Variable(floor(vec[0].numVal)));
+        break;
+    case HSH2('n','c'): // (n) -> n: ceiling
+        vec = retrieve(Variable::NUM, 1, consume);
+        store(Variable(ceil(vec[0].numVal)));
+        break;
+    case HSH3('N','R','O'): // (n) -> n: round
+        vec = retrieve(Variable::NUM, 1, consume);
+        store(Variable(round(vec[0].numVal)));
+        break;
     case HSH2('n','a'): // (nn) -> n: addition
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal + vec[1].numVal));
@@ -260,6 +274,10 @@ void Snowman::eval_token(std::string token) {
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal / vec[1].numVal));
         break;
+    case HSH3('N','M','O'): // (nn) -> n: modulo
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable(fmod(vec[0].numVal, vec[1].numVal)));
+        break;
     case HSH2('n','l'): // (nn) -> n: less than
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double)(vec[0].numVal < vec[1].numVal)));
@@ -267,6 +285,20 @@ void Snowman::eval_token(std::string token) {
     case HSH2('n','g'): // (nn) -> n: greater than
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double)(vec[0].numVal > vec[1].numVal)));
+        break;
+    case HSH2('n','r'): { // (nn) -> n: range
+        vec = retrieve(Variable::NUM, 2, consume);
+        int a = round(vec[0].numVal), b = round(vec[1].numVal);
+        std::vector<double> rng(b - a);
+        std::iota(std::begin(rng), std::end(rng), a);
+        auto vrng = new std::vector<Variable>(b - a);
+        for (double d : rng) vrng->push_back(Variable(d));
+        store(Variable(vrng));
+        break;
+    }
+    case HSH2('n','p'): // (nn) -> n: power
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable(pow(vec[0].numVal, vec[1].numVal)));
         break;
     case HSH2('s','p'): // (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY, 1, consume);
@@ -282,7 +314,7 @@ void Snowman::eval_token(std::string token) {
             store(stringarr(std::to_string(vec[0].numVal)));
             break;
         case Variable::ARRAY:
-            store(vec[0]);
+            store(vec[0]); // TODO handle non-array-strings
             break;
         case Variable::BLOCK:
             store(stringarr(*vec[0].blockVal));
