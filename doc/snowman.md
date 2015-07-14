@@ -256,9 +256,7 @@ TODO: unfold?
 
 Whitespace and non-printable-ASCII characters are all stripped before
 processing your Snowman program. This means that `1 1` will not have the
-desired effect (it will store 11). To store two 1's, use `1vn1`, `1vN1`, or
-sometimes `1dU1` (duplicate-consume has the same effect as no-op, but only in
-certain circumstances).
+desired effect (it will store 11). To store two 1's, use `1vn1` or `1vN1`.
 
 ## Example programs
 
