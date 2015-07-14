@@ -304,9 +304,47 @@ void Snowman::eval_token(std::string token) {
         vec = retrieve(Variable::ARRAY, 1, consume);
         std::cout << arrstring(vec[0]) << std::endl;
         break;
+    case HSH2('n','o'): // (*) -> n: boolean/logical not (returns `1` for `0 :; []`, `0` otherwise)
+        vec = retrieve(-1, 1, consume);
+        store(Variable((double)(!Snowman::toBool(vec[0]))));
+        break;
     case HSH2('t','s'): // (*) -> a: to array-"string"
         vec = retrieve(-1, 1, consume);
         store(stringarr(Snowman::inspect(vec[0])));
+        break;
+    case HSH2('b','o'): // (**) -> n: boolean/logical and ("bo" = "both" because "an," "ad," and "nd" are all taken)
+        vec = retrieve(-1, 2, consume);
+        store(Variable((double)(Snowman::toBool(vec[0]) &&
+            Snowman::toBool(vec[1]))));
+        break;
+    case HSH2('o','r'): // (**) -> n: boolean/logical or
+        vec = retrieve(-1, 2, consume);
+        store(Variable((double)(Snowman::toBool(vec[0]) ||
+            Snowman::toBool(vec[1]))));
+        break;
+    case HSH2('e','q'): // (**) -> n: equal?
+        vec = retrieve(-1, 2, consume);
+        if (vec[0].type != vec[1].type) {
+            store(Variable(0.0));
+        } else {
+            switch (vec[0].type) {
+            case Variable::UNDEFINED:
+                store(Variable(1.0));
+                break;
+            case Variable::NUM:
+                store(Variable((double)(vec[0].numVal == vec[1].numVal)));
+                break;
+            case Variable::ARRAY:
+                //store(Variable((double)((*vec[0].arrayVal) ==
+                //    (*vec[1].arrayVal))));
+                // TODO why doesn't this work?
+                break;
+            case Variable::BLOCK:
+                store(Variable((double)((*vec[0].blockVal) ==
+                    (*vec[1].blockVal))));
+                break;
+            }
+        }
         break;
     case HSH2('d','u'): // (*) -> **: duplicate
         vec = retrieve(-1, 1, consume);
@@ -408,5 +446,18 @@ std::string Snowman::inspect(Variable v) {
     }
     case Variable::BLOCK:
         return *v.blockVal;
+    }
+}
+
+bool Snowman::toBool(Variable v) {
+    switch (v.type) {
+    case Variable::UNDEFINED:
+        return false;
+    case Variable::NUM:
+        return v.numVal != 0;
+    case Variable::ARRAY:
+        return (*v.arrayVal).size() != 0;
+    case Variable::BLOCK:
+        return (*v.blockVal).size() != 0;
     }
 }

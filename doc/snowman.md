@@ -242,7 +242,6 @@ TODO: unfold?
 - `bo` (\*\*) -> n: boolean/logical and ("bo" = "both" because "an," "ad," and
   "nd" are all taken
 - `or` (\*\*) -> n: boolean/logical or
-- `xo` (\*\*) -> n: boolean/logical xor
 - `eq` (\*\*) -> n: equal?
 - `du` (\*) -> \*\*: duplicate
 
