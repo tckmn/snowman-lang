@@ -301,14 +301,22 @@ void Snowman::eval_token(std::string token) {
         store(Variable(pow(vec[0].numVal, vec[1].numVal)));
         break;
     case HSH2('a','r'): { // (an) -> a: array repeat
-        std::vector<Variable> arr = *retrieve(Variable::ARRAY, 1,
-            consume)[0].arrayVal;
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
-        auto v = new std::vector<Variable>(arr.size() * count);
-        for (int i = 0; i < arr.size() * count; ++i) {
-            (*v)[i] = arr[i % arr.size()];
+        auto arr = new std::vector<Variable>(vec.size() * count);
+        for (int i = 0; i < vec.size() * count; ++i) {
+            (*arr)[i] = vec[i % vec.size()];
         }
-        store(Variable(v));
+        store(Variable(arr));
+        break;
+    }
+    case HSH2('a','e'): { // (ab) -> -: each
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
+        for (Variable v : vec) {
+            store(v);
+            run(b);
+        }
         break;
     }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
