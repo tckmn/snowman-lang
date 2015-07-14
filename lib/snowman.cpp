@@ -304,7 +304,7 @@ void Snowman::eval_token(std::string token) {
         int a = round(vec[0].numVal), b = round(vec[1].numVal);
         std::vector<double> rng(b - a);
         std::iota(std::begin(rng), std::end(rng), a);
-        auto vrng = new std::vector<Variable>(b - a);
+        auto vrng = new std::vector<Variable>;
         for (double d : rng) vrng->push_back(Variable(d));
         store(Variable(vrng));
         break;
