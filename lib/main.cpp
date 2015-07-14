@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     std::string code;
     if (filename == "") {
         std::string line;
-        while (std::getline(std::cin, line)) code += line;
+        while (std::getline(std::cin, line) && line != "__END__") code += line;
     } else {
         std::ifstream infile(filename.c_str());
         if (infile.good()) {
