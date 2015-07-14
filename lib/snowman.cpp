@@ -14,6 +14,7 @@
 #define ROT3(a,b,c) v = vars[a]; vars[a] = vars[b]; vars[b] = vars[c]; vars[c] = v;
 
 #define TOG_ACT(n) activeVars[n] = !activeVars[n]
+#define ROT_ACT() b = activeVars[0]; activeVars[0] = activeVars[3]; activeVars[3] = activeVars[5]; activeVars[5] = activeVars[6]; activeVars[6] = activeVars[7]; activeVars[7] = activeVars[4]; activeVars[4] = activeVars[2]; activeVars[2] = activeVars[1]; activeVars[1] = b;
 
 // constructor/destructor are boring
 Snowman::Snowman(): activeVars{false} { srand(time(nullptr)); }
@@ -194,6 +195,7 @@ void Snowman::eval_token(std::string token) {
     // huge switch statement (this contains all operators, letter or otherwise)
     std::vector<Variable> vec; // for convenience with retrieve()
     Variable v; // for variable operators (ROT2, ROT3)
+    bool b; // for active variable rotation operators (ROT_ACT)
     switch (token_hsh) {
     case HSH1('/'): // cf
         ROT2(2, 5); break;
@@ -230,6 +232,10 @@ void Snowman::eval_token(std::string token) {
     case HSH1('~'): // invert all (abcdefgh)
         TOG_ACT(0); TOG_ACT(1); TOG_ACT(2); TOG_ACT(3); TOG_ACT(4); TOG_ACT(5);
         TOG_ACT(6); TOG_ACT(7); break;
+    case HSH1('@'): // rotate (done clockwise, abcehgfd -> bcehgfda)
+        ROT_ACT(); break;
+    case HSH1('%'): // reflect (abcehgfd -> hgfdabce)
+        ROT_ACT(); ROT_ACT(); ROT_ACT(); ROT_ACT(); break;
     case HSH1('?'): // mark all as inactive
         activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
