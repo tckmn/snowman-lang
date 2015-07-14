@@ -300,6 +300,17 @@ void Snowman::eval_token(std::string token) {
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(pow(vec[0].numVal, vec[1].numVal)));
         break;
+    case HSH2('a','r'): { // (an) -> a: array repeat
+        std::vector<Variable> arr = *retrieve(Variable::ARRAY, 1,
+            consume)[0].arrayVal;
+        int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        auto v = new std::vector<Variable>(arr.size() * count);
+        for (int i = 0; i < arr.size() * count; ++i) {
+            (*v)[i] = arr[i % arr.size()];
+        }
+        store(Variable(v));
+        break;
+    }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY, 1, consume);
         std::cout << arrstring(vec[0]) << std::endl;
@@ -378,14 +389,20 @@ void Snowman::store(Variable val) {
     }
 }
 
-std::vector<Variable> Snowman::retrieve(int type, int count, bool consume) {
+std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int skip) {
     // for definition of "retrieve", see doc/snowman.md
     // (this implementation is a bit different, because it's also used for
     // gathering letter operator arguments)
     // default value of count is 1
+    // default value of consume is true
+    // default value of skip is 0
     std::vector<Variable> vec;
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i]) {
+            if (skip) {
+                --skip;
+                continue;
+            }
             if ((vars[i].type != Variable::UNDEFINED) &&
                     (type == -1 || vars[i].type == type)) {
                 vec.push_back(vars[i]);
