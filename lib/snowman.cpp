@@ -6,6 +6,8 @@
 #include <cmath>
 #include <numeric>
 
+#define DEBUG
+
 #define HSH1(a) ((long)a)
 #define HSH2(a,b) (((long)a)*256 + ((long)b))
 #define HSH3(a,b,c) (((long)a)*256*256 + ((long)b)*256 + ((long)c))
@@ -23,7 +25,13 @@ Snowman::~Snowman() {}
 // execute string of code
 void Snowman::run(std::string code) {
     std::vector<std::string> tokens = Snowman::tokenize(code);
-    for (std::string s : tokens) eval_token(s);
+    for (std::string s : tokens) {
+        eval_token(s);
+#ifdef DEBUG
+        std::cout << "<[T]> " << s << std::endl;
+        std::cout << "<[D]> " << debug();
+#endif
+    }
 }
 
 // static method to convert string of code into tokens (individual
@@ -503,4 +511,15 @@ bool Snowman::toBool(Variable v) {
     case Variable::BLOCK:
         return (*v.blockVal).size() != 0;
     }
+}
+
+std::string Snowman::debug() {
+    std::string s;
+    for (int i = 0; i < 8; ++i) {
+        s += "{" + (activeVars[i] ? std::string("*") : std::string("")) + " " +
+            Snowman::inspect(vars[i]) + " } ";
+    }
+
+    s += "\n";
+    return s;
 }
