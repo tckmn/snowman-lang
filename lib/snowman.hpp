@@ -54,7 +54,7 @@ class Snowman {
     public:
         Snowman();
         ~Snowman();
-        void run(std::string code);
+        void run(std::string code, bool debugOutput = false);
         Variable vars[8];
         bool activeVars[8];
         std::map<int, Variable> permavars;

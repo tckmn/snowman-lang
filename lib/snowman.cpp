@@ -23,14 +23,14 @@ Snowman::Snowman(): activeVars{false} { srand(time(nullptr)); }
 Snowman::~Snowman() {}
 
 // execute string of code
-void Snowman::run(std::string code) {
+void Snowman::run(std::string code, bool debugOutput) {
     std::vector<std::string> tokens = Snowman::tokenize(code);
     for (std::string s : tokens) {
         eval_token(s);
-#ifdef DEBUG
-        std::cout << "<[T]> " << s << std::endl;
-        std::cout << "<[D]> " << debug();
-#endif
+        if (debugOutput) {
+            std::cout << "<[T]> " << s << std::endl;
+            std::cout << "<[D]> " << debug();
+        }
     }
 }
 

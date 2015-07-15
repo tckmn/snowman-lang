@@ -6,6 +6,7 @@
 int main(int argc, char *argv[]) {
     // parse arguments
     std::string filename;
+    bool debug = false;
     for (int i = 1; i < argc; ++i) {
         std::string arg(argv[i]);
         if (arg[0] == '-') {
@@ -14,6 +15,7 @@ int main(int argc, char *argv[]) {
                 // no switch on strings :(
                 if (arg == "--help") argid = 'h';
                 else if (arg == "--interactive") argid = 'i';
+                else if (arg == "--debug") argid = 'd';
                 else {
                     std::cerr << "Unknown long argument `" << arg << "'" <<
                         std::endl;
@@ -44,12 +46,16 @@ int main(int argc, char *argv[]) {
                     "Options:\n"
                     "    -h, --help: (without filename) display this message\n"
                     "    -i, --interactive: (without filename) start a REPL\n"
+                    "    -d, --debug: include debug output\n"
                     "Snowman will read from STDIN if you do not specify a "
                         "file name or the -h or -i options.\n";
                 return 0;
             case 'i':
                 std::cout << "TODO: REPL" << std::endl;
                 return 0;  // TODO
+            case 'd':
+                debug = true;
+                break;
             default:
                 std::cerr << "Unknown argument `" << arg << "'" << std::endl;
             }
@@ -81,5 +87,5 @@ int main(int argc, char *argv[]) {
 
     // run code
     Snowman sm = Snowman();
-    sm.run(code);
+    sm.run(code, debug);
 }
