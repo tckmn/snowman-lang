@@ -11,8 +11,10 @@ This is the documentation page for the Snowman
 minutes.</sup>
 
 Snowman was named as such because it has 8 variables, and a snowman looks like
-an 8. (It's also a golf term, and I was introduced to esolangs via [Programming
-Puzzles & Code Golf Stack Exchange](http://codegolf.stackexchange.com).)
+an 8. (It's also [a golf
+term](https://en.wikipedia.org/wiki/Glossary_of_golf#S), and I was introduced
+to esolangs via [Programming Puzzles & Code Golf Stack
+Exchange](http://codegolf.stackexchange.com).)
 
 ## Variables
 
