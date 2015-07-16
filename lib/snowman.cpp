@@ -18,6 +18,8 @@
 #define TOG_ACT(n) activeVars[n] = !activeVars[n]
 #define ROT_ACT() b = activeVars[0]; activeVars[0] = activeVars[3]; activeVars[3] = activeVars[5]; activeVars[5] = activeVars[6]; activeVars[6] = activeVars[7]; activeVars[7] = activeVars[4]; activeVars[4] = activeVars[2]; activeVars[2] = activeVars[1]; activeVars[1] = b;
 
+const std::string DIGITS = "0123456789abcedefghijklmnopqrstuvwxyz";
+
 // constructor/destructor are boring
 Snowman::Snowman(): activeVars{false}, debugOutput(false) { srand(time(nullptr)); }
 Snowman::~Snowman() {}
@@ -347,6 +349,19 @@ void Snowman::eval_token(std::string token) {
             store(v);
             run(b);
         }
+        break;
+    }
+    case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
+        // TODO support uppercase letters for bases > 10
+        // TODO at least some error checking
+        std::string str = arrstring(retrieve(Variable::ARRAY, 1,
+            consume)[0].arrayVal);
+        int base = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        int num = 0;
+        for (int i = str.length()-1; i >= 0; --i) {
+            num += DIGITS.find(str[i]) * pow(base, str.length()-1 - i);
+        }
+        store(Variable((double)num));
         break;
     }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
