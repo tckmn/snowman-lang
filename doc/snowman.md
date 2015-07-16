@@ -210,19 +210,18 @@ operator), it is an error.
 - `aa` (an) -> \*: element at index
 - `al` (a) -> n: array length
 - `az` (a) -> a: zip/transpose
-TODO: unfold?
+- TODO: unfold?
 
 #### "String" operators
 
 - `sb` (an) -> n: from-base from array-"string"
 - `sp` (a) -> -: print an array-"string"
-- `se` (a) -> a: eval (Ruby) code in array-"string", return array-"string" of
-  result
 - `sm` (aa) -> a: regex match; first array-"string" is search text, second
   array-"string" is regex
 - `sr` (aaa) -> a: regex replace; first array-"string" is string to operate on,
   second array-"string" is regex, third is replacement text
 - `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
+- TODO: eval (some other language) code?
 
 ### Blocks
 
