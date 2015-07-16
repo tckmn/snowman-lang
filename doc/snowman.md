@@ -275,3 +275,7 @@ FizzBuzz (newlines are extraneous):
     )1vn101nR:du*_/3NmO0eQ)(#5NmO0eQ
     }~(~%@or(%nO?_/)#%@{%@tS?)aRsP@@
     "Fizz"_aRsP\"Buzz"aRsP?)10wRsP;aE
+
+Quine:
+
+    {"{""'*'sp'34wRsp'sP'spsp'#sp'sp'sp"'*'sp'34wRsp'sP'spsp'#sp'sp'sp

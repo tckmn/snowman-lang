@@ -321,6 +321,15 @@ void Snowman::eval_token(std::string token) {
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(pow(vec[0].numVal, vec[1].numVal)));
         break;
+    case HSH2('a','c'): { // (aa) -> a: concatenate arrays
+        vec = retrieve(Variable::ARRAY, 2, consume);
+        int s1 = vec[0].arrayVal->size(), s2 = vec[1].arrayVal->size();
+        auto arr = new std::vector<Variable>(s1 + s2);
+        for (int i = 0; i < s1; ++i) (*arr)[i] = (*vec[0].arrayVal)[i];
+        for (int i = 0; i < s2; ++i) (*arr)[s1+i] = (*vec[1].arrayVal)[i];
+        store(Variable(arr));
+        break;
+    }
     case HSH2('a','r'): { // (an) -> a: array repeat
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
