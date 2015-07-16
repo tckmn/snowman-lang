@@ -351,6 +351,10 @@ void Snowman::eval_token(std::string token) {
         }
         break;
     }
+    case HSH2('a','l'):
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        store(Variable((double)vec.size()));
+        break;
     case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
         // TODO support uppercase letters for bases > 10
         // TODO at least some error checking
