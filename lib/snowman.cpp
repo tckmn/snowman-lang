@@ -354,6 +354,13 @@ void Snowman::eval_token(std::string token) {
         vec = retrieve(-1, 1, consume);
         store(Variable((double)(!Snowman::toBool(vec[0]))));
         break;
+    case HSH2('w','r'): { // (*) -> a: wrap in array
+        vec = retrieve(-1, 1, consume);
+        auto wrapped = new std::vector<Variable>(1);
+        (*wrapped)[0] = vec[0];
+        store(Variable(wrapped));
+        break;
+    }
     case HSH2('t','s'): // (*) -> a: to array-"string"
         vec = retrieve(-1, 1, consume);
         store(stringarr(Snowman::inspect(vec[0])));
@@ -364,7 +371,6 @@ void Snowman::eval_token(std::string token) {
             Snowman::toBool(vec[1]))));
         break;
     case HSH2('o','r'): // (**) -> n: boolean/logical or
-        std::cout << consume << std::endl;
         vec = retrieve(-1, 2, consume);
         store(Variable((double)(Snowman::toBool(vec[0]) ||
             Snowman::toBool(vec[1]))));
