@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
         std::ifstream infile(filename.c_str());
         if (infile.good()) {
             std::stringstream buf;
-            buf << infile.rdbuf();
+            buf << infile.rdbuf() << std::endl;
             code = buf.str();
         } else {
             std::cerr << "Could not read file " << filename << std::endl;

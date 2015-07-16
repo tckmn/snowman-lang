@@ -42,8 +42,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
     std::vector<std::string> tokens;
     std::string token;
     for (char& c : code) {
-        if (!(c >= '!' && c <= '~')) {
-            // ignore non-printable-ASCII
+        if ((token[0] != '"' && token[0] != ':') && !(c >= '!' && c <= '~')) {
+            // ignore non-printable-ASCII outside of string/block literals
             continue;
         }
 
