@@ -19,7 +19,7 @@
 #define ROT_ACT() b = activeVars[0]; activeVars[0] = activeVars[3]; activeVars[3] = activeVars[5]; activeVars[5] = activeVars[6]; activeVars[6] = activeVars[7]; activeVars[7] = activeVars[4]; activeVars[4] = activeVars[2]; activeVars[2] = activeVars[1]; activeVars[1] = b;
 
 // constructor/destructor are boring
-Snowman::Snowman(): activeVars{false} { srand(time(nullptr)); }
+Snowman::Snowman(): activeVars{false}, debugOutput(false) { srand(time(nullptr)); }
 Snowman::~Snowman() {}
 
 // execute string of code
@@ -342,7 +342,7 @@ void Snowman::eval_token(std::string token) {
     }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY, 1, consume);
-        std::cout << arrstring(vec[0]) << std::endl;
+        std::cout << arrstring(vec[0]);
         break;
     case HSH2('b','d'): // (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`, except it's a do-while so the condition isn't tested first)
         vec = retrieve(Variable::BLOCK, 1, consume);
@@ -497,7 +497,8 @@ std::string Snowman::inspect(Variable v) {
         for (Variable v2 : *v.arrayVal) {
             s += Snowman::inspect(v2) + " ";
         }
-        s[s.length()-1] = ']';
+        if (s.length() == 1) s = "[]";
+        else s[s.length()-1] = ']';
         return s;
     }
     case Variable::BLOCK:
