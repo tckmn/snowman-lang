@@ -50,7 +50,6 @@ class Snowman {
         static Variable stringarr(std::string str);
         static std::string inspect(Variable str);
         static bool toBool(Variable v);
-        std::string debug();
     public:
         Snowman();
         ~Snowman();
@@ -60,6 +59,7 @@ class Snowman {
         std::map<int, Variable> permavars;
         int activePermavar;
         bool debugOutput;
+        std::string debug();
 };
 
 #endif

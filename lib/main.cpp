@@ -4,9 +4,10 @@
 #include "snowman.hpp"
 
 int main(int argc, char *argv[]) {
+    Snowman sm = Snowman();
+
     // parse arguments
     std::string filename;
-    bool debug = false;
     for (int i = 1; i < argc; ++i) {
         std::string arg(argv[i]);
         if (arg[0] == '-') {
@@ -50,11 +51,17 @@ int main(int argc, char *argv[]) {
                     "Snowman will read from STDIN if you do not specify a "
                         "file name or the -h or -i options.\n";
                 return 0;
-            case 'i':
-                std::cout << "TODO: REPL" << std::endl;
-                return 0;  // TODO
+            case 'i': {
+                std::cout << ">> ";
+                std::string line;
+                while (std::getline(std::cin, line)) {
+                    sm.run(line);
+                    std::cout << sm.debug();
+                    std::cout << ">> ";
+                }
+            }
             case 'd':
-                debug = true;
+                sm.debugOutput = true;
                 break;
             default:
                 std::cerr << "Unknown argument `" << arg << "'" << std::endl;
@@ -86,7 +93,5 @@ int main(int argc, char *argv[]) {
     }
 
     // run code
-    Snowman sm = Snowman();
-    if (debug) sm.debugOutput = true;
     sm.run(code);
 }
