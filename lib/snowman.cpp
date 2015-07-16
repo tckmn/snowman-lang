@@ -351,6 +351,10 @@ void Snowman::eval_token(std::string token) {
         }
         break;
     }
+    case HSH2('a','a'):
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        store(vec[(int)retrieve(Variable::NUM, 1, consume, 1)[0].numVal]);
+        break;
     case HSH2('a','l'):
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         store(Variable((double)vec.size()));
