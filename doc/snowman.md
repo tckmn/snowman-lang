@@ -272,6 +272,6 @@ Cat program (exits on empty input):
 
 FizzBuzz (newlines are extraneous):
 
-    )1vn100nR:du*_/3NmO0eQ)(#5NmO0eQ
-    }~(~%@bo(%nO?_/)#%@{%@tS?)aRsP@@
-    "Fizz"_aRsP\"Buzz"aRsP?);aE
+    )1vn101nR:du*_/3NmO0eQ)(#5NmO0eQ
+    }~(~%@or(%nO?_/)#%@{%@tS?)aRsP@@
+    "Fizz"_aRsP\"Buzz"aRsP?)10wRsP;aE
