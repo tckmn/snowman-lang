@@ -487,17 +487,21 @@ std::string Snowman::inspect(Variable v) {
     switch (v.type) {
     case Variable::UNDEFINED:
         return "";
-    case Variable::NUM:
-        return std::to_string(v.numVal);
+    case Variable::NUM: {
+        char buf[64];
+        sprintf(buf, "%.*G", 16, v.numVal);
+        return std::string(buf);
+    }
     case Variable::ARRAY: {
-        std::string s;
+        std::string s = "[";
         for (Variable v2 : *v.arrayVal) {
-            s += Snowman::inspect(v2); // TODO: have a separator or something?
+            s += Snowman::inspect(v2) + " ";
         }
+        s[s.length()-1] = ']';
         return s;
     }
     case Variable::BLOCK:
-        return *v.blockVal;
+        return ":" + (*v.blockVal) + ";";
     }
 }
 
