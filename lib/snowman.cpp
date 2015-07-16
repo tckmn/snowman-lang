@@ -213,6 +213,10 @@ void Snowman::eval_token(std::string token) {
         ROT2(0, 7); break;
     case HSH1('_'): // fh
         ROT2(5, 7); break;
+    case HSH1('['): // af
+        ROT2(0, 5); break;
+    case HSH1(']'): // ch
+        ROT2(2, 7); break;
     case HSH1('|'): // bg
         ROT2(1, 6); break;
     case HSH1('-'): // de

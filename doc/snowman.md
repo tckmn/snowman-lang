@@ -56,6 +56,8 @@ straight lines that can be drawn in one stroke.
 - `/`: cf
 - `\`: ah
 - `_`: fh
+- `[`: af
+- `]`: ch
 - `|`: bg
 - `-`: de
 - `'`: bd
@@ -65,8 +67,6 @@ straight lines that can be drawn in one stroke.
 - `^`: dbe
 - `>`: aef
 - `<`: cdh
-
-*(`[` and `]` do not currently do anything)*
 
 Rotation is done counterclockwise. For example, `>` causes the `a` variable to
 take on the previous value of the `e` variable, `e` becomes what `f` was, and
