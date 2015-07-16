@@ -42,6 +42,11 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
     std::vector<std::string> tokens;
     std::string token;
     for (char& c : code) {
+        if (!(c >= '!' && c <= '~')) {
+            // ignore non-printable-ASCII
+            continue;
+        }
+
         if (token[0] >= '0' && token[0] <= '9' && !(c >= '0' && c <= '9')) {
             tokens.push_back(token);
             token = "";
@@ -110,13 +115,13 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 // some token that is longer than one character
                 token += c;
                 // allow token to continue to be added to
-            } else if (c >= '!' && c <= '~') {
+            } else /*if (c >= '!' && c <= '~')*/ {
                 // single character token
+                // (printable ascii is already guaranteed from if-continue
+                //  above)
                 token += c;
                 tokens.push_back(token);
                 token = "";
-            } else {
-                // ignore (whitespace or non-printable ASCII)
             }
         } else {
             std::cerr << "panic at tokenize: token started with unknown value?"
