@@ -198,7 +198,7 @@ operator), it is an error.
 - `aan` (aa) -> a: setwise and
 - `ar` (an) -> a: array repeat
 - `aj` (aa) -> a: array join
-- `as` (aa) -> a: split
+- `asp` (aa) -> a: split
 - `ag` (an) -> a: split array in groups of size
 - `ae` (ab) -> -: each
 - `am` (ab) -> a: map
@@ -210,6 +210,8 @@ operator), it is an error.
 - `aa` (an) -> \*: element at index
 - `al` (a) -> n: array length
 - `az` (a) -> a: zip/transpose
+- `as` (anna) -> a: splice (first argument is array to splice, second is start
+  index, third is length, fourth is what to replace with)
 - TODO: unfold?
 
 #### "String" operators
