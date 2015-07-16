@@ -387,7 +387,29 @@ void Snowman::evalToken(std::string token) {
         vec = retrieve(Variable::ARRAY, 1, consume);
         std::cout << arrstring(vec[0]);
         break;
-    case HSH2('b','d'): // (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`, except it's a do-while so the condition isn't tested first)
+    case HSH2('b','r'): { // (bn) -> -: repeat
+        std::string code = *retrieve(Variable::BLOCK, 1, consume)[0].blockVal;
+        double count = retrieve(Variable::NUM, 1, consume, 1)[0].numVal;
+        for (int i = 0; i < round(count); ++i) run(code);
+        break;
+    }
+    case HSH2('b','w'): // (bb) -> -: while ("returned" value from second block is simply first non-undefined active variable, which is set to undefined after reading it)
+        vec = retrieve(Variable::BLOCK, 2, consume);
+        while (1) {
+            run(*vec[1].blockVal);
+            if (!Snowman::toBool(retrieve(-1)[0])) break;
+            run(*vec[0].blockVal);
+        }
+        break;
+    case HSH2('b','i'): { // (bb*) -> -: if/else
+        std::string ifBlock = *retrieve(Variable::BLOCK, 1, consume)[0].blockVal;
+        std::string elseBlock = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
+        bool condition = Snowman::toBool(retrieve(-1, 1, consume, 2)[0]);
+        if (condition) run(ifBlock);
+        else run(elseBlock);
+        break;
+    }
+    case HSH2('b','d'): // (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`)
         vec = retrieve(Variable::BLOCK, 1, consume);
         do {
             run(*vec[0].blockVal);

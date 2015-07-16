@@ -230,9 +230,8 @@ operator), it is an error.
 - `br` (bn) -> -: repeat
 - `bw` (bb) -> -: while ("returned" value from second block is simply first
   non-undefined active variable, which is set to undefined after reading it)
-- `bi` (bbn) -> -: if/else
-- `bd` (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`, except
-  it's a do-while so the condition isn't tested first)
+- `bi` (bb\*) -> -: if/else
+- `bd` (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`)
 
 ### Any
 
