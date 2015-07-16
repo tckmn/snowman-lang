@@ -52,7 +52,7 @@ struct Variable {
 class Snowman {
     private:
         static std::vector<std::string> tokenize(std::string code);
-        void eval_token(std::string token);
+        void evalToken(std::string token);
         void store(Variable v);
         std::vector<Variable> retrieve(int type, int count = 1, bool consume =
             true, int skip = 0);

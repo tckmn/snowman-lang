@@ -20,15 +20,17 @@
 
 const std::string DIGITS = "0123456789abcedefghijklmnopqrstuvwxyz";
 
-// constructor/destructor are boring
-Snowman::Snowman(): activeVars{false}, debugOutput(false) { srand(time(nullptr)); }
+// constructor/destructor
+Snowman::Snowman(): activeVars{false}, activePermavar(0), debugOutput(false) {
+    srand(time(nullptr));
+}
 Snowman::~Snowman() {}
 
 // execute string of code
 void Snowman::run(std::string code) {
     std::vector<std::string> tokens = Snowman::tokenize(code);
     for (std::string s : tokens) {
-        eval_token(s);
+        evalToken(s);
         if (debugOutput) {
             std::cout << "<[T]> " << s << std::endl;
             std::cout << "<[D]> " << debug();
@@ -134,7 +136,7 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
 }
 
 // execute an individual token (called in a loop over all tokens)
-void Snowman::eval_token(std::string token) {
+void Snowman::evalToken(std::string token) {
     bool consume; // used for letter operators, 2nd and 3rd if blocks below
     if (token[0] >= '0' && token[0] <= '9') {
         // store literal number
@@ -142,10 +144,10 @@ void Snowman::eval_token(std::string token) {
         try {
             num = std::stoi(token);
         } catch (const std::invalid_argument& e) {
-            std::cerr << "panic at eval_token: invalid number?" << std::endl;
+            std::cerr << "panic at evalToken: invalid number?" << std::endl;
             exit(1);
         } catch (const std::out_of_range& e) {
-            std::cerr << "panic at eval_token: number out of range?"
+            std::cerr << "panic at evalToken: number out of range?"
                 << std::endl;
             exit(1);
         }
@@ -174,7 +176,7 @@ void Snowman::eval_token(std::string token) {
             // convert to all uppercase
             token[2] = token[2] - ('a' - 'A');
         } else {
-            std::cerr << "panic at eval_token: bad letter function "
+            std::cerr << "panic at evalToken: bad letter function "
                 "capitalization?" << std::endl;
             exit(1);
         }
@@ -195,7 +197,7 @@ void Snowman::eval_token(std::string token) {
     } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
         // handled below
     } else {
-        std::cerr << "panic at eval_token: bad token?" << std::endl;
+        std::cerr << "panic at evalToken: bad token?" << std::endl;
         exit(1);
     }
 
@@ -457,7 +459,7 @@ void Snowman::eval_token(std::string token) {
         store(Variable((double)rand() / RAND_MAX));
         break;
     default:
-        std::cerr << "panic at eval_token: unknown token?" << std::endl;
+        std::cerr << "panic at evalToken: unknown token?" << std::endl;
         exit(1);
     }
 }
@@ -573,6 +575,11 @@ std::string Snowman::debug() {
             Snowman::inspect(vars[i]) + " } ";
     }
 
-    s += "\n";
+    for (const auto& pv : permavars) {
+        s += std::to_string(pv.first) + "=" + Snowman::inspect(pv.second) +
+            " ";
+    }
+
+    s[s.length()-1] = '\n';
     return s;
 }
