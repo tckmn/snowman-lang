@@ -87,5 +87,6 @@ int main(int argc, char *argv[]) {
 
     // run code
     Snowman sm = Snowman();
-    sm.run(code, debug);
+    if (debug) sm.debugOutput = true;
+    sm.run(code);
 }

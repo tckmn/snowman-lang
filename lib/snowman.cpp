@@ -23,7 +23,7 @@ Snowman::Snowman(): activeVars{false} { srand(time(nullptr)); }
 Snowman::~Snowman() {}
 
 // execute string of code
-void Snowman::run(std::string code, bool debugOutput) {
+void Snowman::run(std::string code) {
     std::vector<std::string> tokens = Snowman::tokenize(code);
     for (std::string s : tokens) {
         eval_token(s);
@@ -364,6 +364,7 @@ void Snowman::eval_token(std::string token) {
             Snowman::toBool(vec[1]))));
         break;
     case HSH2('o','r'): // (**) -> n: boolean/logical or
+        std::cout << consume << std::endl;
         vec = retrieve(-1, 2, consume);
         store(Variable((double)(Snowman::toBool(vec[0]) ||
             Snowman::toBool(vec[1]))));
