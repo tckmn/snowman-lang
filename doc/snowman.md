@@ -266,9 +266,9 @@ Hello World (`sP` can also be `sp`):
 
     ("Hello, World!"sP
 
-Cat program (exits on empty input):
+Cat program:
 
-    (:vGsp;bD
+    (:vGsP10wRsp;bD
 
 FizzBuzz (newlines are extraneous):
 
