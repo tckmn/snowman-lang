@@ -132,13 +132,10 @@ operator takes (`n` = number, `b` = block, `a` = array, `*` = any, `-` = void),
 rtn is a list of the types of the operator's return values, and desc is a short
 description.
 
-Arguments to a letter operator are the list of active variables. If any active
-variables are undefined, it is an error/UB, unless they are "trailing
-undefineds" (which is used for returning values without consuming the
-arguments or returning more values than there are arguments; see below).
-
-If there are less than n non-undefined active variables, behavior is undefined.
-An error may occur. So don't do that!
+Arguments to a letter operator are the list of the first n active variables,
+where n is the number of arguments. If any of these are undefined, it is an
+error. If there are less than n non-undefined active variables, it is also an
+error.
 
 Different capitalization invokes different effects when calling a
 letter-operator. This is documented in the table below:
@@ -165,7 +162,7 @@ this case, the second active variable slot remains undefined and there is no
 error.
 
 If there is a type mismatch (if you give arguments of the wrong type to the
-operator), undefined behavior is invoked.
+operator), it is an error.
 
 ### Numbers
 
