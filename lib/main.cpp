@@ -6,6 +6,10 @@
 int main(int argc, char *argv[]) {
     Snowman sm = Snowman();
 
+    std::string VERSION_STRING = "v" + std::to_string(Snowman::MAJOR_VERSION) +
+        "." + std::to_string(Snowman::MINOR_VERSION) + "." +
+        std::to_string(Snowman::PATCH_VERSION);
+
     // parse arguments
     std::string filename;
     for (int i = 1; i < argc; ++i) {
@@ -49,9 +53,12 @@ int main(int argc, char *argv[]) {
                     "    -i, --interactive: (without filename) start a REPL\n"
                     "    -d, --debug: include debug output\n"
                     "Snowman will read from STDIN if you do not specify a "
-                        "file name or the -h or -i options.\n";
+                        "file name or the -h or -i options.\n"
+                    "Snowman version: " << VERSION_STRING << "\n";
                 return 0;
             case 'i': {
+                std::cout << "Snowman REPL, version " << VERSION_STRING <<
+                    std::endl;
                 std::cout << ">> ";
                 std::string line;
                 while (std::getline(std::cin, line)) {

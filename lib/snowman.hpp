@@ -60,16 +60,19 @@ class Snowman {
         static Variable stringarr(std::string str);
         static std::string inspect(Variable str);
         static bool toBool(Variable v);
-    public:
-        Snowman();
-        ~Snowman();
-        void run(std::string code);
         Variable vars[8];
         bool activeVars[8];
         std::map<int, Variable> permavars;
         int activePermavar;
-        bool debugOutput;
+    public:
+        Snowman();
+        ~Snowman();
+        void run(std::string code);
         std::string debug();
+        bool debugOutput;
+        const static int MAJOR_VERSION = 0;
+        const static int MINOR_VERSION = 0;
+        const static int PATCH_VERSION = 0;
 };
 
 #endif
