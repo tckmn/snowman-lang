@@ -90,17 +90,20 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
             }
         } else if (token[0] == '"') {
             // string literal in progress
-            // TODO handle escaping (here and below)
             token += c;
             if (c == '"') {
-                tokens.push_back(token);
-                token = "";
+                if (token[token.length()-2] == '\\') {
+                    token.erase(token.length() - 2, 1); // get rid of backslash
+                } else {
+                    tokens.push_back(token);
+                    token = "";
+                }
             }
         } else if (token[0] == ':') {
             // block literal in progress
             token += c;
             int nest_depth = 0;
-            bool string_mode = false;
+            bool string_mode = false, escaping = false;
             for (char& tc : token) {
                 if (tc == ':' && !string_mode) ++nest_depth;
                 else if (tc == ';' && !string_mode) {
@@ -109,9 +112,10 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                             "nesting?" << std::endl;
                         exit(1);
                     } else --nest_depth;
-                } else if (tc == '"') {
+                } else if (tc == '"' && !escaping) {
                     string_mode = !string_mode;
                 }
+                escaping = (tc == '\\' && string_mode);
             }
             if (nest_depth == 0) {
                 tokens.push_back(token);
