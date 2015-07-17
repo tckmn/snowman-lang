@@ -110,10 +110,22 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 tokens.push_back(token);
                 token = "";
             }
+        } else if (token[0] == '=') {
+            // permavar switch in progress
+            token += c;
+            if ((c == '+') || (c == '!')) {
+                tokens.push_back(token);
+                token = "";
+            } else if (c != '=') {
+                std::cerr << "panic at tokenize: invalid permavar name?"
+                    << std::endl;
+                exit(1);
+            }
         } else if (token.length() == 0) {
             // nothing currently in progress; start new token
             if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
-                    (c >= 'A' && c <= 'Z') || (c == '"') || (c == ':')) {
+                    (c >= 'A' && c <= 'Z') || (c == '"') || (c == ':') ||
+                    (c == '=')) {
                 // some token that is longer than one character
                 token += c;
                 // allow token to continue to be added to
@@ -193,6 +205,11 @@ void Snowman::evalToken(std::string token) {
         // store literal block
         auto str = new std::string(token.substr(1, token.length() - 2));
         store(Variable(str));
+        return;
+    } else if ((token[0] == '=') || (token[0] == '+') || (token[0] == '!')) {
+        // switch permavar
+        activePermavar = (token.length()-1) * 2 +
+            (token[token.length()-1] == '!');
         return;
     } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
         // handled below
