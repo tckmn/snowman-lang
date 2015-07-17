@@ -74,6 +74,7 @@ int main(int argc, char *argv[]) {
                 return 0;
             default:
                 std::cerr << "Unknown argument `" << arg << "'" << std::endl;
+                return 1;
             }
         } else if (filename == "") {
             filename = arg;
