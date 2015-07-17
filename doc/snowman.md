@@ -191,8 +191,8 @@ Operators marked with an asterisk are not yet implemented.
 
 ### Arrays
 
-- \* `aso` (a) -> a: sort
-- \* `asb` (ab) -> a: sort by
+- `aso` (a) -> a: sort
+- `asb` (ab) -> a: sort by
 - \* `af` (ab) -> a: fold
 - `ac` (aa) -> a: concatenate arrays
 - `ad` (aa) -> a: array/set difference

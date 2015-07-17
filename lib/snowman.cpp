@@ -394,6 +394,27 @@ void Snowman::evalToken(std::string token) {
         store(stringarr(nb));
         break;
     }
+    case HSH3('A','S','O'): { // (a) -> a: sort
+        auto arr = new std::vector<Variable>(*retrieve(Variable::ARRAY, 1,
+            consume)[0].arrayVal);
+        std::sort(arr->begin(), arr->end());
+        store(Variable(arr));
+        break;
+    }
+    case HSH3('A','S','B'): { // (ab) -> a: sort by
+        auto arr = new std::vector<Variable>(*retrieve(Variable::ARRAY, 1,
+            consume)[0].arrayVal);
+        std::string cmp = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
+        std::sort(arr->begin(), arr->end(),
+            [&] (Variable const& a, Variable const& b) {
+                store(a);
+                store(b);
+                run(cmp);
+                return Snowman::toBool(retrieve(-1, 1, true, -1)[0]);
+            });
+        store(Variable(arr));
+        break;
+    }
     case HSH2('a','c'): { // (aa) -> a: concatenate arrays
         vec = retrieve(Variable::ARRAY, 2, consume);
         int s1 = vec[0].arrayVal->size(), s2 = vec[1].arrayVal->size();

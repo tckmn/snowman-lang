@@ -26,6 +26,15 @@ struct Variable {
         case BLOCK: return blockVal == v.blockVal;
         }
     }
+    bool operator<(const Variable& v) const {
+        if (type != v.type) return type < v.type;
+        switch (v.type) {
+        case UNDEFINED: return false;
+        case NUM: return numVal < v.numVal;
+        case ARRAY: return arrayVal < v.arrayVal;
+        case BLOCK: return blockVal < v.blockVal;
+        }
+    }
 
     // essentially operator='s, except specialer
     void set(bool x) { mm(); type = UNDEFINED; undefinedVal = x; }
