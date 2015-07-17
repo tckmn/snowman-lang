@@ -203,12 +203,12 @@ Operators marked with an asterisk are not yet implemented.
 - \* `as` (aa) -> a: split
 - \* `ag` (an) -> a: split array in groups of size
 - `ae` (ab) -> -: each
-- \* `am` (ab) -> a: map
-- \* `an` (an) -> a: every nth element
-- \* `ase` (ab) -> a: select
-- \* `asi` (ab) -> n: select by index / index of / find index
-- \* `aal` (an) -> a: elements at indeces less than n
-- \* `aag` (an) -> a: elements at indeces greater than n
+- `am` (ab) -> a: map
+- `an` (an) -> a: every nth element
+- `ase` (ab) -> a: select
+- `asi` (ab) -> n: select by index / index of / find index
+- `aal` (an) -> a: elements at indeces less than n
+- `aag` (an) -> a: elements at indeces greater than n
 - `aa` (an) -> \*: element at index
 - `al` (a) -> n: array length
 - \* `az` (a) -> a: zip/transpose

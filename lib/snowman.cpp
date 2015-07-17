@@ -362,6 +362,71 @@ void Snowman::evalToken(std::string token) {
         }
         break;
     }
+    case HSH2('a','m'): { // (ab) -> a: map
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
+        auto v2 = new std::vector<Variable>;
+        for (Variable v : vec) {
+            store(v);
+            run(b);
+            v2->push_back(retrieve(-1, 1, consume, -1)[0]);
+        }
+        store(Variable(v2));
+        break;
+    }
+    case HSH2('a','n'): { // (an) -> a: every nth element
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        auto v2 = new std::vector<Variable>;
+        for (int i = 0; i < vec.size(); i += n) v2->push_back(vec[i]);
+        store(Variable(v2));
+        break;
+    }
+    case HSH3('A','S','E'): { // (ab) -> a: select
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
+        auto v2 = new std::vector<Variable>;
+        for (Variable v : vec) {
+            store(v);
+            run(b);
+            if (Snowman::toBool(retrieve(-1, 1, consume, -1)[0])) {
+                v2->push_back(v);
+            }
+        }
+        store(Variable(v2));
+        break;
+    }
+    case HSH3('A','S','I'): { // (ab) -> a: select by index / index of / find index
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
+        auto v2 = new std::vector<Variable>;
+        for (int i = 0; i < vec.size(); ++i) {
+            Variable v = vec[i];
+            store(v);
+            run(b);
+            if (Snowman::toBool(retrieve(-1, 1, consume, -1)[0])) {
+                v2->push_back(Variable((double)i));
+            }
+        }
+        store(Variable(v2));
+        break;
+    }
+    case HSH3('A','A','L'): { // (an) -> a: elements at indeces less than n
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        auto v2 = new std::vector<Variable>(n);
+        for (int i = 0; i < vec.size() && i < n; ++i) (*v2)[i] = vec[i];
+        store(Variable(v2));
+        break;
+    }
+    case HSH3('A','A','G'): { // (an) -> a: elements at indeces greater than n
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        auto v2 = new std::vector<Variable>(vec.size() - n - 1);
+        for (int i = n + 1; i < vec.size(); ++i) (*v2)[i - n - 1] = vec[i];
+        store(Variable(v2));
+        break;
+    }
     case HSH2('a','a'):
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         store(vec[(int)retrieve(Variable::NUM, 1, consume, 1)[0].numVal]);
