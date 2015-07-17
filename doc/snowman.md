@@ -211,8 +211,8 @@ Operators marked with an asterisk are not yet implemented.
 - \* `aag` (an) -> a: elements at indeces greater than n
 - `aa` (an) -> \*: element at index
 - `al` (a) -> n: array length
-- `az` (a) -> a: zip/transpose
-- `asp` (anna) -> a: splice (first argument is array to splice, second is start
+- \* `az` (a) -> a: zip/transpose
+- \* `asp` (anna) -> a: splice (first argument is array to splice, second is start
   index, third is length, fourth is what to replace with)
 - TODO: unfold?
 
