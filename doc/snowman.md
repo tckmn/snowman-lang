@@ -195,9 +195,9 @@ Operators marked with an asterisk are not yet implemented.
 - \* `asb` (ab) -> a: sort by
 - \* `af` (ab) -> a: fold
 - `ac` (aa) -> a: concatenate arrays
-- \* `ad` (aa) -> a: array/set difference
-- \* `aor` (aa) -> a: setwise or
-- \* `aan` (aa) -> a: setwise and
+- `ad` (aa) -> a: array/set difference
+- `aor` (aa) -> a: setwise or
+- `aan` (aa) -> a: setwise and
 - `ar` (an) -> a: array repeat
 - `aj` (aa) -> a: array join
 - `as` (aa) -> a: split
@@ -211,7 +211,7 @@ Operators marked with an asterisk are not yet implemented.
 - `aag` (an) -> a: elements at indeces greater than n
 - `aa` (an) -> \*: element at index
 - `al` (a) -> n: array length
-- \* `az` (a) -> a: zip/transpose
+- `az` (a) -> a: zip/transpose
 - \* `asp` (anna) -> a: splice (first argument is array to splice, second is start
   index, third is length, fourth is what to replace with)
 - TODO: unfold?

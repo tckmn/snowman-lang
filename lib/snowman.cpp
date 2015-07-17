@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <numeric>
+#include <algorithm>
 
 #define DEBUG
 
@@ -360,6 +361,48 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
+    case HSH2('a','d'): { // (aa) -> a: array/set difference
+        vec = retrieve(Variable::ARRAY, 2, consume);
+        auto arr = new std::vector<Variable>;
+        for (int i = 0; i < vec[0].arrayVal->size(); ++i) {
+            if (std::find(vec[1].arrayVal->begin(), vec[1].arrayVal->end(),
+                    (*vec[0].arrayVal)[i]) == vec[1].arrayVal->end()) {
+                arr->push_back((*vec[0].arrayVal)[i]);
+            }
+        }
+        store(Variable(arr));
+        break;
+    }
+    case HSH3('A','O','R'): { // (aa) -> a: setwise or
+        vec = retrieve(Variable::ARRAY, 2, consume);
+        auto arr = new std::vector<Variable>;
+        for (Variable v : *vec[0].arrayVal) {
+            if (std::find(arr->begin(), arr->end(), v) == arr->end()) {
+                arr->push_back(v);
+            }
+        }
+        for (Variable v : *vec[1].arrayVal) {
+            if (std::find(arr->begin(), arr->end(), v) == arr->end()) {
+                arr->push_back(v);
+            }
+        }
+        store(Variable(arr));
+        break;
+    }
+    case HSH3('A','A','N'): { // (aa) -> a: setwise and
+        vec = retrieve(Variable::ARRAY, 2, consume);
+        auto arr = new std::vector<Variable>;
+        for (int i = 0; i < vec[0].arrayVal->size(); ++i) {
+            if (std::find(vec[1].arrayVal->begin(), vec[1].arrayVal->end(),
+                    (*vec[0].arrayVal)[i]) != vec[1].arrayVal->end() &&
+                    std::find(arr->begin(), arr->end(), (*vec[0].arrayVal)[i])
+                    == arr->end()) {
+                arr->push_back((*vec[0].arrayVal)[i]);
+            }
+        }
+        store(Variable(arr));
+        break;
+    }
     case HSH2('a','r'): { // (an) -> a: array repeat
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
@@ -496,14 +539,42 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH2('a','a'):
+    case HSH2('a','a'): // (an) -> *: element at index
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         store(vec[(int)retrieve(Variable::NUM, 1, consume, 1)[0].numVal]);
         break;
-    case HSH2('a','l'):
+    case HSH2('a','l'): // (a) -> n: array length
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         store(Variable((double)vec.size()));
         break;
+    case HSH2('a','z'): { // (a) -> a: zip/transpose
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        auto vec2 = new std::vector<Variable>;
+        // sanity check, also get max size
+        int maxSize = 0;
+        for (int i = 0; i < vec.size(); ++i) {
+            if (vec[i].type != Variable::ARRAY) {
+                std::cerr << "panic at az: array elements are not arrays?"
+                    << std::endl;
+                exit(1);
+            }
+            if (vec[i].arrayVal->size() > maxSize) {
+                maxSize = vec[i].arrayVal->size();
+            }
+        }
+        // fill vec2 now
+        for (int j = 0; j < maxSize; ++j) {
+            auto tmp = new std::vector<Variable>;
+            for (int i = 0; i < vec.size(); ++i) {
+                if (vec[i].arrayVal->size() > j) {
+                    tmp->push_back((*vec[i].arrayVal)[j]);
+                }
+            }
+            vec2->push_back(Variable(tmp));
+        }
+        store(Variable(vec2));
+        break;
+    }
     case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
         // TODO support uppercase letters for bases > 10
         // TODO at least some error checking
