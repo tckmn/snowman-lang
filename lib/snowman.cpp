@@ -262,7 +262,7 @@ void Snowman::evalToken(std::string token) {
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
             false; break;
     case HSH1('*'): // retrieve a value, set the current permavar's value to this
-        vec = retrieve(-1);
+        vec = retrieve(-1, 1, true, -1);
         permavars[activePermavar] = vec[0];
         break;
     case HSH1('#'): // store the current permavar's value
@@ -397,7 +397,7 @@ void Snowman::evalToken(std::string token) {
         vec = retrieve(Variable::BLOCK, 2, consume);
         while (1) {
             run(*vec[1].blockVal);
-            if (!Snowman::toBool(retrieve(-1)[0])) break;
+            if (!Snowman::toBool(retrieve(-1, 1, true, -1)[0])) break;
             run(*vec[0].blockVal);
         }
         break;
@@ -413,7 +413,7 @@ void Snowman::evalToken(std::string token) {
         vec = retrieve(Variable::BLOCK, 1, consume);
         do {
             run(*vec[0].blockVal);
-        } while (Snowman::toBool(retrieve(-1)[0]));
+        } while (Snowman::toBool(retrieve(-1, 1, true, -1)[0]));
         break;
     case HSH2('n','o'): // (*) -> n: boolean/logical not (returns `1` for `0 :; []`, `0` otherwise)
         vec = retrieve(-1, 1, consume);
@@ -502,10 +502,12 @@ std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int s
     // default value of count is 1
     // default value of consume is true
     // default value of skip is 0
+    // if skip is -1, any amount of variables will be skipped (ex. retrieve(-1,
+    //   1, false, -1) will get you the first non-undefined variable)
     std::vector<Variable> vec;
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i]) {
-            if (skip) {
+            if (skip > 0) {
                 --skip;
                 continue;
             }
@@ -515,6 +517,8 @@ std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int s
                 if (consume) vars[i] = Variable(); // set to undefined
                 if (vec.size() == count) return vec;
                 // TODO should trailing non-undefined's be ok?
+            } else if (skip == -1) {
+                continue;
             } else {
                 std::cerr << "panic at retrieve: wrong type?" << std::endl;
                 exit(1);
