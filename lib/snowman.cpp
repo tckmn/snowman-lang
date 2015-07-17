@@ -303,47 +303,42 @@ void Snowman::evalToken(std::string token) {
         store(permavars[activePermavar]);
         break;
     case HSH3('N','D','E'): // (n) -> n: decrement
-        vec = retrieve(Variable::NUM, 1, consume);
-        store(Variable(vec[0].numVal - 1));
+        store(Variable(retrieve(Variable::NUM, 1, consume)[0].numVal - 1));
         break;
     case HSH3('N','I','N'): // (n) -> n: increment
-        vec = retrieve(Variable::NUM, 1, consume);
-        store(Variable(vec[0].numVal + 1));
+        store(Variable(retrieve(Variable::NUM, 1, consume)[0].numVal + 1));
         break;
     case HSH3('N','A','B'): // (n) -> n: absolute value
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal < 0 ? -vec[0].numVal : vec[0].numVal));
         break;
     case HSH2('n','f'): // (n) -> n: floor
-        vec = retrieve(Variable::NUM, 1, consume);
-        store(Variable(floor(vec[0].numVal)));
+        store(Variable(floor(retrieve(Variable::NUM, 1, consume)[0].numVal)));
         break;
     case HSH2('n','c'): // (n) -> n: ceiling
-        vec = retrieve(Variable::NUM, 1, consume);
-        store(Variable(ceil(vec[0].numVal)));
+        store(Variable(ceil(retrieve(Variable::NUM, 1, consume)[0].numVal)));
         break;
     case HSH3('N','R','O'): // (n) -> n: round
-        vec = retrieve(Variable::NUM, 1, consume);
-        store(Variable(round(vec[0].numVal)));
+        store(Variable(round(retrieve(Variable::NUM, 1, consume)[0].numVal)));
         break;
     case HSH3('N','B','N'): // (n) -> n: bitwise NOT
-        vec = retrieve(Variable::NUM, 1, consume);
-        store(Variable((double) ~((int)round(vec[0].numVal))));
+        store(Variable((double) ~((int)round(retrieve(Variable::NUM, 1,
+            consume)[0].numVal))));
         break;
     case HSH3('N','B','O'): // (nn) -> n: bitwise OR
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double) (((int)round(vec[0].numVal)) |
-                        ((int)round(vec[1].numVal)))));
+                                 ((int)round(vec[1].numVal)))));
         break;
     case HSH3('N','B','A'): // (nn) -> n: bitwise AND
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double) (((int)round(vec[0].numVal)) &
-                        ((int)round(vec[1].numVal)))));
+                                 ((int)round(vec[1].numVal)))));
         break;
     case HSH3('N','B','X'): // (nn) -> n: bitwise XOR
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double) (((int)round(vec[0].numVal)) ^
-                        ((int)round(vec[1].numVal)))));
+                                 ((int)round(vec[1].numVal)))));
         break;
     case HSH2('n','a'): // (nn) -> n: addition
         vec = retrieve(Variable::NUM, 2, consume);
