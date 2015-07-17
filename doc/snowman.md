@@ -259,6 +259,9 @@ Whitespace and non-printable-ASCII characters are all stripped before
 processing your Snowman program. This means that `1 1` will not have the
 desired effect (it will store 11). To store two 1's, use `1vn1` or `1vN1`.
 
+Two slashes in a row (`//`) normally have no effect, so this represents a
+comment (that continues until a newline character).
+
 ## Example programs
 
 Hello World (`sP` can also be `sp`):
