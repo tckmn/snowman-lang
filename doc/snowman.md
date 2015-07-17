@@ -187,7 +187,7 @@ Operators marked with an asterisk are not yet implemented.
 - `ng` (nn) -> n: greater than
 - `nr` (nn) -> a: range
 - `np` (nn) -> n: power
-- \* `nb` (nn) -> a: to base
+- `nb` (nn) -> a: to base
 
 ### Arrays
 
@@ -212,7 +212,7 @@ Operators marked with an asterisk are not yet implemented.
 - `aa` (an) -> \*: element at index
 - `al` (a) -> n: array length
 - `az` (a) -> a: zip/transpose
-- \* `asp` (anna) -> a: splice (first argument is array to splice, second is start
+- `asp` (anna) -> a: splice (first argument is array to splice, second is start
   index, third is length, fourth is what to replace with)
 - TODO: unfold?
 

@@ -368,6 +368,18 @@ void Snowman::evalToken(std::string token) {
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(pow(vec[0].numVal, vec[1].numVal)));
         break;
+    case HSH2('n','b'): { // (nn) -> a: to base
+        // TODO don't round, convert decimals too
+        vec = retrieve(Variable::NUM, 2, consume);
+        int n = round(vec[0].numVal), base = round(vec[1].numVal);
+        std::string nb;
+        while (n) {
+            nb = DIGITS[n % base] + nb;
+            n /= base;
+        }
+        store(stringarr(nb));
+        break;
+    }
     case HSH2('a','c'): { // (aa) -> a: concatenate arrays
         vec = retrieve(Variable::ARRAY, 2, consume);
         int s1 = vec[0].arrayVal->size(), s2 = vec[1].arrayVal->size();
@@ -591,9 +603,28 @@ void Snowman::evalToken(std::string token) {
         store(Variable(vec2));
         break;
     }
+    case HSH3('A','S','P'): { // (anna) -> a: splice (first argument is array to splice, second is start index, third is length, fourth is what to replace with)
+        std::vector<Variable> arr = *retrieve(Variable::ARRAY, 1,
+            consume)[0].arrayVal;
+        int idx = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal),
+            len = round(retrieve(Variable::NUM, 1, consume, 2)[0].numVal);
+        std::vector<Variable> repl = *retrieve(Variable::ARRAY, 1,
+            consume, 3)[0].arrayVal;
+        auto result = new std::vector<Variable>;
+        for (int i = 0; i < idx && i < arr.size(); ++i) {
+            result->push_back(arr[i]);
+        }
+        result->insert(result->end(), repl.begin(), repl.end());
+        for (int i = idx + len; i < arr.size(); ++i) {
+            result->push_back(arr[i]);
+        }
+        store(Variable(result));
+        break;
+    }
     case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
         // TODO support uppercase letters for bases > 10
         // TODO at least some error checking
+        // TODO don't round, convert decimals too
         std::string str = arrstring(retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal);
         int base = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
