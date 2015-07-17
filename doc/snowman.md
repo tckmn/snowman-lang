@@ -164,8 +164,6 @@ error.
 If there is a type mismatch (if you give arguments of the wrong type to the
 operator), it is an error.
 
-Operators marked with an asterisk are not yet implemented.
-
 ### Numbers
 
 - `nde` (n) -> n: decrement
@@ -193,7 +191,7 @@ Operators marked with an asterisk are not yet implemented.
 
 - `aso` (a) -> a: sort
 - `asb` (ab) -> a: sort by
-- \* `af` (ab) -> a: fold
+- `af` (ab) -> \*: fold
 - `ac` (aa) -> a: concatenate arrays
 - `ad` (aa) -> a: array/set difference
 - `aor` (aa) -> a: setwise or
@@ -220,11 +218,12 @@ Operators marked with an asterisk are not yet implemented.
 
 - `sb` (an) -> n: from-base from array-"string"
 - `sp` (a) -> -: print an array-"string"
-- \* `sm` (aa) -> a: regex match; first array-"string" is search text, second
+- `sm` (aa) -> a: regex match; first array-"string" is search text, second
   array-"string" is regex
-- \* `sr` (aaa) -> a: regex replace; first array-"string" is string to operate on,
+- `sr` (aaa) -> a: regex replace; first array-"string" is string to operate on,
   second array-"string" is regex, third is replacement text
-- \* `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
+- `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
+  (TODO: not yet implemented)
 - TODO: eval (some other language) code?
 
 ### Blocks

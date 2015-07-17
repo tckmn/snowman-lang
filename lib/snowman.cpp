@@ -6,6 +6,7 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
+#include <regex>
 
 #define DEBUG
 
@@ -415,6 +416,16 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
+    case HSH2('a','f'): { // (ab) -> *: fold
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        std::string blk = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
+        store(vec[0]);
+        for (int i = 1; i < vec.size(); ++i) {
+            store(vec[i]);
+            run(blk);
+        }
+        break;
+    }
     case HSH2('a','c'): { // (aa) -> a: concatenate arrays
         vec = retrieve(Variable::ARRAY, 2, consume);
         int s1 = vec[0].arrayVal->size(), s2 = vec[1].arrayVal->size();
@@ -674,6 +685,32 @@ void Snowman::evalToken(std::string token) {
         vec = retrieve(Variable::ARRAY, 1, consume);
         std::cout << arrstring(vec[0]);
         break;
+    case HSH2('s','m'): { // (aa) -> a: regex match; first array-"string" is search text, second array-"string" is regex
+        std::string str = arrstring(retrieve(Variable::ARRAY, 1, consume)[0]);
+        std::regex rgx(arrstring(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        auto mb = std::sregex_iterator(str.begin(), str.end(), rgx),
+             me = std::sregex_iterator();
+        auto results = new std::vector<Variable>;
+        for (auto it = mb; it != me; ++it) {
+            results->push_back(stringarr(it->str()));
+        }
+        store(Variable(results));
+        break;
+    }
+    case HSH2('s','r'): { // (aaa) -> a: regex replace; first array-"string" is string to operate on, second array-"string" is rege, third is replacement text
+        std::string str = arrstring(retrieve(Variable::ARRAY, 1, consume)[0]);
+        std::regex rgx(arrstring(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::string repl = arrstring(retrieve(Variable::ARRAY, 1, consume, 2)[0]);
+        store(Variable(stringarr(std::regex_replace(str, rgx, repl))));
+        break;
+    }
+    case HSH3('S','R','B'): { // (aab) -> a: same as `sr` but with a block instead of array-"string"
+        std::string str = arrstring(retrieve(Variable::ARRAY, 1, consume)[0]);
+        std::regex rgx(arrstring(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::string repl = *retrieve(Variable::BLOCK, 1, consume, 2)[0].blockVal;
+        // TODO (this might help: http://stackoverflow.com/a/22617942/1223693)
+        break;
+    }
     case HSH2('b','r'): { // (bn) -> -: repeat
         std::string code = *retrieve(Variable::BLOCK, 1, consume)[0].blockVal;
         double count = retrieve(Variable::NUM, 1, consume, 1)[0].numVal;
