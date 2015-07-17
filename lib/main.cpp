@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
                 if (arg == "--help") argid = 'h';
                 else if (arg == "--interactive") argid = 'i';
                 else if (arg == "--debug") argid = 'd';
+                else if (arg == "--evaluate") argid = 'e';
                 else {
                     std::cerr << "Unknown long argument `" << arg << "'" <<
                         std::endl;
@@ -37,21 +38,14 @@ int main(int argc, char *argv[]) {
             }
 
             switch (argid) {
-            // for future reference, this is how arguments with parameters work
-            /*case 'i':
-                if ((++i) == argc) {
-                    std::cerr << "Argument `" << arg << "' requires a "
-                        "parameter (ID)" << std::endl;
-                    return 1;
-                }
-                id = argv[i];
-                break;*/
             case 'h':
                 std::cout << "Usage: " << argv[0] << " [OPTION]... [FILENAME]\n" <<
                     "Options:\n"
                     "    -h, --help: (without filename) display this message\n"
                     "    -i, --interactive: (without filename) start a REPL\n"
                     "    -d, --debug: include debug output\n"
+                    "    -e, --evaluate: takes one parameter, runs as Snowman"
+                        "code\n"
                     "Snowman will read from STDIN if you do not specify a "
                         "file name or the -h or -i options.\n"
                     "Snowman version: " << VERSION_STRING << "\n";
@@ -70,6 +64,14 @@ int main(int argc, char *argv[]) {
             case 'd':
                 sm.debugOutput = true;
                 break;
+            case 'e':
+                if ((++i) == argc) {
+                    std::cerr << "Argument `" << arg << "' requires a"
+                        "parameter" << std::endl;
+                    return 1;
+                }
+                sm.run(std::string(argv[i]));
+                return 0;
             default:
                 std::cerr << "Unknown argument `" << arg << "'" << std::endl;
             }
