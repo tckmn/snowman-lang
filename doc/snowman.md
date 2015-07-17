@@ -164,6 +164,8 @@ error.
 If there is a type mismatch (if you give arguments of the wrong type to the
 operator), it is an error.
 
+Operators marked with an asterisk are not yet implemented.
+
 ### Numbers
 
 - `nde` (n) -> n: decrement
@@ -172,10 +174,10 @@ operator), it is an error.
 - `nf` (n) -> n: floor
 - `nc` (n) -> n: ceiling
 - `nro` (n) -> n: round
-- `nbn` (n) -> n: bitwise NOT
-- `nbo` (nn) -> n: bitwise OR
-- `nba` (nn) -> n: bitwise AND
-- `nbx` (nn) -> n: bitwise XOR
+- \* `nbn` (n) -> n: bitwise NOT
+- \* `nbo` (nn) -> n: bitwise OR
+- \* `nba` (nn) -> n: bitwise AND
+- \* `nbx` (nn) -> n: bitwise XOR
 - `na` (nn) -> n: addition
 - `ns` (nn) -> n: subtraction
 - `nm` (nn) -> n: multiplication
@@ -185,32 +187,32 @@ operator), it is an error.
 - `ng` (nn) -> n: greater than
 - `nr` (nn) -> a: range
 - `np` (nn) -> n: power
-- `nb` (nn) -> a: to base
+- \* `nb` (nn) -> a: to base
 
 ### Arrays
 
-- `aso` (a) -> a: sort
-- `asb` (ab) -> a: sort by
-- `af` (ab) -> a: fold
+- \* `aso` (a) -> a: sort
+- \* `asb` (ab) -> a: sort by
+- \* `af` (ab) -> a: fold
 - `ac` (aa) -> a: concatenate arrays
-- `ad` (aa) -> a: array/set difference
-- `aor` (aa) -> a: setwise or
-- `aan` (aa) -> a: setwise and
+- \* `ad` (aa) -> a: array/set difference
+- \* `aor` (aa) -> a: setwise or
+- \* `aan` (aa) -> a: setwise and
 - `ar` (an) -> a: array repeat
-- `aj` (aa) -> a: array join
-- `asp` (aa) -> a: split
-- `ag` (an) -> a: split array in groups of size
+- \* `aj` (aa) -> a: array join
+- \* `as` (aa) -> a: split
+- \* `ag` (an) -> a: split array in groups of size
 - `ae` (ab) -> -: each
-- `am` (ab) -> a: map
-- `an` (an) -> a: every nth element
-- `ase` (ab) -> a: select
-- `asi` (ab) -> n: select by index / index of / find index
-- `aal` (an) -> a: elements at indeces less than n
-- `aag` (an) -> a: elements at indeces greater than n
+- \* `am` (ab) -> a: map
+- \* `an` (an) -> a: every nth element
+- \* `ase` (ab) -> a: select
+- \* `asi` (ab) -> n: select by index / index of / find index
+- \* `aal` (an) -> a: elements at indeces less than n
+- \* `aag` (an) -> a: elements at indeces greater than n
 - `aa` (an) -> \*: element at index
 - `al` (a) -> n: array length
 - `az` (a) -> a: zip/transpose
-- `as` (anna) -> a: splice (first argument is array to splice, second is start
+- `asp` (anna) -> a: splice (first argument is array to splice, second is start
   index, third is length, fourth is what to replace with)
 - TODO: unfold?
 
@@ -218,11 +220,11 @@ operator), it is an error.
 
 - `sb` (an) -> n: from-base from array-"string"
 - `sp` (a) -> -: print an array-"string"
-- `sm` (aa) -> a: regex match; first array-"string" is search text, second
+- \* `sm` (aa) -> a: regex match; first array-"string" is search text, second
   array-"string" is regex
-- `sr` (aaa) -> a: regex replace; first array-"string" is string to operate on,
+- \* `sr` (aaa) -> a: regex replace; first array-"string" is string to operate on,
   second array-"string" is regex, third is replacement text
-- `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
+- \* `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
 - TODO: eval (some other language) code?
 
 ### Blocks
