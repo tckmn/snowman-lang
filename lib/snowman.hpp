@@ -91,7 +91,7 @@ class Snowman {
         std::string debug();
         bool debugOutput;
         const static int MAJOR_VERSION = 0;
-        const static int MINOR_VERSION = 0;
+        const static int MINOR_VERSION = 1;
         const static int PATCH_VERSION = 0;
 };
 
