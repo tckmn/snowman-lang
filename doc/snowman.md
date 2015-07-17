@@ -112,9 +112,9 @@ zero or more `=`, then a `+` or `!`. So, possible peramvar names are `+`, `!`,
 
 The following operators have to do with literals:
 
-- `:...;`: store literal block
+- `:...;`: store literal block (can be nested)
 - `"..."`: store literal string-array ("strings" are just arrays of ASCII
-  codes)
+  codes; use `\"` to include quotes within string literals)
 - (one or more digits): store literal number
 
 Literal arrays don't exist. You can create empty arrays with `""` and push to
