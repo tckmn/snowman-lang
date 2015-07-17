@@ -736,8 +736,8 @@ std::string Snowman::debug() {
     }
 
     for (const auto& pv : permavars) {
-        s += std::to_string(pv.first) + "=" + Snowman::inspect(pv.second) +
-            " ";
+        s += std::string(pv.first / 2, '=') + (pv.first % 2 == 0 ? "+" : "!") +
+            "=" + Snowman::inspect(pv.second) + " ";
     }
 
     s[s.length()-1] = '\n';
