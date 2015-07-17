@@ -174,10 +174,10 @@ Operators marked with an asterisk are not yet implemented.
 - `nf` (n) -> n: floor
 - `nc` (n) -> n: ceiling
 - `nro` (n) -> n: round
-- \* `nbn` (n) -> n: bitwise NOT
-- \* `nbo` (nn) -> n: bitwise OR
-- \* `nba` (nn) -> n: bitwise AND
-- \* `nbx` (nn) -> n: bitwise XOR
+- `nbn` (n) -> n: bitwise NOT
+- `nbo` (nn) -> n: bitwise OR
+- `nba` (nn) -> n: bitwise AND
+- `nbx` (nn) -> n: bitwise XOR
 - `na` (nn) -> n: addition
 - `ns` (nn) -> n: subtraction
 - `nm` (nn) -> n: multiplication

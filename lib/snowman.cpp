@@ -326,6 +326,25 @@ void Snowman::evalToken(std::string token) {
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(round(vec[0].numVal)));
         break;
+    case HSH3('N','B','N'): // (n) -> n: bitwise NOT
+        vec = retrieve(Variable::NUM, 1, consume);
+        store(Variable((double) ~((int)round(vec[0].numVal))));
+        break;
+    case HSH3('N','B','O'): // (nn) -> n: bitwise OR
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable((double) (((int)round(vec[0].numVal)) |
+                        ((int)round(vec[1].numVal)))));
+        break;
+    case HSH3('N','B','A'): // (nn) -> n: bitwise AND
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable((double) (((int)round(vec[0].numVal)) &
+                        ((int)round(vec[1].numVal)))));
+        break;
+    case HSH3('N','B','X'): // (nn) -> n: bitwise XOR
+        vec = retrieve(Variable::NUM, 2, consume);
+        store(Variable((double) (((int)round(vec[0].numVal)) ^
+                        ((int)round(vec[1].numVal)))));
+        break;
     case HSH2('n','a'): // (nn) -> n: addition
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal + vec[1].numVal));
