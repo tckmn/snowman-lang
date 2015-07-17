@@ -353,6 +353,58 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
+    case HSH2('a','j'): { // (aa) -> a: array join
+        vec = retrieve(Variable::ARRAY, 2, consume);
+        auto arr = new std::vector<Variable>;
+        if (vec[0].arrayVal->size() < 2) {
+            store(vec[0]);
+        } else {
+            for (auto it = vec[0].arrayVal->begin(); it !=
+                    std::prev(vec[0].arrayVal->end()); ++it) {
+                arr->push_back(*it);
+                arr->insert(arr->end(), vec[1].arrayVal->begin(),
+                    vec[1].arrayVal->end());
+            }
+            arr->push_back((*vec[0].arrayVal)[vec[0].arrayVal->size() - 1]);
+            store(Variable(arr));
+        }
+        break;
+    }
+    case HSH2('a','s'): { // (aa) -> a: split
+        vec = retrieve(Variable::ARRAY, 2, consume);
+        auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
+        for (int i = 0; i < vec[0].arrayVal->size(); ++i) {
+            if ((*vec[1].arrayVal) ==
+                    std::vector<Variable>(vec[0].arrayVal->begin() + i,
+                        vec[0].arrayVal->begin() + i +
+                        vec[1].arrayVal->size())) {
+                arr->push_back(Variable(tmp));
+                tmp = new std::vector<Variable>;
+                i += vec[1].arrayVal->size() - 1;
+            } else {
+                tmp->push_back((*vec[0].arrayVal)[i]);
+            }
+        }
+        arr->push_back(Variable(tmp));
+        store(Variable(arr));
+        break;
+    }
+    case HSH2('a','g'): { // (an) -> a: split array in groups of size
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
+        for (int i = 0; i < vec.size(); ++i) {
+            tmp->push_back(vec[i]);
+            if (i % n == (n-1)) {
+                arr->push_back(Variable(tmp));
+                tmp = new std::vector<Variable>;
+            }
+        }
+        if (tmp->size()) arr->push_back(Variable(tmp));
+        else delete tmp;
+        store(Variable(arr));
+        break;
+    }
     case HSH2('a','e'): { // (ab) -> -: each
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;

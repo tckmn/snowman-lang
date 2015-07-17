@@ -199,9 +199,9 @@ Operators marked with an asterisk are not yet implemented.
 - \* `aor` (aa) -> a: setwise or
 - \* `aan` (aa) -> a: setwise and
 - `ar` (an) -> a: array repeat
-- \* `aj` (aa) -> a: array join
-- \* `as` (aa) -> a: split
-- \* `ag` (an) -> a: split array in groups of size
+- `aj` (aa) -> a: array join
+- `as` (aa) -> a: split
+- `ag` (an) -> a: split array in groups of size
 - `ae` (ab) -> -: each
 - `am` (ab) -> a: map
 - `an` (an) -> a: every nth element

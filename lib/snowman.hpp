@@ -16,6 +16,17 @@ struct Variable {
     // destructor
     ~Variable() {}
 
+    // operators
+    bool operator==(const Variable& v) const {
+        if (type != v.type) return false;
+        switch (v.type) {
+        case UNDEFINED: return true;
+        case NUM: return numVal == v.numVal;
+        case ARRAY: return arrayVal == v.arrayVal;
+        case BLOCK: return blockVal == v.blockVal;
+        }
+    }
+
     // essentially operator='s, except specialer
     void set(bool x) { mm(); type = UNDEFINED; undefinedVal = x; }
     void set(double x) { mm(); type = NUM; numVal = x; }
