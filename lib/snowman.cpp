@@ -1,12 +1,12 @@
 #include "snowman.hpp"
-#include <iostream>
-#include <stdexcept>
-#include <ctime>
-#include <cstdlib>
-#include <cmath>
-#include <numeric>
-#include <algorithm>
-#include <regex>
+#include <iostream>   // std::cout, std::cerr, std::endl
+#include <stdexcept>  // std::invalid_argument, std::out_of_range
+#include <ctime>      // time (for seeding RNG)
+#include <cstdlib>    // rand, srand, exit
+#include <cmath>      // abs, fmod, pow, ceil, floor, round
+#include <algorithm>  // find
+#include <regex>      // obvious
+// included from snowman.hpp: <vector>, <string>, <map>
 
 #define DEBUG
 
@@ -371,11 +371,10 @@ void Snowman::evalToken(std::string token) {
         break;
     case HSH2('n','r'): { // (nn) -> n: range
         vec = retrieve(Variable::NUM, 2, consume);
-        int a = round(vec[0].numVal), b = round(vec[1].numVal);
-        std::vector<double> rng(b - a);
-        std::iota(std::begin(rng), std::end(rng), a);
         auto vrng = new std::vector<Variable>;
-        for (double d : rng) vrng->push_back(Variable(d));
+        for (double i = vec[0].numVal; i < vec[1].numVal; ++i) {
+            vrng->push_back(Variable(i));
+        }
         store(Variable(vrng));
         break;
     }
