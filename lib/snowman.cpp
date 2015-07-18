@@ -777,9 +777,8 @@ void Snowman::evalToken(std::string token) {
                 store(Variable((double)(vec[0].numVal == vec[1].numVal)));
                 break;
             case Variable::ARRAY:
-                //store(Variable((double)((*vec[0].arrayVal) ==
-                //    (*vec[1].arrayVal))));
-                // TODO why doesn't this work?
+                store(Variable((double)((*vec[0].arrayVal) ==
+                    (*vec[1].arrayVal))));
                 break;
             case Variable::BLOCK:
                 store(Variable((double)((*vec[0].blockVal) ==
@@ -840,7 +839,6 @@ std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int s
                 vec.push_back(vars[i]);
                 if (consume) vars[i] = Variable(); // set to undefined
                 if (vec.size() == count) return vec;
-                // TODO should trailing non-undefined's be ok?
             } else if (skip == -1) {
                 continue;
             } else {
