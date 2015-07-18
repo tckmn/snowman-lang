@@ -386,12 +386,14 @@ void Snowman::evalToken(std::string token) {
         // TODO don't round, convert decimals too
         vec = retrieve(Variable::NUM, 2, consume);
         int n = round(vec[0].numVal), base = round(vec[1].numVal);
+        bool neg = n < 0;
+        if (neg) n = -n;
         std::string nb;
         while (n) {
             nb = DIGITS[n % base] + nb;
             n /= base;
         }
-        store(stringarr(nb));
+        store(stringarr((neg ? "-" : "") + nb));
         break;
     }
     case HSH3('A','S','O'): { // (a) -> a: sort
@@ -674,10 +676,15 @@ void Snowman::evalToken(std::string token) {
             consume)[0].arrayVal);
         int base = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         int num = 0;
+        bool neg = false;
+        if (str[0] == '-') {
+            neg = true;
+            str = str.substr(1);
+        }
         for (int i = str.length()-1; i >= 0; --i) {
             num += DIGITS.find(str[i]) * pow(base, str.length()-1 - i);
         }
-        store(Variable((double)num));
+        store(Variable((double)num * (neg ? 1 : -1)));
         break;
     }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
