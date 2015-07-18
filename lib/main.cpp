@@ -43,15 +43,15 @@ int main(int argc, char *argv[]) {
                     "Options:\n"
                     "    -h, --help: (without filename) display this message\n"
                     "    -i, --interactive: (without filename) start a REPL\n"
+                    "    -e, --evaluate: (without filename) takes one "
+                        "parameter, runs as Snowman code\n"
                     "    -d, --debug: include debug output\n"
-                    "    -e, --evaluate: takes one parameter, runs as Snowman"
-                        "code\n"
                     "Snowman will read from STDIN if you do not specify a "
                         "file name or the -h or -i options.\n"
                     "Snowman version: " << VERSION_STRING << "\n";
                 return 0;
             case 'i': {
-                std::cout << "Snowman REPL, version " << VERSION_STRING <<
+                std::cout << "Snowman REPL, " << VERSION_STRING <<
                     std::endl;
                 std::cout << ">> ";
                 std::string line;
