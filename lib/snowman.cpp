@@ -296,6 +296,12 @@ void Snowman::evalToken(std::string token) {
         activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
             false; break;
+    case HSH1('$'):
+        // TODO
+        break;
+    case HSH1('&'):
+        // TODO
+        break;
     case HSH1('*'): // retrieve a value, set the current permavar's value to this
         vec = retrieve(-1, 1, true, -1);
         permavars[activePermavar] = vec[0];

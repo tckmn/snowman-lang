@@ -89,8 +89,8 @@ lines.
 - `@`: rotate (done clockwise, abcehgfd -> bcehgfda)
 - `%`: reflect (abcehgfd -> hgfdabce)
 - `?`: mark all as inactive
-- `$`: save current state
-- `&`: restore saved state
+- `$`: save current state (TODO: not yet implemented)
+- `&`: restore saved state (TODO: not yet implemented)
 
 The following operators have to do with permavars. These are variables that you
 can freely store to / retrieve from.
