@@ -690,7 +690,6 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
-        // TODO support uppercase letters for bases > 10
         // TODO at least some error checking
         // TODO don't round, convert decimals too
         std::string str = arrToString(retrieve(Variable::ARRAY, 1,
@@ -703,9 +702,11 @@ void Snowman::evalToken(std::string token) {
             str = str.substr(1);
         }
         for (int i = str.length()-1; i >= 0; --i) {
-            num += DIGITS.find(str[i]) * pow(base, str.length()-1 - i);
+            char c = (str[i] >= 'A' && str[i] <= 'Z') ? str[i] + ('a' - 'A') :
+                str[i];
+            num += (DIGITS.find(c) - 1) * pow(base, str.length()-1 - i);
         }
-        store(Variable((double)num * (neg ? 1 : -1)));
+        store(Variable((double)num * (neg ? -1 : 1)));
         break;
     }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
