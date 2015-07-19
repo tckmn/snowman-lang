@@ -6,6 +6,18 @@
 #include <string>
 #include <map>
 
+struct Variable;
+
+typedef std::vector<Variable>::size_type vvs;
+typedef std::string::size_type ss;
+
+class SnowmanException: public std::runtime_error {
+    public:
+        SnowmanException(std::string msg = "Snowman error occurred",
+                bool fatal = false): std::runtime_error(msg), fatal(fatal) {}
+        bool fatal;
+};
+
 struct Variable {
     // constructors
     Variable(): undefinedVal(true) { type = UNDEFINED; }
@@ -25,6 +37,8 @@ struct Variable {
         case NUM: return numVal == v.numVal;
         case ARRAY: return arrayVal == v.arrayVal;
         case BLOCK: return blockVal == v.blockVal;
+        default: throw SnowmanException("at Variable::operator==: impossible"
+                    "type?", true);
         }
     }
     bool operator<(const Variable& v) const {
@@ -34,6 +48,8 @@ struct Variable {
         case NUM: return numVal < v.numVal;
         case ARRAY: return arrayVal < v.arrayVal;
         case BLOCK: return blockVal < v.blockVal;
+        default: throw SnowmanException("at Variable::operator<: impossible"
+                     "type?", true);
         }
     }
 
@@ -58,6 +74,7 @@ struct Variable {
         switch (type) {
         case ARRAY: delete arrayVal; break;
         case BLOCK: delete blockVal; break;
+        default: break;
         }
     }
 
@@ -75,7 +92,7 @@ class Snowman {
         static std::vector<std::string> tokenize(std::string code);
         void evalToken(std::string token);
         void store(Variable v);
-        std::vector<Variable> retrieve(int type, int count = 1, bool consume =
+        std::vector<Variable> retrieve(int type, vvs count = 1, bool consume =
             true, int skip = 0);
         static std::string arrToString(Variable arr);
         static Variable stringToArr(std::string str);
@@ -94,13 +111,6 @@ class Snowman {
         const static int MAJOR_VERSION = 0;
         const static int MINOR_VERSION = 1;
         const static int PATCH_VERSION = 2;
-};
-
-class SnowmanException: public std::runtime_error {
-    public:
-        SnowmanException(std::string msg = "Snowman error occurred",
-                bool fatal = false): std::runtime_error(msg), fatal(fatal) {}
-        bool fatal;
 };
 
 #endif

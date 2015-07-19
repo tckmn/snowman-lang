@@ -183,7 +183,9 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
 
 // execute an individual token (called in a loop over all tokens)
 void Snowman::evalToken(std::string token) {
-    bool consume; // used for letter operators, 2nd and 3rd if blocks below
+    // used for letter operators, 2nd and 3rd if blocks below
+    // (initialized to false because compiler warnings)
+    bool consume = false;
     if (token[0] >= '0' && token[0] <= '9') {
         // store literal number
         int num;
@@ -230,7 +232,7 @@ void Snowman::evalToken(std::string token) {
     } else if (token.length() >= 2 && token[0] == '"') {
         // store literal string-array
         auto vec = new std::vector<Variable>(token.length() - 2);
-        for (int i = 1; i < token.length() - 1; ++i) {
+        for (vvs i = 1; i < token.length() - 1; ++i) {
             (*vec)[i-1] = Variable((double)token[i]);
         }
         store(Variable(vec));
@@ -456,7 +458,7 @@ void Snowman::evalToken(std::string token) {
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string blk = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         store(vec[0]);
-        for (int i = 1; i < vec.size(); ++i) {
+        for (vvs i = 1; i < vec.size(); ++i) {
             store(vec[i]);
             run(blk);
         }
@@ -474,7 +476,7 @@ void Snowman::evalToken(std::string token) {
     case HSH2('a','d'): { // (aa) -> a: array/set difference
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>;
-        for (int i = 0; i < vec[0].arrayVal->size(); ++i) {
+        for (vvs i = 0; i < vec[0].arrayVal->size(); ++i) {
             if (std::find(vec[1].arrayVal->begin(), vec[1].arrayVal->end(),
                     (*vec[0].arrayVal)[i]) == vec[1].arrayVal->end()) {
                 arr->push_back((*vec[0].arrayVal)[i]);
@@ -502,7 +504,7 @@ void Snowman::evalToken(std::string token) {
     case HSH3('A','A','N'): { // (aa) -> a: setwise and
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>;
-        for (int i = 0; i < vec[0].arrayVal->size(); ++i) {
+        for (vvs i = 0; i < vec[0].arrayVal->size(); ++i) {
             if (std::find(vec[1].arrayVal->begin(), vec[1].arrayVal->end(),
                     (*vec[0].arrayVal)[i]) != vec[1].arrayVal->end() &&
                     std::find(arr->begin(), arr->end(), (*vec[0].arrayVal)[i])
@@ -517,7 +519,7 @@ void Snowman::evalToken(std::string token) {
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto arr = new std::vector<Variable>(vec.size() * count);
-        for (int i = 0; i < vec.size() * count; ++i) {
+        for (vvs i = 0; i < vec.size() * count; ++i) {
             (*arr)[i] = vec[i % vec.size()];
         }
         store(Variable(arr));
@@ -543,7 +545,7 @@ void Snowman::evalToken(std::string token) {
     case HSH2('a','s'): { // (aa) -> a: split
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
-        for (int i = 0; i < vec[0].arrayVal->size(); ++i) {
+        for (vvs i = 0; i < vec[0].arrayVal->size(); ++i) {
             if ((*vec[1].arrayVal) ==
                     std::vector<Variable>(vec[0].arrayVal->begin() + i,
                         vec[0].arrayVal->begin() + i +
@@ -561,9 +563,9 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('a','g'): { // (an) -> a: split array in groups of size
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
-        int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        vvs n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
-        for (int i = 0; i < vec.size(); ++i) {
+        for (vvs i = 0; i < vec.size(); ++i) {
             tmp->push_back(vec[i]);
             if (i % n == (n-1)) {
                 arr->push_back(Variable(tmp));
@@ -600,7 +602,7 @@ void Snowman::evalToken(std::string token) {
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto v2 = new std::vector<Variable>;
-        for (int i = 0; i < vec.size(); i += n) v2->push_back(vec[i]);
+        for (vvs i = 0; i < vec.size(); i += n) v2->push_back(vec[i]);
         store(Variable(v2));
         break;
     }
@@ -622,7 +624,7 @@ void Snowman::evalToken(std::string token) {
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         auto v2 = new std::vector<Variable>;
-        for (int i = 0; i < vec.size(); ++i) {
+        for (vvs i = 0; i < vec.size(); ++i) {
             Variable v = vec[i];
             store(v);
             run(b);
@@ -635,9 +637,9 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH3('A','A','L'): { // (an) -> a: elements at indeces less than n
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
-        int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        vvs n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto v2 = new std::vector<Variable>(n);
-        for (int i = 0; i < vec.size() && i < n; ++i) (*v2)[i] = vec[i];
+        for (vvs i = 0; i < vec.size() && i < n; ++i) (*v2)[i] = vec[i];
         store(Variable(v2));
         break;
     }
@@ -645,7 +647,7 @@ void Snowman::evalToken(std::string token) {
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto v2 = new std::vector<Variable>(vec.size() - n - 1);
-        for (int i = n + 1; i < vec.size(); ++i) (*v2)[i - n - 1] = vec[i];
+        for (vvs i = n + 1; i < vec.size(); ++i) (*v2)[i - n - 1] = vec[i];
         store(Variable(v2));
         break;
     }
@@ -661,8 +663,8 @@ void Snowman::evalToken(std::string token) {
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         auto vec2 = new std::vector<Variable>;
         // sanity check, also get max size
-        int maxSize = 0;
-        for (int i = 0; i < vec.size(); ++i) {
+        vvs maxSize = 0;
+        for (vvs i = 0; i < vec.size(); ++i) {
             if (vec[i].type != Variable::ARRAY) {
                 throw SnowmanException("at az: array elements are not arrays, "
                         "stopping execution of az", false);
@@ -672,9 +674,9 @@ void Snowman::evalToken(std::string token) {
             }
         }
         // fill vec2 now
-        for (int j = 0; j < maxSize; ++j) {
+        for (vvs j = 0; j < maxSize; ++j) {
             auto tmp = new std::vector<Variable>;
-            for (int i = 0; i < vec.size(); ++i) {
+            for (vvs i = 0; i < vec.size(); ++i) {
                 if (vec[i].arrayVal->size() > j) {
                     tmp->push_back((*vec[i].arrayVal)[j]);
                 }
@@ -687,16 +689,16 @@ void Snowman::evalToken(std::string token) {
     case HSH3('A','S','P'): { // (anna) -> a: splice (first argument is array to splice, second is start index, third is length, fourth is what to replace with)
         std::vector<Variable> arr = *retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal;
-        int idx = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal),
+        vvs idx = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal),
             len = round(retrieve(Variable::NUM, 1, consume, 2)[0].numVal);
         std::vector<Variable> repl = *retrieve(Variable::ARRAY, 1,
             consume, 3)[0].arrayVal;
         auto result = new std::vector<Variable>;
-        for (int i = 0; i < idx && i < arr.size(); ++i) {
+        for (vvs i = 0; i < idx && i < arr.size(); ++i) {
             result->push_back(arr[i]);
         }
         result->insert(result->end(), repl.begin(), repl.end());
-        for (int i = idx + len; i < arr.size(); ++i) {
+        for (vvs i = idx + len; i < arr.size(); ++i) {
             result->push_back(arr[i]);
         }
         store(Variable(result));
@@ -713,7 +715,7 @@ void Snowman::evalToken(std::string token) {
             neg = true;
             str = str.substr(1);
         }
-        int dotPos = str.find('.'), subPos = str.length() - 1;
+        ss dotPos = str.find('.'), subPos = str.length() - 1;
         if (dotPos != std::string::npos) {
             str.erase(dotPos, 1);
             subPos = dotPos - 1;
@@ -863,7 +865,7 @@ void Snowman::store(Variable val) {
     }
 }
 
-std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int skip) {
+std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int skip) {
     // for definition of "retrieve", see doc/snowman.md
     // (also used for gathering letter operator arguments)
     // default value of count is 1
@@ -942,6 +944,7 @@ std::string Snowman::inspect(Variable v) {
     }
     case Variable::BLOCK:
         return ":" + (*v.blockVal) + ";";
+    default: throw SnowmanException("at inspect: impossible type?", true);
     }
 }
 
@@ -955,6 +958,7 @@ bool Snowman::toBool(Variable v) {
         return (*v.arrayVal).size() != 0;
     case Variable::BLOCK:
         return (*v.blockVal).size() != 0;
+    default: throw SnowmanException("at toBool: impossible type?", true);
     }
 }
 
