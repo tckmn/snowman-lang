@@ -20,7 +20,7 @@
 #define TOG_ACT(n) activeVars[n] = !activeVars[n]
 #define ROT_ACT() b = activeVars[0]; activeVars[0] = activeVars[3]; activeVars[3] = activeVars[5]; activeVars[5] = activeVars[6]; activeVars[6] = activeVars[7]; activeVars[7] = activeVars[4]; activeVars[4] = activeVars[2]; activeVars[2] = activeVars[1]; activeVars[1] = b;
 
-const std::string DIGITS = "0123456789abcedefghijklmnopqrstuvwxyz";
+const std::string DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz";
 const int TOBASE_PRECISION = 10; // number of digits after decimal point
 
 // constructor/destructor
@@ -691,22 +691,26 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
         // TODO at least some error checking
-        // TODO don't round, convert decimals too
         std::string str = arrToString(retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal);
         int base = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
-        int num = 0;
+        double num = 0;
         bool neg = false;
         if (str[0] == '-') {
             neg = true;
             str = str.substr(1);
         }
-        for (int i = str.length()-1; i >= 0; --i) {
+        int dotPos = str.find('.'), subPos = str.length() - 1;
+        if (dotPos != std::string::npos) {
+            str.erase(dotPos, 1);
+            subPos = dotPos - 1;
+        }
+        for (int i = str.length() - 1; i >= 0; --i) {
             char c = (str[i] >= 'A' && str[i] <= 'Z') ? str[i] + ('a' - 'A') :
                 str[i];
-            num += (DIGITS.find(c) - 1) * pow(base, str.length()-1 - i);
+            num += DIGITS.find(c) * pow(base, subPos - i);
         }
-        store(Variable((double)num * (neg ? -1 : 1)));
+        store(Variable(num * (neg ? -1 : 1)));
         break;
     }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
