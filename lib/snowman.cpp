@@ -393,7 +393,7 @@ void Snowman::evalToken(std::string token) {
             nb = DIGITS[n % base] + nb;
             n /= base;
         }
-        store(stringarr((neg ? "-" : "") + nb));
+        store(stringToArr((neg ? "-" : "") + nb));
         break;
     }
     case HSH3('A','S','O'): { // (a) -> a: sort
@@ -672,7 +672,7 @@ void Snowman::evalToken(std::string token) {
         // TODO support uppercase letters for bases > 10
         // TODO at least some error checking
         // TODO don't round, convert decimals too
-        std::string str = arrstring(retrieve(Variable::ARRAY, 1,
+        std::string str = arrToString(retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal);
         int base = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         int num = 0;
@@ -689,30 +689,30 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('s','p'): // (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY, 1, consume);
-        std::cout << arrstring(vec[0]);
+        std::cout << arrToString(vec[0]);
         break;
     case HSH2('s','m'): { // (aa) -> a: regex match; first array-"string" is search text, second array-"string" is regex
-        std::string str = arrstring(retrieve(Variable::ARRAY, 1, consume)[0]);
-        std::regex rgx(arrstring(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
+        std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
         auto mb = std::sregex_iterator(str.begin(), str.end(), rgx),
              me = std::sregex_iterator();
         auto results = new std::vector<Variable>;
         for (auto it = mb; it != me; ++it) {
-            results->push_back(stringarr(it->str()));
+            results->push_back(stringToArr(it->str()));
         }
         store(Variable(results));
         break;
     }
     case HSH2('s','r'): { // (aaa) -> a: regex replace; first array-"string" is string to operate on, second array-"string" is rege, third is replacement text
-        std::string str = arrstring(retrieve(Variable::ARRAY, 1, consume)[0]);
-        std::regex rgx(arrstring(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
-        std::string repl = arrstring(retrieve(Variable::ARRAY, 1, consume, 2)[0]);
-        store(Variable(stringarr(std::regex_replace(str, rgx, repl))));
+        std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
+        std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::string repl = arrToString(retrieve(Variable::ARRAY, 1, consume, 2)[0]);
+        store(Variable(stringToArr(std::regex_replace(str, rgx, repl))));
         break;
     }
     case HSH3('S','R','B'): { // (aab) -> a: same as `sr` but with a block instead of array-"string"
-        std::string str = arrstring(retrieve(Variable::ARRAY, 1, consume)[0]);
-        std::regex rgx(arrstring(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
+        std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
         std::string repl = *retrieve(Variable::BLOCK, 1, consume, 2)[0].blockVal;
         // TODO (this might help: http://stackoverflow.com/a/22617942/1223693)
         break;
@@ -758,7 +758,7 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('t','s'): // (*) -> a: to array-"string"
         vec = retrieve(-1, 1, consume);
-        store(stringarr(Snowman::inspect(vec[0])));
+        store(stringToArr(Snowman::inspect(vec[0])));
         break;
     case HSH2('b','o'): // (**) -> n: boolean/logical and ("bo" = "both" because "an," "ad," and "nd" are all taken)
         vec = retrieve(-1, 2, consume);
@@ -803,7 +803,7 @@ void Snowman::evalToken(std::string token) {
     case HSH2('v','g'): { // (-) -> a: get line of input (as an array-"string")
         std::string line;
         std::getline(std::cin, line);
-        store(stringarr(line));
+        store(stringToArr(line));
         break;
     }
     case HSH2('v','r'): // (-) -> n: random number [0,1)
@@ -860,10 +860,10 @@ std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int s
     return vec;
 }
 
-std::string Snowman::arrstring(Variable arr) {
+std::string Snowman::arrToString(Variable arr) {
     // convert std::vector<Variable[.type==Variable::NUM]> to std::string
     if (arr.type != Variable::ARRAY) {
-        std::cerr << "panic at arrstring: bad argument?" << std::endl;
+        std::cerr << "panic at arrToString: bad argument?" << std::endl;
         exit(1);
     }
     std::string s;
@@ -871,14 +871,14 @@ std::string Snowman::arrstring(Variable arr) {
         if (v.type == Variable::NUM) {
             s += (char)v.numVal;
         } else {
-            std::cerr << "panic at arrstring: bad argument?" << std::endl;
+            std::cerr << "panic at arrToString: bad argument?" << std::endl;
             exit(1);
         }
     }
     return s;
 }
 
-Variable Snowman::stringarr(std::string str) {
+Variable Snowman::stringToArr(std::string str) {
     auto vec = new std::vector<Variable>;
     for (char& c : str) {
         vec->push_back(Variable((double)c));

@@ -76,8 +76,8 @@ class Snowman {
         void store(Variable v);
         std::vector<Variable> retrieve(int type, int count = 1, bool consume =
             true, int skip = 0);
-        static std::string arrstring(Variable arr);
-        static Variable stringarr(std::string str);
+        static std::string arrToString(Variable arr);
+        static Variable stringToArr(std::string str);
         static std::string inspect(Variable str);
         static bool toBool(Variable v);
         Variable vars[8];
