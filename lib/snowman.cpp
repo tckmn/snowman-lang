@@ -25,6 +25,8 @@
 
 const std::string DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz";
 const int TOBASE_PRECISION = 10; // number of digits after decimal point
+const double TOBASE_EPSILON = 0.00001; // if the decimal part is less than
+                                       // this, it will be treated as an int
 
 // constructor/destructor
 Snowman::Snowman(): activeVars{false}, activePermavar(0),
@@ -425,11 +427,10 @@ void Snowman::evalToken(std::string token) {
         if (neg) nb = '-' + nb;
         // convert decimal part
         double decimalPart = vec[0].numVal - floor(vec[0].numVal);
-        // TODO this should be less... arbitrary
-        if (decimalPart > 0.00001) {
+        if (decimalPart > TOBASE_EPSILON) {
             nb += '.';
             for (int count = 0; (count < TOBASE_PRECISION) &&
-                    (decimalPart > 0.00001); ++count) {
+                    (decimalPart > TOBASE_EPSILON); ++count) {
                 decimalPart *= base;
                 int digit = floor(decimalPart);
                 nb += DIGITS[digit];
@@ -711,7 +712,6 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
-        // TODO at least some error checking
         std::string str = arrToString(retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal);
         int base = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
@@ -729,7 +729,13 @@ void Snowman::evalToken(std::string token) {
         for (int i = str.length() - 1; i >= 0; --i) {
             char c = (str[i] >= 'A' && str[i] <= 'Z') ? str[i] + ('a' - 'A') :
                 str[i];
-            num += DIGITS.find(c) * pow(base, subPos - i);
+            ss digit = DIGITS.find(c);
+            if ((digit == std::string::npos) || (digit >= (ss) base)) {
+                num = 0;
+                break;
+            } else {
+                num += digit * pow(base, subPos - i);
+            }
         }
         store(Variable(num * (neg ? -1 : 1)));
         break;
