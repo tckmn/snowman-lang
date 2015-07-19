@@ -1,12 +1,11 @@
 #include "snowman.hpp"
 #include <iostream>   // std::cout, std::cerr, std::endl
-#include <stdexcept>  // std::invalid_argument, std::out_of_range
 #include <ctime>      // time (for seeding RNG)
-#include <cstdlib>    // rand, srand, exit
+#include <cstdlib>    // rand, srand
 #include <cmath>      // abs, fmod, pow, ceil, floor, round
 #include <algorithm>  // find
 #include <regex>      // obvious
-// included from snowman.hpp: <vector>, <string>, <map>
+// included from snowman.hpp: <vector>, <string>, <map>, <stdexcept>
 
 #define DEBUG
 
@@ -31,9 +30,30 @@ Snowman::~Snowman() {}
 
 // execute string of code
 void Snowman::run(std::string code) {
-    std::vector<std::string> tokens = Snowman::tokenize(code);
+    std::vector<std::string> tokens;
+    try {
+        tokens = Snowman::tokenize(code);
+    } catch (SnowmanException& se) {
+        std::cerr << "SnowmanException thrown at tokenize" << std::endl;
+        std::cerr << "  what():  " << se.what() << std::endl;
+        // all exceptions are fatal because then we have no tokens to run
+        std::cerr << "fatal error, aborting" << std::endl;
+        return;
+    }
     for (std::string s : tokens) {
-        evalToken(s);
+        try {
+            evalToken(s);
+        } catch (SnowmanException& se) {
+            std::cerr << "SnowmanException thrown at evalToken" << std::endl;
+            std::cerr << "  what():  " << se.what() << std::endl;
+            if (se.fatal) {
+                std::cerr << "fatal error, aborting" << std::endl;
+                return;
+            } else {
+                std::cerr << "non-fatal error, continuing" << std::endl;
+                continue;
+            }
+        }
         if (debugOutput) {
             std::cout << "<[T]> " << s << std::endl;
             std::cout << "<[D]> " << debug();
@@ -73,9 +93,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 tokens.push_back(token);
                 token = "";
             } else {
-                std::cerr << "panic at tokenize: letter operator terminated "
-                    "prematurely?" << std::endl;
-                exit(1);
+                throw SnowmanException("at tokenize: letter operator "
+                    "terminated prematurely?", true);
             }
         } else if (token[0] >= 'A' && token[0] <= 'Z') {
             // three-letter operator in progress
@@ -86,9 +105,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                     token = "";
                 }
             } else {
-                std::cerr << "panic at tokenize: letter operator terminated "
-                    "prematurely?" << std::endl;
-                exit(1);
+                throw SnowmanException("at tokenize: letter operator "
+                    "terminated prematurely?", true);
             }
         } else if (token[0] == '"') {
             // string literal in progress
@@ -110,9 +128,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 if (tc == ':' && !string_mode) ++nest_depth;
                 else if (tc == ';' && !string_mode) {
                     if (nest_depth == 0) {
-                        std::cerr << "panic at tokenize: invalid block "
-                            "nesting?" << std::endl;
-                        exit(1);
+                        throw SnowmanException("at tokenize: invalid block "
+                            "nesting?", true);
                     } else --nest_depth;
                 } else if (tc == '"' && !escaping) {
                     string_mode = !string_mode;
@@ -130,9 +147,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 tokens.push_back(token);
                 token = "";
             } else if (c != '=') {
-                std::cerr << "panic at tokenize: invalid permavar name?"
-                    << std::endl;
-                exit(1);
+                throw SnowmanException("at tokenize: invalid permavar name?",
+                    true);
             }
         } else if (token.length() == 0) {
             // nothing currently in progress; start new token
@@ -157,9 +173,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 }
             }
         } else {
-            std::cerr << "panic at tokenize: token started with unknown value?"
-                << std::endl;
-            exit(1);
+            throw SnowmanException("at tokenize: token started with unknown"
+                "value?", true);
         }
     }
     if (token.length() != 0) tokens.push_back(token);
@@ -175,12 +190,13 @@ void Snowman::evalToken(std::string token) {
         try {
             num = std::stoi(token);
         } catch (const std::invalid_argument& e) {
-            std::cerr << "panic at evalToken: invalid number?" << std::endl;
-            exit(1);
+            store(Variable(0.0));
+            throw SnowmanException("at evalToken: invalid number " + token +
+                "? using 0 instead", false);
         } catch (const std::out_of_range& e) {
-            std::cerr << "panic at evalToken: number out of range?"
-                << std::endl;
-            exit(1);
+            store(Variable(0.0));
+            throw SnowmanException("at evalToken: number " + token + " out of "
+                "range, using 0 instead", false);
         }
         store(Variable((double)num));
         return;
@@ -207,9 +223,8 @@ void Snowman::evalToken(std::string token) {
             // convert to all uppercase
             token[2] = token[2] - ('a' - 'A');
         } else {
-            std::cerr << "panic at evalToken: bad letter function "
-                "capitalization?" << std::endl;
-            exit(1);
+            throw SnowmanException("at evalToken: bad letter function "
+                "capitalization, ignoring token", false);
         }
         // handled further below
     } else if (token.length() >= 2 && token[0] == '"') {
@@ -233,8 +248,7 @@ void Snowman::evalToken(std::string token) {
     } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
         // handled below
     } else {
-        std::cerr << "panic at evalToken: bad token?" << std::endl;
-        exit(1);
+        throw SnowmanException("at evalToken: unrecognized token?", true);
     }
 
     // compute a hash for each token, so that we can use a switch statement
@@ -650,9 +664,8 @@ void Snowman::evalToken(std::string token) {
         int maxSize = 0;
         for (int i = 0; i < vec.size(); ++i) {
             if (vec[i].type != Variable::ARRAY) {
-                std::cerr << "panic at az: array elements are not arrays?"
-                    << std::endl;
-                exit(1);
+                throw SnowmanException("at az: array elements are not arrays, "
+                        "stopping execution of az", false);
             }
             if (vec[i].arrayVal->size() > maxSize) {
                 maxSize = vec[i].arrayVal->size();
@@ -836,8 +849,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable((double)rand() / RAND_MAX));
         break;
     default:
-        std::cerr << "panic at evalToken: unknown token?" << std::endl;
-        exit(1);
+        throw SnowmanException("at evalToken: unrecognized token?", true);
     }
 }
 
@@ -874,14 +886,14 @@ std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int s
             } else if (skip == -1) {
                 continue;
             } else {
-                std::cerr << "panic at retrieve: wrong type?" << std::endl;
-                exit(1);
+                throw SnowmanException("at retrieve: wrong type, stopping "
+                    "execution of operator", false);
             }
         }
     }
     if (vec.size() < count) {
-        std::cerr << "panic at retrieve: not enough variables?" << std::endl;
-        exit(1);
+        throw SnowmanException("at retrieve: not enough variables, stopping "
+            "execution of oeprator", true);
     }
     return vec;
 }
@@ -889,16 +901,14 @@ std::vector<Variable> Snowman::retrieve(int type, int count, bool consume, int s
 std::string Snowman::arrToString(Variable arr) {
     // convert std::vector<Variable[.type==Variable::NUM]> to std::string
     if (arr.type != Variable::ARRAY) {
-        std::cerr << "panic at arrToString: bad argument?" << std::endl;
-        exit(1);
+        throw SnowmanException("at arrToString: bad argument?", true);
     }
     std::string s;
     for (Variable v : *arr.arrayVal) {
         if (v.type == Variable::NUM) {
             s += (char)v.numVal;
         } else {
-            std::cerr << "panic at arrToString: bad argument?" << std::endl;
-            exit(1);
+            throw SnowmanException("at arrToString: bad argument?", true);
         }
     }
     return s;

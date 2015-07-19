@@ -1,6 +1,7 @@
 #ifndef __SNOWMAN_HPP__
 #define __SNOWMAN_HPP__
 
+#include <stdexcept>
 #include <vector>
 #include <string>
 #include <map>
@@ -93,6 +94,13 @@ class Snowman {
         const static int MAJOR_VERSION = 0;
         const static int MINOR_VERSION = 1;
         const static int PATCH_VERSION = 1;
+};
+
+class SnowmanException: public std::runtime_error {
+    public:
+        SnowmanException(std::string msg = "Snowman error occurred",
+                bool fatal = false): std::runtime_error(msg), fatal(fatal) {}
+        bool fatal;
 };
 
 #endif
