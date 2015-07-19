@@ -102,6 +102,7 @@ class Snowman {
         bool activeVars[8];
         std::map<int, Variable> permavars;
         int activePermavar;
+        bool savedActiveState[8];
     public:
         Snowman();
         ~Snowman();

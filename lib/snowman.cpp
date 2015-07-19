@@ -27,7 +27,8 @@ const std::string DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz";
 const int TOBASE_PRECISION = 10; // number of digits after decimal point
 
 // constructor/destructor
-Snowman::Snowman(): activeVars{false}, activePermavar(0), debugOutput(false) {
+Snowman::Snowman(): activeVars{false}, activePermavar(0),
+        savedActiveState{false}, debugOutput(false) {
     srand(time(nullptr));
 }
 Snowman::~Snowman() {}
@@ -317,11 +318,12 @@ void Snowman::evalToken(std::string token) {
         activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
             false; break;
-    case HSH1('$'):
-        // TODO
+    case HSH1('$'): // save current state
+        // woo, C-like memory management
+        memcpy(savedActiveState, activeVars, sizeof(bool)*8);
         break;
-    case HSH1('&'):
-        // TODO
+    case HSH1('&'): // restore saved state
+        memcpy(activeVars, savedActiveState, sizeof(bool)*8);
         break;
     case HSH1('*'): // retrieve a value, set the current permavar's value to this
         vec = retrieve(-1, 1, true, -1);
