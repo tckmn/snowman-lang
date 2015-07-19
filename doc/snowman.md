@@ -233,6 +233,7 @@ operator), it is an error.
   non-undefined active variable, which is set to undefined after reading it)
 - `bi` (bb\*) -> -: if/else
 - `bd` (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`)
+- `be` (b) -> -: execute / evaluate
 
 ### Any
 

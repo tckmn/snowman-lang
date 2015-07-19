@@ -790,6 +790,10 @@ void Snowman::evalToken(std::string token) {
             run(*vec[0].blockVal);
         } while (Snowman::toBool(retrieve(-1, 1, true, -1)[0]));
         break;
+    case HSH2('b','e'): // (b) -> -: execute / evaluate
+        vec = retrieve(Variable::BLOCK, 1, consume);
+        run(*vec[0].blockVal);
+        break;
     case HSH2('n','o'): // (*) -> n: boolean/logical not (returns `1` for `0 :; []`, `0` otherwise)
         vec = retrieve(-1, 1, consume);
         store(Variable((double)(!Snowman::toBool(vec[0]))));
@@ -899,7 +903,7 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
     }
     if (vec.size() < count) {
         throw SnowmanException("at retrieve: not enough variables, stopping "
-            "execution of oeprator", true);
+            "execution of operator", true);
     }
     return vec;
 }
