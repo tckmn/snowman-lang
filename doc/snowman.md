@@ -212,7 +212,6 @@ operator), it is an error.
 - `az` (a) -> a: zip/transpose
 - `asp` (anna) -> a: splice (first argument is array to splice, second is start
   index, third is length, fourth is what to replace with)
-- TODO: unfold?
 
 #### "String" operators
 
@@ -223,7 +222,6 @@ operator), it is an error.
 - `sr` (aaa) -> a: regex replace; first array-"string" is string to operate on,
   second array-"string" is regex, third is replacement text
 - `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
-- TODO: eval (some other language) code?
 
 ### Blocks
 
