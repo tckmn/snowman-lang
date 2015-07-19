@@ -21,6 +21,7 @@
 #define ROT_ACT() b = activeVars[0]; activeVars[0] = activeVars[3]; activeVars[3] = activeVars[5]; activeVars[5] = activeVars[6]; activeVars[6] = activeVars[7]; activeVars[7] = activeVars[4]; activeVars[4] = activeVars[2]; activeVars[2] = activeVars[1]; activeVars[1] = b;
 
 const std::string DIGITS = "0123456789abcedefghijklmnopqrstuvwxyz";
+const int TOBASE_PRECISION = 10; // number of digits after decimal point
 
 // constructor/destructor
 Snowman::Snowman(): activeVars{false}, activePermavar(0), debugOutput(false) {
@@ -389,9 +390,9 @@ void Snowman::evalToken(std::string token) {
         store(Variable(pow(vec[0].numVal, vec[1].numVal)));
         break;
     case HSH2('n','b'): { // (nn) -> a: to base
-        // TODO don't round, convert decimals too
         vec = retrieve(Variable::NUM, 2, consume);
-        int n = round(vec[0].numVal), base = round(vec[1].numVal);
+        // convert integer part
+        int n = floor(vec[0].numVal), base = round(vec[1].numVal);
         bool neg = n < 0;
         if (neg) n = -n;
         std::string nb;
@@ -399,7 +400,21 @@ void Snowman::evalToken(std::string token) {
             nb = DIGITS[n % base] + nb;
             n /= base;
         }
-        store(stringToArr((neg ? "-" : "") + nb));
+        if (neg) nb = '-' + nb;
+        // convert decimal part
+        double decimalPart = vec[0].numVal - floor(vec[0].numVal);
+        // TODO this should be less... arbitrary
+        if (decimalPart > 0.00001) {
+            nb += '.';
+            for (int count = 0; (count < TOBASE_PRECISION) &&
+                    (decimalPart > 0.00001); ++count) {
+                decimalPart *= base;
+                int digit = floor(decimalPart);
+                nb += DIGITS[digit];
+                decimalPart -= digit;
+            }
+        }
+        store(stringToArr(nb));
         break;
     }
     case HSH3('A','S','O'): { // (a) -> a: sort
