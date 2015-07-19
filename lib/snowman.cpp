@@ -268,139 +268,151 @@ void Snowman::evalToken(std::string token) {
         token_hsh += ch;
     }
 
-    // huge switch statement (this contains all operators, letter or otherwise)
+    // and now, time for...
+    // THE HUGE SWITCH STATEMENT! (this contains all operators, letter or
+    //   otherwise)
+
     std::vector<Variable> vec; // for convenience with retrieve()
     Variable v; // for variable operators (ROT2, ROT3)
     bool b; // for active variable rotation operators (ROT_ACT)
+
     switch (token_hsh) {
-    case HSH1('/'): // cf
+
+    /// Rotation operators
+    case HSH1('/'): /// cf
         ROT2(2, 5); break;
-    case HSH1('\\'): // ah
+    case HSH1('\\'): /// ah
         ROT2(0, 7); break;
-    case HSH1('_'): // fh
+    case HSH1('_'): /// fh
         ROT2(5, 7); break;
-    case HSH1('['): // af
+    case HSH1('['): /// af
         ROT2(0, 5); break;
-    case HSH1(']'): // ch
+    case HSH1(']'): /// ch
         ROT2(2, 7); break;
-    case HSH1('|'): // bg
+    case HSH1('|'): /// bg
         ROT2(1, 6); break;
-    case HSH1('-'): // de
+    case HSH1('-'): /// de
         ROT2(3, 4); break;
-    case HSH1('\''): // bd
+    case HSH1('\''): /// bd
         ROT2(1, 3); break;
-    case HSH1('`'): // be
+    case HSH1('`'): /// be
         ROT2(1, 4); break;
-    case HSH1(','): // eg
+    case HSH1(','): /// eg
         ROT2(4, 6); break;
-    case HSH1('.'): // dg
+    case HSH1('.'): /// dg
         ROT2(3, 6); break;
-    case HSH1('^'): // dbe
+    case HSH1('^'): /// dbe
         ROT3(1, 3, 4); break;
-    case HSH1('>'): // aef
+    case HSH1('>'): /// aef
         ROT3(0, 4, 5); break;
-    case HSH1('<'): // cdh
+    case HSH1('<'): /// cdh
         ROT3(2, 3, 7); break;
-    case HSH1('('): // af
+
+    /// Active variable operators
+    case HSH1('('): /// af
         TOG_ACT(0); TOG_ACT(5); break;
-    case HSH1(')'): // ch
+    case HSH1(')'): /// ch
         TOG_ACT(2); TOG_ACT(7); break;
-    case HSH1('{'): // bdg
+    case HSH1('{'): /// bdg
         TOG_ACT(1); TOG_ACT(3); TOG_ACT(6); break;
-    case HSH1('}'): // beg
+    case HSH1('}'): /// beg
         TOG_ACT(1); TOG_ACT(4); TOG_ACT(6); break;
-    case HSH1('~'): // invert all (abcdefgh)
+    case HSH1('~'): /// invert all (abcdefgh)
         TOG_ACT(0); TOG_ACT(1); TOG_ACT(2); TOG_ACT(3); TOG_ACT(4); TOG_ACT(5);
         TOG_ACT(6); TOG_ACT(7); break;
-    case HSH1('@'): // rotate (done clockwise, abcehgfd -> bcehgfda)
+    case HSH1('@'): /// rotate (done clockwise, abcehgfd -> bcehgfda)
         ROT_ACT(); break;
-    case HSH1('%'): // reflect (abcehgfd -> hgfdabce)
+    case HSH1('%'): /// reflect (abcehgfd -> hgfdabce)
         ROT_ACT(); ROT_ACT(); ROT_ACT(); ROT_ACT(); break;
-    case HSH1('?'): // mark all as inactive
+    case HSH1('?'): /// mark all as inactive
         activeVars[0] = activeVars[1] = activeVars[2] = activeVars[3] =
             activeVars[4] = activeVars[5] = activeVars[6] = activeVars[7] =
             false; break;
-    case HSH1('$'): // save current state
+    case HSH1('$'): /// save current state
         // woo, C-like memory management
         memcpy(savedActiveState, activeVars, sizeof(bool)*8);
         break;
-    case HSH1('&'): // restore saved state
+    case HSH1('&'): /// restore saved state
         memcpy(activeVars, savedActiveState, sizeof(bool)*8);
         break;
-    case HSH1('*'): // retrieve a value, set the current permavar's value to this
+
+    /// Permavar operators
+    case HSH1('*'): /// retrieve a value, set the current permavar's value to this
         vec = retrieve(-1, 1, true, -1);
         permavars[activePermavar] = vec[0];
         break;
-    case HSH1('#'): // store the current permavar's value
+    case HSH1('#'): /// store the current permavar's value
         store(permavars[activePermavar]);
         break;
-    case HSH3('N','D','E'): // (n) -> n: decrement
+
+    /// Number operators
+    case HSH3('N','D','E'): /// (n) -> n: decrement
         store(Variable(retrieve(Variable::NUM, 1, consume)[0].numVal - 1));
         break;
-    case HSH3('N','I','N'): // (n) -> n: increment
+    case HSH3('N','I','N'): /// (n) -> n: increment
         store(Variable(retrieve(Variable::NUM, 1, consume)[0].numVal + 1));
         break;
-    case HSH3('N','A','B'): // (n) -> n: absolute value
+    case HSH3('N','A','B'): /// (n) -> n: absolute value
         vec = retrieve(Variable::NUM, 1, consume);
         store(Variable(vec[0].numVal < 0 ? -vec[0].numVal : vec[0].numVal));
         break;
-    case HSH2('n','f'): // (n) -> n: floor
+    case HSH2('n','f'): /// (n) -> n: floor
         store(Variable(floor(retrieve(Variable::NUM, 1, consume)[0].numVal)));
         break;
-    case HSH2('n','c'): // (n) -> n: ceiling
+    case HSH2('n','c'): /// (n) -> n: ceiling
         store(Variable(ceil(retrieve(Variable::NUM, 1, consume)[0].numVal)));
         break;
-    case HSH3('N','R','O'): // (n) -> n: round
+    case HSH3('N','R','O'): /// (n) -> n: round
         store(Variable(round(retrieve(Variable::NUM, 1, consume)[0].numVal)));
         break;
-    case HSH3('N','B','N'): // (n) -> n: bitwise NOT
+    case HSH3('N','B','N'): /// (n) -> n: bitwise NOT
         store(Variable((double) ~((int)round(retrieve(Variable::NUM, 1,
             consume)[0].numVal))));
         break;
-    case HSH3('N','B','O'): // (nn) -> n: bitwise OR
+    case HSH3('N','B','O'): /// (nn) -> n: bitwise OR
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double) (((int)round(vec[0].numVal)) |
                                  ((int)round(vec[1].numVal)))));
         break;
-    case HSH3('N','B','A'): // (nn) -> n: bitwise AND
+    case HSH3('N','B','A'): /// (nn) -> n: bitwise AND
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double) (((int)round(vec[0].numVal)) &
                                  ((int)round(vec[1].numVal)))));
         break;
-    case HSH3('N','B','X'): // (nn) -> n: bitwise XOR
+    case HSH3('N','B','X'): /// (nn) -> n: bitwise XOR
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double) (((int)round(vec[0].numVal)) ^
                                  ((int)round(vec[1].numVal)))));
         break;
-    case HSH2('n','a'): // (nn) -> n: addition
+    case HSH2('n','a'): /// (nn) -> n: addition
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal + vec[1].numVal));
         break;
-    case HSH2('n','s'): // (nn) -> n: subtraction
+    case HSH2('n','s'): /// (nn) -> n: subtraction
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal - vec[1].numVal));
         break;
-    case HSH2('n','m'): // (nn) -> n: multiplication
+    case HSH2('n','m'): /// (nn) -> n: multiplication
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal * vec[1].numVal));
         break;
-    case HSH2('n','d'): // (nn) -> n: division
+    case HSH2('n','d'): /// (nn) -> n: division
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(vec[0].numVal / vec[1].numVal));
         break;
-    case HSH3('N','M','O'): // (nn) -> n: modulo
+    case HSH3('N','M','O'): /// (nn) -> n: modulo
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(fmod(vec[0].numVal, vec[1].numVal)));
         break;
-    case HSH2('n','l'): // (nn) -> n: less than
+    case HSH2('n','l'): /// (nn) -> n: less than
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double)(vec[0].numVal < vec[1].numVal)));
         break;
-    case HSH2('n','g'): // (nn) -> n: greater than
+    case HSH2('n','g'): /// (nn) -> n: greater than
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable((double)(vec[0].numVal > vec[1].numVal)));
         break;
-    case HSH2('n','r'): { // (nn) -> n: range
+    case HSH2('n','r'): { /// (nn) -> n: range
         vec = retrieve(Variable::NUM, 2, consume);
         auto vrng = new std::vector<Variable>;
         for (double i = vec[0].numVal; i < vec[1].numVal; ++i) {
@@ -409,11 +421,11 @@ void Snowman::evalToken(std::string token) {
         store(Variable(vrng));
         break;
     }
-    case HSH2('n','p'): // (nn) -> n: power
+    case HSH2('n','p'): /// (nn) -> n: power
         vec = retrieve(Variable::NUM, 2, consume);
         store(Variable(pow(vec[0].numVal, vec[1].numVal)));
         break;
-    case HSH2('n','b'): { // (nn) -> a: to base
+    case HSH2('n','b'): { /// (nn) -> a: to base
         vec = retrieve(Variable::NUM, 2, consume);
         // convert integer part
         int n = floor(vec[0].numVal), base = round(vec[1].numVal);
@@ -440,14 +452,16 @@ void Snowman::evalToken(std::string token) {
         store(stringToArr(nb));
         break;
     }
-    case HSH3('A','S','O'): { // (a) -> a: sort
+
+    /// Array operators
+    case HSH3('A','S','O'): { /// (a) -> a: sort
         auto arr = new std::vector<Variable>(*retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal);
         std::sort(arr->begin(), arr->end());
         store(Variable(arr));
         break;
     }
-    case HSH3('A','S','B'): { // (ab) -> a: sort by
+    case HSH3('A','S','B'): { /// (ab) -> a: sort by
         auto arr = new std::vector<Variable>(*retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal);
         std::string cmp = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
@@ -461,7 +475,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH2('a','f'): { // (ab) -> *: fold
+    case HSH2('a','f'): { /// (ab) -> *: fold
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string blk = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         store(vec[0]);
@@ -471,7 +485,7 @@ void Snowman::evalToken(std::string token) {
         }
         break;
     }
-    case HSH2('a','c'): { // (aa) -> a: concatenate arrays
+    case HSH2('a','c'): { /// (aa) -> a: concatenate arrays
         vec = retrieve(Variable::ARRAY, 2, consume);
         int s1 = vec[0].arrayVal->size(), s2 = vec[1].arrayVal->size();
         auto arr = new std::vector<Variable>(s1 + s2);
@@ -480,7 +494,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH2('a','d'): { // (aa) -> a: array/set difference
+    case HSH2('a','d'): { /// (aa) -> a: array/set difference
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>;
         for (vvs i = 0; i < vec[0].arrayVal->size(); ++i) {
@@ -492,7 +506,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH3('A','O','R'): { // (aa) -> a: setwise or
+    case HSH3('A','O','R'): { /// (aa) -> a: setwise or
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>;
         for (Variable v : *vec[0].arrayVal) {
@@ -508,7 +522,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH3('A','A','N'): { // (aa) -> a: setwise and
+    case HSH3('A','A','N'): { /// (aa) -> a: setwise and
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>;
         for (vvs i = 0; i < vec[0].arrayVal->size(); ++i) {
@@ -522,7 +536,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH2('a','r'): { // (an) -> a: array repeat
+    case HSH2('a','r'): { /// (an) -> a: array repeat
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto arr = new std::vector<Variable>(vec.size() * count);
@@ -532,7 +546,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH2('a','j'): { // (aa) -> a: array join
+    case HSH2('a','j'): { /// (aa) -> a: array join
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>;
         if (vec[0].arrayVal->size() < 2) {
@@ -549,7 +563,7 @@ void Snowman::evalToken(std::string token) {
         }
         break;
     }
-    case HSH2('a','s'): { // (aa) -> a: split
+    case HSH2('a','s'): { /// (aa) -> a: split
         vec = retrieve(Variable::ARRAY, 2, consume);
         auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
         for (vvs i = 0; i < vec[0].arrayVal->size(); ++i) {
@@ -568,7 +582,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH2('a','g'): { // (an) -> a: split array in groups of size
+    case HSH2('a','g'): { /// (an) -> a: split array in groups of size
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         vvs n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
@@ -584,7 +598,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(arr));
         break;
     }
-    case HSH2('a','e'): { // (ab) -> -: each
+    case HSH2('a','e'): { /// (ab) -> -: each
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         for (Variable v : vec) {
@@ -593,7 +607,7 @@ void Snowman::evalToken(std::string token) {
         }
         break;
     }
-    case HSH2('a','m'): { // (ab) -> a: map
+    case HSH2('a','m'): { /// (ab) -> a: map
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         auto v2 = new std::vector<Variable>;
@@ -605,7 +619,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH2('a','n'): { // (an) -> a: every nth element
+    case HSH2('a','n'): { /// (an) -> a: every nth element
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto v2 = new std::vector<Variable>;
@@ -613,7 +627,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH3('A','S','E'): { // (ab) -> a: select
+    case HSH3('A','S','E'): { /// (ab) -> a: select
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         auto v2 = new std::vector<Variable>;
@@ -627,7 +641,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH3('A','S','I'): { // (ab) -> a: select by index / index of / find index
+    case HSH3('A','S','I'): { /// (ab) -> a: select by index / index of / find index
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string b = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         auto v2 = new std::vector<Variable>;
@@ -642,7 +656,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH3('A','A','L'): { // (an) -> a: elements at indeces less than n
+    case HSH3('A','A','L'): { /// (an) -> a: elements at indeces less than n
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         vvs n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto v2 = new std::vector<Variable>(n);
@@ -650,7 +664,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH3('A','A','G'): { // (an) -> a: elements at indeces greater than n
+    case HSH3('A','A','G'): { /// (an) -> a: elements at indeces greater than n
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
         auto v2 = new std::vector<Variable>(vec.size() - n - 1);
@@ -658,15 +672,15 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH2('a','a'): // (an) -> *: element at index
+    case HSH2('a','a'): /// (an) -> *: element at index
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         store(vec[(int)retrieve(Variable::NUM, 1, consume, 1)[0].numVal]);
         break;
-    case HSH2('a','l'): // (a) -> n: array length
+    case HSH2('a','l'): /// (a) -> n: array length
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         store(Variable((double)vec.size()));
         break;
-    case HSH2('a','z'): { // (a) -> a: zip/transpose
+    case HSH2('a','z'): { /// (a) -> a: zip/transpose
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         auto vec2 = new std::vector<Variable>;
         // sanity check, also get max size
@@ -693,7 +707,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable(vec2));
         break;
     }
-    case HSH3('A','S','P'): { // (anna) -> a: splice (first argument is array to splice, second is start index, third is length, fourth is what to replace with)
+    case HSH3('A','S','P'): { /// (anna) -> a: splice (first argument is array to splice, second is start index, third is length, fourth is what to replace with)
         std::vector<Variable> arr = *retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal;
         vvs idx = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal),
@@ -711,7 +725,9 @@ void Snowman::evalToken(std::string token) {
         store(Variable(result));
         break;
     }
-    case HSH2('s','b'): { // (an) -> n: from-base from array-"string"
+
+    /// "String" operators
+    case HSH2('s','b'): { /// (an) -> n: from-base from array-"string"
         std::string str = arrToString(retrieve(Variable::ARRAY, 1,
             consume)[0].arrayVal);
         int base = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
@@ -740,11 +756,11 @@ void Snowman::evalToken(std::string token) {
         store(Variable(num * (neg ? -1 : 1)));
         break;
     }
-    case HSH2('s','p'): // (a) -> -: print an array-"string"
+    case HSH2('s','p'): /// (a) -> -: print an array-"string"
         vec = retrieve(Variable::ARRAY, 1, consume);
         std::cout << arrToString(vec[0]);
         break;
-    case HSH2('s','m'): { // (aa) -> a: regex match; first array-"string" is search text, second array-"string" is regex
+    case HSH2('s','m'): { /// (aa) -> a: regex match; first array-"string" is search text, second array-"string" is regex
         std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
         std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
         auto mb = std::sregex_iterator(str.begin(), str.end(), rgx),
@@ -756,14 +772,14 @@ void Snowman::evalToken(std::string token) {
         store(Variable(results));
         break;
     }
-    case HSH2('s','r'): { // (aaa) -> a: regex replace; first array-"string" is string to operate on, second array-"string" is rege, third is replacement text
+    case HSH2('s','r'): { /// (aaa) -> a: regex replace; first array-"string" is string to operate on, second array-"string" is rege, third is replacement text
         std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
         std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
         std::string repl = arrToString(retrieve(Variable::ARRAY, 1, consume, 2)[0]);
         store(Variable(stringToArr(std::regex_replace(str, rgx, repl))));
         break;
     }
-    case HSH3('S','R','B'): { // (aab) -> a: same as `sr` but with a block instead of array-"string"
+    case HSH3('S','R','B'): { /// (aab) -> a: same as `sr` but with a block instead of array-"string"
         std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
         std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
         std::string repl = *retrieve(Variable::BLOCK, 1, consume, 2)[0].blockVal;
@@ -784,13 +800,15 @@ void Snowman::evalToken(std::string token) {
         store(stringToArr(result));
         break;
     }
-    case HSH2('b','r'): { // (bn) -> -: repeat
+
+    /// Block operators
+    case HSH2('b','r'): { /// (bn) -> -: repeat
         std::string code = *retrieve(Variable::BLOCK, 1, consume)[0].blockVal;
         double count = retrieve(Variable::NUM, 1, consume, 1)[0].numVal;
         for (int i = 0; i < round(count); ++i) run(code);
         break;
     }
-    case HSH2('b','w'): // (bb) -> -: while ("returned" value from second block is simply first non-undefined active variable, which is set to undefined after reading it)
+    case HSH2('b','w'): /// (bb) -> -: while ("returned" value from second block is simply first non-undefined active variable, which is set to undefined after reading it)
         vec = retrieve(Variable::BLOCK, 2, consume);
         while (1) {
             run(*vec[1].blockVal);
@@ -798,7 +816,7 @@ void Snowman::evalToken(std::string token) {
             run(*vec[0].blockVal);
         }
         break;
-    case HSH2('b','i'): { // (bb*) -> -: if/else
+    case HSH2('b','i'): { /// (bb*) -> -: if/else
         std::string ifBlock = *retrieve(Variable::BLOCK, 1, consume)[0].blockVal;
         std::string elseBlock = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
         bool condition = Snowman::toBool(retrieve(-1, 1, consume, 2)[0]);
@@ -806,42 +824,44 @@ void Snowman::evalToken(std::string token) {
         else run(elseBlock);
         break;
     }
-    case HSH2('b','d'): // (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`)
+    case HSH2('b','d'): /// (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`)
         vec = retrieve(Variable::BLOCK, 1, consume);
         do {
             run(*vec[0].blockVal);
         } while (Snowman::toBool(retrieve(-1, 1, true, -1)[0]));
         break;
-    case HSH2('b','e'): // (b) -> -: execute / evaluate
+    case HSH2('b','e'): /// (b) -> -: execute / evaluate
         vec = retrieve(Variable::BLOCK, 1, consume);
         run(*vec[0].blockVal);
         break;
-    case HSH2('n','o'): // (*) -> n: boolean/logical not (returns `1` for `0 :; []`, `0` otherwise)
+
+    /// (Any type) operators
+    case HSH2('n','o'): /// (*) -> n: boolean/logical not (returns `1` for `0 :; []`, `0` otherwise)
         vec = retrieve(-1, 1, consume);
         store(Variable((double)(!Snowman::toBool(vec[0]))));
         break;
-    case HSH2('w','r'): { // (*) -> a: wrap in array
+    case HSH2('w','r'): { /// (*) -> a: wrap in array
         vec = retrieve(-1, 1, consume);
         auto wrapped = new std::vector<Variable>(1);
         (*wrapped)[0] = vec[0];
         store(Variable(wrapped));
         break;
     }
-    case HSH2('t','s'): // (*) -> a: to array-"string"
+    case HSH2('t','s'): /// (*) -> a: to array-"string"
         vec = retrieve(-1, 1, consume);
         store(stringToArr(Snowman::inspect(vec[0])));
         break;
-    case HSH2('b','o'): // (**) -> n: boolean/logical and ("bo" = "both" because "an," "ad," and "nd" are all taken)
+    case HSH2('b','o'): /// (**) -> n: boolean/logical and ("bo" = "both" because "an," "ad," and "nd" are all taken)
         vec = retrieve(-1, 2, consume);
         store(Variable((double)(Snowman::toBool(vec[0]) &&
             Snowman::toBool(vec[1]))));
         break;
-    case HSH2('o','r'): // (**) -> n: boolean/logical or
+    case HSH2('o','r'): /// (**) -> n: boolean/logical or
         vec = retrieve(-1, 2, consume);
         store(Variable((double)(Snowman::toBool(vec[0]) ||
             Snowman::toBool(vec[1]))));
         break;
-    case HSH2('e','q'): // (**) -> n: equal?
+    case HSH2('e','q'): /// (**) -> n: equal?
         vec = retrieve(-1, 2, consume);
         if (vec[0].type != vec[1].type) {
             store(Variable(0.0));
@@ -864,24 +884,27 @@ void Snowman::evalToken(std::string token) {
             }
         }
         break;
-    case HSH2('d','u'): // (*) -> **: duplicate
+    case HSH2('d','u'): /// (*) -> **: duplicate
         vec = retrieve(-1, 1, consume);
         store(vec[0]);
         store(vec[0]);
         break;
-    case HSH2('v','n'): // (-) -> -: no-op (do nothing)
+
+    /// "Void" operators
+    case HSH2('v','n'): /// (-) -> -: no-op (do nothing)
         break;
-    case HSH2('v','g'): { // (-) -> a: get line of input (as an array-"string")
+    case HSH2('v','g'): { /// (-) -> a: get line of input (as an array-"string")
         std::string line;
         std::getline(std::cin, line);
         store(stringToArr(line));
         break;
     }
-    case HSH2('v','r'): // (-) -> n: random number [0,1)
+    case HSH2('v','r'): /// (-) -> n: random number [0,1)
         store(Variable((double)rand() / RAND_MAX));
         break;
     default:
         throw SnowmanException("at evalToken: unrecognized token?", true);
+
     }
 }
 

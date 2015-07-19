@@ -37,21 +37,13 @@ Additionally, zero or more variables are marked as "active variables." The
 effect of this will be covered in more detail later. Initially, there are no
 active variables.
 
-## Operators
-
-### Variable operators
+## Variable operators
 
 These are operators that have to do with manipulating the 8 variables in
 Snowman. They are all ASCII characters that are not upper- or lowercase
 letters.
 
-The following operators rotate variables; for example, `/` switches the `c`
-variable with the `f` variable. They are all symbols that consist of only
-straight lines that can be drawn in one stroke.
-
-    a b c
-    d   e
-    f g h
+### Rotation operators
 
 - `/`: cf
 - `\`: ah
@@ -68,18 +60,15 @@ straight lines that can be drawn in one stroke.
 - `>`: aef
 - `<`: cdh
 
+These operators rotate variables; for example, `/` switches the `c` variable
+with the `f` variable. They are all symbols that consist of only straight lines
+that can be drawn in one stroke.
+
 Rotation is done counterclockwise. For example, `>` causes the `a` variable to
 take on the previous value of the `e` variable, `e` becomes what `f` was, and
 `f` becomes what `a` was.
 
-The following operators toggle which variables are marked as "active;" for
-example, `(` will mark variables `a` and `f` as active if they are currently
-inactive, and inactive if they are active. They are all symbols that have curvy
-lines.
-
-    a b c
-    d   e
-    f g h
+### Active variable operators
 
 - `(`: af
 - `)`: ch
@@ -92,19 +81,25 @@ lines.
 - `$`: save current state
 - `&`: restore saved state
 
-The following operators have to do with permavars. These are variables that you
-can freely store to / retrieve from.
+These operators toggle which variables are marked as "active;" for example, `(`
+will mark variables `a` and `f` as active if they are currently inactive, and
+inactive if they are active. They are all symbols that have curvy lines.
 
-Note: in the following documentation, "store" is defined as follows: place in
+### Permavar operators
+
+- `*`: retrieve a value, set the current permavar's value to this
+- `#`: store the current permavar's value
+
+These operators have to do with permavars. These are variables that you can
+freely store to / retrieve from.
+
+Note: in the preceding documentation, "store" is defined as follows: place in
 first undefined active variable slot. A "store" operation does nothing if all
 active variables are full or there are no active variables.
 
 Similarly, a "retrieve" does the opposite. It selects the first active
 variable, and errors if it's undefined. Otherwise it sets it to undefined and
 returns what its value was.
-
-- `*`: retrieve a value, set the current permavar's value to this
-- `#`: store the current permavar's value
 
 To switch the current permavar, use the `=+!` characters. Permavar names are
 zero or more `=`, then a `+` or `!`. So, possible peramvar names are `+`, `!`,
@@ -164,7 +159,7 @@ error.
 If there is a type mismatch (if you give arguments of the wrong type to the
 operator), it is an error.
 
-### Numbers
+### Number operators
 
 - `nde` (n) -> n: decrement
 - `nin` (n) -> n: increment
@@ -187,7 +182,7 @@ operator), it is an error.
 - `np` (nn) -> n: power
 - `nb` (nn) -> a: to base
 
-### Arrays
+### Array operators
 
 - `aso` (a) -> a: sort
 - `asb` (ab) -> a: sort by
@@ -213,7 +208,7 @@ operator), it is an error.
 - `asp` (anna) -> a: splice (first argument is array to splice, second is start
   index, third is length, fourth is what to replace with)
 
-#### "String" operators
+### "String" operators
 
 - `sb` (an) -> n: from-base from array-"string"
 - `sp` (a) -> -: print an array-"string"
@@ -223,7 +218,7 @@ operator), it is an error.
   second array-"string" is regex, third is replacement text
 - `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
 
-### Blocks
+### Block operators
 
 - `br` (bn) -> -: repeat
 - `bw` (bb) -> -: while ("returned" value from second block is simply first
@@ -232,7 +227,7 @@ operator), it is an error.
 - `bd` (b) -> -: do (`:...;bD` is basically the same as `:;:...;bW`)
 - `be` (b) -> -: execute / evaluate
 
-### Any
+### (Any type) operators
 
 - `no` (\*) -> n: boolean/logical not (returns `1` for `0 :; []`, `0`
   otherwise)
@@ -244,7 +239,7 @@ operator), it is an error.
 - `eq` (\*\*) -> n: equal?
 - `du` (\*) -> \*\*: duplicate
 
-### Void
+### "Void" operators
 
 - `vn` (-) -> -: no-op (do nothing)
 - `vg` (-) -> a: get line of input (as an array-"string")
