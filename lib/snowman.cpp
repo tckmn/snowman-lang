@@ -17,7 +17,11 @@
 #define ROT3(a,b,c) v = vars[a]; vars[a] = vars[b]; vars[b] = vars[c]; vars[c] = v;
 
 #define TOG_ACT(n) activeVars[n] = !activeVars[n]
-#define ROT_ACT() b = activeVars[0]; activeVars[0] = activeVars[3]; activeVars[3] = activeVars[5]; activeVars[5] = activeVars[6]; activeVars[6] = activeVars[7]; activeVars[7] = activeVars[4]; activeVars[4] = activeVars[2]; activeVars[2] = activeVars[1]; activeVars[1] = b;
+#define ROT_ACT() b = activeVars[0]; activeVars[0] = activeVars[3]; \
+    activeVars[3] = activeVars[5]; activeVars[5] = activeVars[6]; \
+    activeVars[6] = activeVars[7]; activeVars[7] = activeVars[4]; \
+    activeVars[4] = activeVars[2]; activeVars[2] = activeVars[1]; \
+    activeVars[1] = b;
 
 const std::string DIGITS = "0123456789abcdefghijklmnopqrstuvwxyz";
 const int TOBASE_PRECISION = 10; // number of digits after decimal point
