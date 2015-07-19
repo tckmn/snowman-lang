@@ -223,7 +223,6 @@ operator), it is an error.
 - `sr` (aaa) -> a: regex replace; first array-"string" is string to operate on,
   second array-"string" is regex, third is replacement text
 - `srb` (aab) -> a: same as `sr` but with a block instead of array-"string"
-  (TODO: not yet implemented)
 - TODO: eval (some other language) code?
 
 ### Blocks

@@ -767,7 +767,21 @@ void Snowman::evalToken(std::string token) {
         std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
         std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
         std::string repl = *retrieve(Variable::BLOCK, 1, consume, 2)[0].blockVal;
-        // TODO (this might help: http://stackoverflow.com/a/22617942/1223693)
+        auto rb = std::sregex_token_iterator(str.begin(), str.end(), rgx, {-1,0}),
+             re = std::sregex_token_iterator();
+        std::string result;
+        bool isMatch = false;
+        for (auto it = rb; it != re; ++it) {
+            if (isMatch) {
+                store(stringToArr(*it));
+                run(repl);
+                result += arrToString(retrieve(Variable::ARRAY, 1, true, -1)[0]);
+            } else {
+                result += *it;
+            }
+            isMatch = !isMatch;
+        }
+        store(stringToArr(result));
         break;
     }
     case HSH2('b','r'): { // (bn) -> -: repeat
