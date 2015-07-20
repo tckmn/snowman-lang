@@ -305,7 +305,7 @@ void Snowman::evalToken(std::string token) {
     case HSH1('^'): /// dbe
         ROT3(1, 3, 4); break;
     case HSH1('>'): /// aef
-        ROT3(0, 4, 5); break;
+        ROT3(5, 4, 0); break;
     case HSH1('<'): /// cdh
         ROT3(2, 3, 7); break;
 

@@ -64,9 +64,9 @@ These operators rotate variables; for example, `/` switches the `c` variable
 with the `f` variable. They are all symbols that consist of only straight lines
 that can be drawn in one stroke.
 
-Rotation is done counterclockwise. For example, `>` causes the `a` variable to
-take on the previous value of the `e` variable, `e` becomes what `f` was, and
-`f` becomes what `a` was.
+Rotation is done clockwise. For example, `>` causes the `e` variable to take on
+the previous value of the `a` variable, `e` becomes what `f` was, and `f`
+becomes what `a` was.
 
 ### Active variable operators
 
