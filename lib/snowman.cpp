@@ -169,7 +169,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 // single character token
                 // (printable ascii is already guaranteed from if-continue
                 //  above)
-                if (c == '/' && tokens[tokens.size()-1] == "/") {
+                if ((c == '/') && (tokens.size() > 0) &&
+                        (tokens[tokens.size()-1] == "/")) {
                     // comment
                     tokens.pop_back();
                     comment = true;
