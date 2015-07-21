@@ -65,8 +65,8 @@ with the `f` variable. They are all symbols that consist of only straight lines
 that can be drawn in one stroke.
 
 Rotation is done clockwise. For example, `>` causes the `e` variable to take on
-the previous value of the `a` variable, `e` becomes what `f` was, and `f`
-becomes what `a` was.
+the previous value of the `a` variable, `f` becomes what `e` was, and `a`
+becomes what `f` was.
 
 ### Active variable operators
 
