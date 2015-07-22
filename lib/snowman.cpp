@@ -903,6 +903,9 @@ void Snowman::evalToken(std::string token) {
     case HSH2('v','r'): /// (-) -> n: random number [0,1)
         store(Variable((double)rand() / RAND_MAX));
         break;
+    case HSH2('v','t'): /// (-) -> n: time (seconds since epoch)
+        store(Variable((double)time(nullptr)));
+        break;
     default:
         throw SnowmanException("at evalToken: unrecognized token?", true);
 

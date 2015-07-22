@@ -244,6 +244,7 @@ operator), it is an error.
 - `vn` (-) -> -: no-op (do nothing)
 - `vg` (-) -> a: get line of input (as an array-"string")
 - `vr` (-) -> n: random number [0,1)
+- `vt` (-) -> n: time (seconds since epoch)
 
 ## Other characters
 
