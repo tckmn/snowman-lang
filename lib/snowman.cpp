@@ -746,7 +746,8 @@ void Snowman::evalToken(std::string token) {
             neg = true;
             str = str.substr(1);
         }
-        ss dotPos = str.find('.'), subPos = str.length() - 1;
+        ss dotPos = str.find('.');
+        int subPos = str.length() - 1;
         if (dotPos != std::string::npos) {
             str.erase(dotPos, 1);
             subPos = dotPos - 1;
