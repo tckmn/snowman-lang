@@ -734,6 +734,28 @@ void Snowman::evalToken(std::string token) {
         store(Variable(result));
         break;
     }
+    case HSH3('A','F','L'): { /// (an) -> a: flatten (number is how many "layers" to flatten; 0 means completely flatten the array)
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        bool infinite = (count == 0), changed = true;
+        while ((changed) && (infinite || count--)) {
+            changed = false;
+            std::vector<Variable> arr;
+            for (Variable v : vec) {
+                if (v.type == Variable::ARRAY) {
+                    changed = true;
+                    for (Variable v2 : *v.arrayVal) {
+                        arr.push_back(v2);
+                    }
+                } else {
+                    arr.push_back(v);
+                }
+            }
+            vec = arr;
+        }
+        store(Variable(new std::vector<Variable>(vec)));
+        break;
+    }
 
     /// "String" operators
     case HSH2('s','b'): { /// (an) -> n: from-base from array-"string"

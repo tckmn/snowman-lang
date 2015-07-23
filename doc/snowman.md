@@ -207,6 +207,8 @@ operator), it is an error.
 - `az` (a) -> a: zip/transpose
 - `asp` (anna) -> a: splice (first argument is array to splice, second is start
   index, third is length, fourth is what to replace with)
+- `afl` (an) -> a: flatten (number is how many "layers" to flatten; 0 means
+  completely flatten the array)
 
 ### "String" operators
 
