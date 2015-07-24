@@ -101,7 +101,9 @@ int main(int argc, char *argv[]) {
     std::string code;
     if (filename == "") {
         std::string line;
-        while (std::getline(std::cin, line) && line != "__END__") code += line;
+        while (std::getline(std::cin, line) && line != "__END__") {
+            code += line + "\n";
+        }
     } else {
         std::ifstream infile(filename.c_str());
         if (infile.good()) {
@@ -119,6 +121,7 @@ int main(int argc, char *argv[]) {
         for (std::string s : Snowman::tokenize(code)) {
             std::cout << s;
         }
+        std::cout << std::endl;
         return 0;
     }
 
