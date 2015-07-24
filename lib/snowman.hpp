@@ -89,7 +89,6 @@ struct Variable {
 
 class Snowman {
     private:
-        static std::vector<std::string> tokenize(std::string code);
         void evalToken(std::string token);
         void store(Variable v);
         std::vector<Variable> retrieve(int type, vvs count = 1, bool consume =
@@ -106,6 +105,7 @@ class Snowman {
     public:
         Snowman();
         ~Snowman();
+        static std::vector<std::string> tokenize(std::string code);
         void run(std::string code);
         std::string debug();
         bool debugOutput;

@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 
     // parse arguments
     std::string filename;
+    bool minify = false;
     for (int i = 1; i < argc; ++i) {
         std::string arg(argv[i]);
         if (arg[0] == '-') {
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) {
                 else if (arg == "--interactive") argid = 'i';
                 else if (arg == "--debug") argid = 'd';
                 else if (arg == "--evaluate") argid = 'e';
+                else if (arg == "--minify") argid = 'm';
                 else {
                     std::cerr << "Unknown long argument `" << arg << "'" <<
                         std::endl;
@@ -46,6 +48,8 @@ int main(int argc, char *argv[]) {
                     "    -e, --evaluate: (without filename) takes one "
                         "parameter, runs as Snowman code\n"
                     "    -d, --debug: include debug output\n"
+                    "    -m, --minify: don't evaluate code; output minified "
+                        "version instead\n"
                     "Snowman will read from STDIN if you do not specify a "
                         "file name or the -h or -i options.\n"
                     "Snowman version: " << VERSION_STRING << "\n";
@@ -72,6 +76,9 @@ int main(int argc, char *argv[]) {
                 }
                 sm.run(std::string(argv[i]));
                 return 0;
+            case 'm':
+                minify = true;
+                break;
             default:
                 std::cerr << "Unknown argument `" << arg << "'" << std::endl;
                 return 1;
@@ -100,6 +107,14 @@ int main(int argc, char *argv[]) {
             std::cerr << "Could not read file " << filename << std::endl;
             return 1;
         }
+    }
+
+    // process -m (--minify) flag
+    if (minify) {
+        for (std::string s : Snowman::tokenize(code)) {
+            std::cout << s;
+        }
+        return 0;
     }
 
     // run code
