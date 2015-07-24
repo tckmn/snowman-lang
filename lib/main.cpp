@@ -20,10 +20,10 @@ int main(int argc, char *argv[]) {
             if (arg.length() >= 1 && arg[0] == '-') {
                 arg = arg.substr(1);
                 // no switch on strings :(
-                if (arg == "help") arg = "h";
-                else if (arg == "interactive") arg = "i";
-                else if (arg == "debug") arg = "d";
+                if (arg == "debug") arg = "d";
                 else if (arg == "evaluate") arg = "e";
+                else if (arg == "help") arg = "h";
+                else if (arg == "interactive") arg = "i";
                 else if (arg == "minify") arg = "m";
                 else {
                     std::cerr << "Unknown long argument `" << arg << "'" <<
@@ -34,21 +34,30 @@ int main(int argc, char *argv[]) {
 
             for (char& argid : arg) {
                 switch (argid) {
+                case 'd':
+                    sm.debugOutput = true;
+                    break;
+                case 'e':
+                    if ((++i) == argc) {
+                        std::cerr << "Argument `-e' requires a parameter" <<
+                            std::endl;
+                        return 1;
+                    }
+                    sm.run(std::string(argv[i]));
+                    return 0;
                 case 'h':
                     std::cout << "Usage: " << argv[0] << " [OPTION]... "
                             "[FILENAME]\n" <<
                         "Options:\n"
-                        "    -h, --help: (without filename) display this "
-                            "message\n"
-                        "    -i, --interactive: (without filename) start a "
-                            "REPL\n"
-                        "    -e, --evaluate: (without filename) takes one "
-                            "parameter, runs as Snowman code\n"
                         "    -d, --debug: include debug output\n"
+                        "    -e, --evaluate: takes one parameter, runs as "
+                            "Snowman code\n"
+                        "    -h, --help: display this message\n"
+                        "    -i, --interactive: start a REPL\n"
                         "    -m, --minify: don't evaluate code; output "
                             "minified version instead\n"
                         "Snowman will read from STDIN if you do not specify a "
-                            "file name or the -h or -i options.\n"
+                            "file name or the -ehi options.\n"
                         "Snowman version: " << VERSION_STRING << "\n";
                     return 0;
                 case 'i': {
@@ -70,17 +79,6 @@ int main(int argc, char *argv[]) {
                     }
                     return 0;
                 }
-                case 'd':
-                    sm.debugOutput = true;
-                    break;
-                case 'e':
-                    if ((++i) == argc) {
-                        std::cerr << "Argument `-e' requires a parameter" <<
-                            std::endl;
-                        return 1;
-                    }
-                    sm.run(std::string(argv[i]));
-                    return 0;
                 case 'm':
                     minify = true;
                     break;
