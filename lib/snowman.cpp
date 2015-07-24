@@ -73,7 +73,7 @@ void Snowman::run(std::string code) {
 std::vector<std::string> Snowman::tokenize(std::string code) {
     std::vector<std::string> tokens;
     std::string token;
-    bool comment = false, inlineComment = false, prevCloseBracket = false,
+    bool comment = false, blockComment = false, prevCloseBracket = false,
          escaping = false;
     for (char& c : code) {
         if (comment) {
@@ -81,9 +81,9 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
             else continue;
         }
 
-        if (inlineComment) {
+        if (blockComment) {
             if (c == ']') {
-                if (prevCloseBracket) inlineComment = prevCloseBracket = false;
+                if (prevCloseBracket) blockComment = prevCloseBracket = false;
                 else prevCloseBracket = true;
             } else {
                 prevCloseBracket = false;
@@ -195,9 +195,9 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                     comment = true;
                 } else if ((c == '[') && (tokens.size() > 0) &&
                         (tokens[tokens.size()-1] == "[")) {
-                    // inline comment
+                    // block comment
                     tokens.pop_back();
-                    inlineComment = true;
+                    blockComment = true;
                 } else {
                     token += c;
                     tokens.push_back(token);
