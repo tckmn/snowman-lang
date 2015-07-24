@@ -247,6 +247,7 @@ operator), it is an error.
 - `vg` (-) -> a: get line of input (as an array-"string")
 - `vr` (-) -> n: random number [0,1)
 - `vt` (-) -> n: time (seconds since epoch)
+- `va` (-) -> a: get command line args
 
 ## Other characters
 

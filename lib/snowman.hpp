@@ -97,6 +97,7 @@ class Snowman {
         static Variable stringToArr(std::string str);
         static std::string inspect(Variable str);
         static bool toBool(Variable v);
+        std::vector<Variable> args;
         Variable vars[8];
         bool activeVars[8];
         std::map<int, Variable> permavars;
@@ -107,6 +108,7 @@ class Snowman {
         ~Snowman();
         static std::vector<std::string> tokenize(std::string code);
         void run(std::string code);
+        void addArg(std::string arg);
         std::string debug();
         bool debugOutput;
         const static int MAJOR_VERSION = 0;

@@ -959,6 +959,10 @@ void Snowman::evalToken(std::string token) {
     case HSH2('v','t'): /// (-) -> n: time (seconds since epoch)
         store(Variable((double)time(nullptr)));
         break;
+    case HSH2('v','a'): /// (-) -> a: get command line args
+        store(Variable(&args));
+        break;
+
     default:
         throw SnowmanException("at evalToken: unrecognized token?", true);
 
@@ -1086,4 +1090,8 @@ std::string Snowman::debug() {
 
     s[s.length()-1] = '\n';
     return s;
+}
+
+void Snowman::addArg(std::string arg) {
+    args.push_back(stringToArr(arg));
 }

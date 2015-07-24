@@ -60,9 +60,8 @@ int main(int argc, char *argv[]) {
         } else if (filename == "") {
             filename = arg;
         } else {
-            std::cerr << "Multiple filenames specified (" << filename << ", "
-                << arg << ")" << std::endl;
-            return 1;
+            // pass as command line argument to Snowman program
+            sm.addArg(arg);
         }
     }
 
