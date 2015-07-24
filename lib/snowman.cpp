@@ -644,11 +644,15 @@ void Snowman::evalToken(std::string token) {
         store(Variable(v2));
         break;
     }
-    case HSH2('a','n'): { /// (an) -> a: every nth element
+    case HSH2('a','n'): { /// (an) -> a: every nth element (negative n = reverse)
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        bool rev = n < 0;
         auto v2 = new std::vector<Variable>;
-        for (vvs i = 0; i < vec.size(); i += n) v2->push_back(vec[i]);
+        for (int i = (rev ? (vec.size()-1) : 0); rev ? (i >= 0) :
+                (((vvs)i) < vec.size()); i += n) {
+            v2->push_back(vec[(vvs)i]);
+        }
         store(Variable(v2));
         break;
     }

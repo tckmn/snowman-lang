@@ -197,7 +197,7 @@ operator), it is an error.
 - `ag` (an) -> a: split array in groups of size
 - `ae` (ab) -> -: each
 - `am` (ab) -> a: map
-- `an` (an) -> a: every nth element
+- `an` (an) -> a: every nth element (negative n = reverse)
 - `ase` (ab) -> a: select
 - `asi` (ab) -> n: select by index / index of / find index
 - `aal` (an) -> a: elements at indeces less than n
