@@ -257,6 +257,9 @@ desired effect (it will store 11). To store two 1's, use `1vn1` or `1vN1`.
 Two slashes in a row (`//`) normally have no effect, so this represents a
 comment (that continues until a newline character).
 
+Two brackets in a row (`[[` and `]]`) normally have no effect, so these
+represent inline comments (the comment goes from the `[[` to the `]]`).
+
 ## Example programs
 
 Hello World (`sP` can also be `sp`):
