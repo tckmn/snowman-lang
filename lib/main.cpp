@@ -57,10 +57,18 @@ int main(int argc, char *argv[]) {
                     std::cout << ">> ";
                     std::string line;
                     while (std::getline(std::cin, line)) {
-                        sm.run(line);
-                        std::cout << sm.debug();
-                        std::cout << ">> ";
+                        if (minify) {
+                            for (std::string s : Snowman::tokenize(line)) {
+                                std::cout << s;
+                            }
+                            std::cout << std::endl << ">> ";
+                        } else {
+                            sm.run(line);
+                            std::cout << sm.debug();
+                            std::cout << ">> ";
+                        }
                     }
+                    return 0;
                 }
                 case 'd':
                     sm.debugOutput = true;
