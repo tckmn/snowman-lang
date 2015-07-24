@@ -87,8 +87,8 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                 else prevCloseBracket = true;
             } else {
                 prevCloseBracket = false;
-                continue;
             }
+            continue;
         }
 
         if ((token[0] != '"' && token[0] != ':') && !(c >= '!' && c <= '~')) {
