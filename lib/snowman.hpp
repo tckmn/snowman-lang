@@ -53,21 +53,6 @@ struct Variable {
         }
     }
 
-    // essentially operator='s, except specialer
-    void set(bool x) { mm(); type = UNDEFINED; undefinedVal = x; }
-    void set(double x) { mm(); type = NUM; numVal = x; }
-    void set(std::vector<Variable>* x) { mm(); type = ARRAY; arrayVal = x; }
-    void set(std::string* x) { mm(); type = BLOCK; blockVal = x; }
-    void set(Variable& v) {
-        mm();
-        switch (v.type) {
-        case UNDEFINED: set(v.undefinedVal); break;
-        case NUM: set(v.numVal); break;
-        case ARRAY: set(v.arrayVal); break;
-        case BLOCK: set(v.blockVal); break;
-        }
-    }
-
     // manage memory (use when modifying value)
     // BE VERY CAREFUL when calling this function
     void mm() {
