@@ -440,7 +440,9 @@ void Snowman::evalToken(std::string token) {
     case HSH2('n','r'): { /// (nn) -> n: range
         vec = retrieve(Variable::NUM, 2, consume);
         auto vrng = new std::vector<Variable>;
-        for (double i = vec[0].numVal; i < vec[1].numVal; ++i) {
+        bool rev = (vec[0].numVal > vec[1].numVal);
+        for (double i = vec[0].numVal; rev ? (i > vec[1].numVal) :
+                (i < vec[1].numVal); i += (rev ? -1 : 1)) {
             vrng->push_back(Variable(i));
         }
         store(Variable(vrng));
