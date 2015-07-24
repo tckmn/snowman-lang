@@ -11,8 +11,8 @@ int main(int argc, char *argv[]) {
         std::to_string(Snowman::PATCH_VERSION);
 
     // parse arguments
-    std::string filename;
-    bool minify = false;
+    std::string filename, code;
+    bool flags[128] = {false};
     for (int i = 1; i < argc; ++i) {
         std::string arg(argv[i]);
         if (arg[0] == '-') {
@@ -38,49 +38,18 @@ int main(int argc, char *argv[]) {
                     sm.debugOutput = true;
                     break;
                 case 'e':
+                    flags['e'] = true;
                     if ((++i) == argc) {
                         std::cerr << "Argument `-e' requires a parameter" <<
                             std::endl;
                         return 1;
                     }
-                    sm.run(std::string(argv[i]));
-                    return 0;
+                    code = argv[i];
+                    break;
                 case 'h':
-                    std::cout << "Usage: " << argv[0] << " [OPTION]... "
-                            "[FILENAME]\n" <<
-                        "Options:\n"
-                        "    -d, --debug: include debug output\n"
-                        "    -e, --evaluate: takes one parameter, runs as "
-                            "Snowman code\n"
-                        "    -h, --help: display this message\n"
-                        "    -i, --interactive: start a REPL\n"
-                        "    -m, --minify: don't evaluate code; output "
-                            "minified version instead\n"
-                        "Snowman will read from STDIN if you do not specify a "
-                            "file name or the -ehi options.\n"
-                        "Snowman version: " << VERSION_STRING << "\n";
-                    return 0;
-                case 'i': {
-                    std::cout << "Snowman REPL, " << VERSION_STRING <<
-                        std::endl;
-                    std::cout << ">> ";
-                    std::string line;
-                    while (std::getline(std::cin, line)) {
-                        if (minify) {
-                            for (std::string s : Snowman::tokenize(line)) {
-                                std::cout << s;
-                            }
-                            std::cout << std::endl << ">> ";
-                        } else {
-                            sm.run(line);
-                            std::cout << sm.debug();
-                            std::cout << ">> ";
-                        }
-                    }
-                    return 0;
-                }
+                case 'i':
                 case 'm':
-                    minify = true;
+                    flags[(int)argid] = true;
                     break;
                 default:
                     std::cerr << "Unknown argument `-" << arg << "'" <<
@@ -98,26 +67,66 @@ int main(int argc, char *argv[]) {
     }
 
     // retrieve code to run
-    std::string code;
-    if (filename == "") {
-        std::string line;
-        while (std::getline(std::cin, line) && line != "__END__") {
-            code += line + "\n";
-        }
-    } else {
-        std::ifstream infile(filename.c_str());
-        if (infile.good()) {
-            std::stringstream buf;
-            buf << infile.rdbuf() << std::endl;
-            code = buf.str();
+    if (!(flags['e'] || flags['h'] || flags['i'])) {
+        if (filename == "") {
+            std::string line;
+            while (std::getline(std::cin, line) && line != "__END__") {
+                code += line + "\n";
+            }
         } else {
-            std::cerr << "Could not read file " << filename << std::endl;
-            return 1;
+            std::ifstream infile(filename.c_str());
+            if (infile.good()) {
+                std::stringstream buf;
+                buf << infile.rdbuf() << std::endl;
+                code = buf.str();
+            } else {
+                std::cerr << "Could not read file " << filename << std::endl;
+                return 1;
+            }
         }
     }
 
+    // process -h (--help) flag
+    if (flags['h']) {
+        std::cout << "Usage: " << argv[0] << " [OPTION]... "
+                "[FILENAME]\n" <<
+            "Options:\n"
+            "    -d, --debug: include debug output\n"
+            "    -e, --evaluate: takes one parameter, runs as Snowman code\n"
+            "    -h, --help: display this message\n"
+            "    -i, --interactive: start a REPL\n"
+            "    -m, --minify: don't evaluate code; output minified version "
+                "instead\n"
+            "Snowman will read from STDIN if you do not specify a file name "
+                "or the -ehi options.\n"
+            "Snowman version: " << VERSION_STRING << "\n";
+        return 0;
+    }
+
+    // process -i (--interactive) flag
+    if (flags['i']) {
+        std::cout << "Snowman REPL, " << VERSION_STRING <<
+            std::endl;
+        std::cout << ">> ";
+        std::string line;
+        while (std::getline(std::cin, line)) {
+            if (flags['m']) {
+                // minify
+                for (std::string s : Snowman::tokenize(line)) {
+                    std::cout << s;
+                }
+                std::cout << std::endl << ">> ";
+            } else {
+                sm.run(line);
+                std::cout << sm.debug();
+                std::cout << ">> ";
+            }
+        }
+        return 0;
+    }
+
     // process -m (--minify) flag
-    if (minify) {
+    if (flags['m']) {
         for (std::string s : Snowman::tokenize(code)) {
             std::cout << s;
         }
