@@ -12,19 +12,21 @@ int main(int argc, char *argv[]) {
 
     // parse arguments
     std::string filename, code;
+    bool parseFlags = true;
     bool flags[128] = {false};
     for (int i = 1; i < argc; ++i) {
         std::string arg(argv[i]);
-        if (arg[0] == '-') {
+        if (parseFlags && (arg[0] == '-') && (arg.length() > 1)) {
             arg = arg.substr(1);
             if (arg.length() >= 1 && arg[0] == '-') {
                 arg = arg.substr(1);
                 // no switch on strings :(
-                if (arg == "debug") arg = "d";
-                else if (arg == "evaluate") arg = "e";
-                else if (arg == "help") arg = "h";
+                if (arg == "") parseFlags = false;
+                else if (arg == "debug")       arg = "d";
+                else if (arg == "evaluate")    arg = "e";
+                else if (arg == "help")        arg = "h";
                 else if (arg == "interactive") arg = "i";
-                else if (arg == "minify") arg = "m";
+                else if (arg == "minify")      arg = "m";
                 else {
                     std::cerr << "Unknown long argument `" << arg << "'" <<
                         std::endl;
@@ -67,7 +69,7 @@ int main(int argc, char *argv[]) {
 
     // retrieve code to run
     if (!(flags['e'] || flags['h'] || flags['i'])) {
-        if (filename == "") {
+        if ((filename == "") || (filename == "-")) {
             std::string line;
             while (std::getline(std::cin, line) && line != "__END__") {
                 code += line + "\n";
