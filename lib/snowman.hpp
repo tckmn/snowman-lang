@@ -63,6 +63,7 @@ struct Variable {
         }
     }
 
+    // the actual data
     enum { UNDEFINED, NUM, ARRAY, BLOCK } type;
     union {
         bool undefinedVal;
@@ -72,30 +73,54 @@ struct Variable {
     };
 };
 
+// used for subroutines
+struct VarState {
+    Variable vars[8];
+    bool activeVars[8];
+};
+
 class Snowman {
     private:
+        // internal evaluation methods
         void evalToken(std::string token);
         void store(Variable v);
         std::vector<Variable> retrieve(int type, vvs count = 1, bool consume =
             true, int skip = 0);
+
+        // utility methods having to do with the language itself
         static std::string arrToString(Variable arr);
         static Variable stringToArr(std::string str);
         static std::string inspect(Variable str);
         static bool toBool(Variable v);
+
+        // command line args
         std::vector<Variable> args;
+
+        // variables and permavars
         Variable vars[8];
         bool activeVars[8];
+        std::vector<VarState> subroutines;
         std::map<int, Variable> permavars;
         int activePermavar;
         bool savedActiveState[8];
+
     public:
+        // constructor / destructor
         Snowman();
         ~Snowman();
+
+        // for manipulating a string of code
         static std::vector<std::string> tokenize(std::string code);
         void run(std::string code);
+
+        // command line args
         void addArg(std::string arg);
+
+        // debugging (also used for REPL)
         std::string debug();
         bool debugOutput;
+
+        // version
         const static int MAJOR_VERSION = 0;
         const static int MINOR_VERSION = 2;
         const static int PATCH_VERSION = 0;

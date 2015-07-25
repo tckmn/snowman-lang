@@ -261,6 +261,13 @@ comment (that continues until a newline character).
 Two brackets in a row (`[[` and `]]`) normally have no effect, so these
 represent inline comments (the comment goes from the `[[` to the `]]`).
 
+Two parentheses in a row (`((` and `))`) normally have no effect, so these
+represent subroutines. Any code wrapped in `((...))` will be executed in an
+entirely new "environment." This means that all variables (and which ones are
+active) are reset. (Permavars and the active permavar are kept the same.) When
+reaching the `))`, all non-undefined active variables are stored in the
+original "environment." These can be nested.
+
 ## Example programs
 
 Hello World (`sP` can also be `sp`):

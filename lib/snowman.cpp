@@ -198,6 +198,16 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                     // block comment
                     tokens.pop_back();
                     blockComment = true;
+                } else if ((c == '(') && (tokens.size() > 0) &&
+                        (tokens[tokens.size()-1] == "(")) {
+                    // subroutine start
+                    tokens.pop_back();
+                    tokens.push_back("((");
+                } else if ((c == ')') && (tokens.size() > 0) &&
+                        (tokens[tokens.size()-1] == ")")) {
+                    // subroutine end
+                    tokens.pop_back();
+                    tokens.push_back("))");
                 } else {
                     token += c;
                     tokens.push_back(token);
@@ -278,6 +288,24 @@ void Snowman::evalToken(std::string token) {
         // switch permavar
         activePermavar = (token.length()-1) * 2 +
             (token[token.length()-1] == '!');
+        return;
+    } else if (token == "((") {
+        VarState vs;
+        memcpy(vs.vars, vars, sizeof(Variable)*8);
+        memcpy(vs.activeVars, activeVars, sizeof(bool)*8);
+        std::fill(std::begin(vars), std::end(vars), Variable());
+        std::fill(std::begin(activeVars), std::end(activeVars), false);
+        subroutines.push_back(vs);
+        return;
+    } else if (token == "))") {
+        if (subroutines.size() == 0) {
+            throw SnowmanException("at evalToken: no subroutines left on "
+                "stack, ignoring `))' instruction", false);
+        }
+        VarState vs = subroutines.back();
+        memcpy(vars, vs.vars, sizeof(Variable)*8);
+        memcpy(activeVars, vs.activeVars, sizeof(bool)*8);
+        subroutines.pop_back();
         return;
     } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
         // handled below
@@ -985,6 +1013,7 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
     // default value of count is 1
     // default value of consume is true
     // default value of skip is 0
+    // if count is 0, as many variables as possible will be returned
     // if skip is -1, any amount of variables will be skipped (ex. retrieve(-1,
     //   1, false, -1) will get you the first non-undefined variable)
     std::vector<Variable> vec;
@@ -998,7 +1027,7 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
                     (type == -1 || vars[i].type == type)) {
                 vec.push_back(vars[i]);
                 if (consume) vars[i] = Variable(); // set to undefined
-                if (vec.size() == count) return vec;
+                if ((count != 0) && (vec.size() == count)) return vec;
             } else if (skip == -1) {
                 continue;
             } else {
@@ -1007,7 +1036,7 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
             }
         }
     }
-    if (vec.size() < count) {
+    if ((count != 0) && (vec.size() < count)) {
         throw SnowmanException("at retrieve: not enough variables, stopping "
             "execution of operator", true);
     }
