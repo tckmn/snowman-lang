@@ -209,6 +209,7 @@ operator), it is an error.
   index, third is length, fourth is what to replace with)
 - `afl` (an) -> a: flatten (number is how many "layers" to flatten; 0 means
   completely flatten the array)
+- `ash` (a) -> a: shuffle array
 
 ### "String" operators
 

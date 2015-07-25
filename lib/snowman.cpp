@@ -806,6 +806,13 @@ void Snowman::evalToken(std::string token) {
         store(Variable(new std::vector<Variable>(vec)));
         break;
     }
+    case HSH3('A','S','H'): { /// (a) -> a: shuffle array
+        vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
+        auto arr = new std::vector<Variable>(vec);
+        std::random_shuffle(arr->begin(), arr->end());
+        store(Variable(arr));
+        break;
+    }
 
     /// "String" operators
     case HSH2('s','b'): { /// (an) -> n: from-base from array-"string"
