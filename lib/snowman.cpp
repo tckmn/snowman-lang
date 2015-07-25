@@ -1013,7 +1013,6 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
     // default value of count is 1
     // default value of consume is true
     // default value of skip is 0
-    // if count is 0, as many variables as possible will be returned
     // if skip is -1, any amount of variables will be skipped (ex. retrieve(-1,
     //   1, false, -1) will get you the first non-undefined variable)
     std::vector<Variable> vec;
@@ -1027,7 +1026,7 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
                     (type == -1 || vars[i].type == type)) {
                 vec.push_back(vars[i]);
                 if (consume) vars[i] = Variable(); // set to undefined
-                if ((count != 0) && (vec.size() == count)) return vec;
+                if (vec.size() == count) return vec;
             } else if (skip == -1) {
                 continue;
             } else {
@@ -1036,7 +1035,7 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
             }
         }
     }
-    if ((count != 0) && (vec.size() < count)) {
+    if (vec.size() < count) {
         throw SnowmanException("at retrieve: not enough variables, stopping "
             "execution of operator", true);
     }
