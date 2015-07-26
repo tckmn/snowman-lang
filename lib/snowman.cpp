@@ -1002,12 +1002,6 @@ void Snowman::evalToken(std::string token) {
         throw SnowmanException("at evalToken: unrecognized token?", true);
 
     }
-
-    // free up memory
-    if (consume) {
-        for (Variable v : gc) v.mm();
-        gc = std::vector<Variable>();
-    }
 }
 
 void Snowman::store(Variable val) {
@@ -1038,10 +1032,7 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
             if ((vars[i].type != Variable::UNDEFINED) &&
                     (type == -1 || vars[i].type == type)) {
                 vec.push_back(vars[i]);
-                if (consume) {
-                    gc.push_back(vars[i]);  // mark for GC
-                    vars[i] = Variable();  // set to undefined
-                }
+                if (consume) vars[i] = Variable();  // set to undefined
                 if (vec.size() == count) return vec;
             } else if (skip == -1) {
                 continue;

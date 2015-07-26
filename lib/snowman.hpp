@@ -104,9 +104,6 @@ class Snowman {
         int activePermavar;
         bool savedActiveState[8];
 
-        // ugly, ugly "garbage collector"
-        std::vector<Variable> gc;
-
     public:
         // constructor / destructor
         Snowman();
