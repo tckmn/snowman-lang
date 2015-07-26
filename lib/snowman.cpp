@@ -718,16 +718,16 @@ void Snowman::evalToken(std::string token) {
     case HSH3('A','A','L'): { /// (an) -> a: elements at indeces less than n
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         vvs n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
-        auto v2 = new std::vector<Variable>(n);
-        for (vvs i = 0; i < vec.size() && i < n; ++i) (*v2)[i] = vec[i];
+        auto v2 = new std::vector<Variable>;
+        for (vvs i = 0; i < vec.size() && i < n; ++i) v2->push_back(vec[i]);
         store(Variable(v2));
         break;
     }
     case HSH3('A','A','G'): { /// (an) -> a: elements at indeces greater than n
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
-        auto v2 = new std::vector<Variable>(vec.size() - n - 1);
-        for (vvs i = n + 1; i < vec.size(); ++i) (*v2)[i - n - 1] = vec[i];
+        auto v2 = new std::vector<Variable>;
+        for (vvs i = n + 1; i < vec.size(); ++i) v2->push_back(vec[i]);
         store(Variable(v2));
         break;
     }
