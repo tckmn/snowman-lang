@@ -29,6 +29,16 @@ struct Variable {
     // destructor
     ~Variable() {}
 
+    // copy constructor
+    Variable(const Variable& v) {
+        switch (v.type) {
+        case UNDEFINED: type = UNDEFINED; undefinedVal = false; break;
+        case NUM: type = NUM; numVal = v.numVal; break;
+        case ARRAY: type = ARRAY; arrayVal = new std::vector<Variable>(*v.arrayVal); break;
+        case BLOCK: type = BLOCK; blockVal = new std::string(*v.blockVal); break;
+        }
+    }
+
     // operators
     bool operator==(const Variable& v) const {
         if (type != v.type) return false;

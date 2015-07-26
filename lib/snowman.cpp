@@ -674,7 +674,7 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : vec) {
             store(v);
             run(b);
-            v2->push_back(retrieve(-1, 1, consume, -1, true)[0]);
+            v2->push_back(Variable(retrieve(-1, 1, consume, -1)[0]));
         }
         store(Variable(v2));
         break;
@@ -935,9 +935,9 @@ void Snowman::evalToken(std::string token) {
         store(Variable((double)(!Snowman::toBool(vec[0]))));
         break;
     case HSH2('w','r'): { /// (*) -> a: wrap in array
-        vec = retrieve(-1, 1, consume, 0, true);
+        vec = retrieve(-1, 1, consume, 0);
         auto wrapped = new std::vector<Variable>(1);
-        (*wrapped)[0] = vec[0];
+        (*wrapped)[0] = Variable(vec[0]);
         store(Variable(wrapped));
         break;
     }
@@ -979,9 +979,9 @@ void Snowman::evalToken(std::string token) {
         }
         break;
     case HSH2('d','u'): /// (*) -> **: duplicate
-        vec = retrieve(-1, 1, consume, 0, true);
-        store(vec[0]);
-        store(vec[0]);
+        vec = retrieve(-1, 1, consume, 0);
+        store(Variable(vec[0]));
+        store(Variable(vec[0]));
         break;
 
     /// "Void" operators
