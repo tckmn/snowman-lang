@@ -640,6 +640,10 @@ void Snowman::evalToken(std::string token) {
     case HSH2('a','g'): { /// (an) -> a: split array in groups of size
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         vvs n = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        if (n <= 0) {
+            throw SnowmanException("at ag: negative or 0 n, stopping "
+                "execution of az", false);
+        }
         auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
         for (vvs i = 0; i < vec.size(); ++i) {
             tmp->push_back(vec[i]);
