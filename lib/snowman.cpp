@@ -484,6 +484,10 @@ void Snowman::evalToken(std::string token) {
         vec = retrieve(Variable::NUM, 2, consume);
         // convert integer part
         int n = floor(vec[0].numVal), base = round(vec[1].numVal);
+        if (base <= 0) {
+            throw SnowmanException("at nb: negative or 0 base, stopping "
+                "execution of nb", false);
+        }
         bool neg = n < 0;
         if (neg) n = -n;
         std::string nb;
@@ -533,10 +537,14 @@ void Snowman::evalToken(std::string token) {
     case HSH2('a','f'): { /// (ab) -> *: fold
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         std::string blk = *retrieve(Variable::BLOCK, 1, consume, 1)[0].blockVal;
-        store(vec[0]);
-        for (vvs i = 1; i < vec.size(); ++i) {
-            store(vec[i]);
-            run(blk);
+        if (vec.size() == 0) {
+            store(Variable(0.0));  // this is just arbitrary
+        } else {
+            store(vec[0]);
+            for (vvs i = 1; i < vec.size(); ++i) {
+                store(vec[i]);
+                run(blk);
+            }
         }
         break;
     }
@@ -738,7 +746,12 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('a','a'): /// (an) -> *: element at index
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
-        store(vec[(int)retrieve(Variable::NUM, 1, consume, 1)[0].numVal]);
+        try {
+            store(vec.at((int)retrieve(Variable::NUM, 1,
+                consume, 1)[0].numVal));
+        } catch (std::out_of_range& oor) {
+            store(Variable(0.0));  // this is just arbitrary
+        }
         break;
     case HSH2('a','l'): /// (a) -> n: array length
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
@@ -856,7 +869,14 @@ void Snowman::evalToken(std::string token) {
         break;
     case HSH2('s','m'): { /// (aa) -> a: regex match; first array-"string" is search text, second array-"string" is regex
         std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
-        std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::regex rgx;
+        try {
+            rgx = std::regex(arrToString(retrieve(Variable::ARRAY, 1,
+                consume, 1)[0]), std::regex::extended);
+        } catch (std::regex_error& re) {
+            throw SnowmanException("at sm: regex error, stopping execution of "
+                "sm", false);
+        }
         auto mb = std::sregex_iterator(str.begin(), str.end(), rgx),
              me = std::sregex_iterator();
         auto results = new std::vector<Variable>;
@@ -868,14 +888,28 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('s','r'): { /// (aaa) -> a: regex replace; first array-"string" is string to operate on, second array-"string" is rege, third is replacement text
         std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
-        std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::regex rgx;
+        try {
+            rgx = std::regex(arrToString(retrieve(Variable::ARRAY, 1,
+                consume, 1)[0]), std::regex::extended);
+        } catch (std::regex_error& re) {
+            throw SnowmanException("at sr: regex error, stopping execution of "
+                "sr", false);
+        }
         std::string repl = arrToString(retrieve(Variable::ARRAY, 1, consume, 2)[0]);
         store(Variable(stringToArr(std::regex_replace(str, rgx, repl))));
         break;
     }
     case HSH3('S','R','B'): { /// (aab) -> a: same as `sr` but with a block instead of array-"string"
         std::string str = arrToString(retrieve(Variable::ARRAY, 1, consume)[0]);
-        std::regex rgx(arrToString(retrieve(Variable::ARRAY, 1, consume, 1)[0]));
+        std::regex rgx;
+        try {
+            rgx = std::regex(arrToString(retrieve(Variable::ARRAY, 1,
+                consume, 1)[0]), std::regex::extended);
+        } catch (std::regex_error& re) {
+            throw SnowmanException("at srb: regex error, stopping execution of "
+                "srb", false);
+        }
         std::string repl = *retrieve(Variable::BLOCK, 1, consume, 2)[0].blockVal;
         auto rb = std::sregex_token_iterator(str.begin(), str.end(), rgx, {-1,0}),
              re = std::sregex_token_iterator();
