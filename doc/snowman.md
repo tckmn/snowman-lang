@@ -287,3 +287,35 @@ FizzBuzz (newlines are extraneous):
 Quine:
 
     {"{""'*'sp'34wRsp'sP'spsp'#sp'sp'sp"'*'sp'34wRsp'sP'spsp'#sp'sp'sp
+
+First 50 elements of the Fibonacci sequence (newline is significant):
+
+    )(:][ts[sP[na\*"
+    "sP;50vn1vn0bR
+
+ROT13 (newlines are extraneous):
+
+    }vg:*#96nG|#110nL,bO|#64nG'(#78nL('>
+    bO,oR|:#13nA;:#109nG|#123nL,bO|#77nG
+    '(#91nL('>bO,oR|:#13nS;:#;bI;bI;aMsP
+
+Rule 110 in an infinite loop (commented):
+
+    }vg:32eQnO;aM  // get input, transform to array of 0's and 1's
+    0`wRaC         // prepend a 0 (this is padding for left edge behavior)
+    // infinite loop the following:
+    |:
+        |al|1nR    // range [1..input.length)
+        // map / transform function
+        :
+            2nA|,AAl|`)4nS)`AaG     // get 3 surrounding elements of index
+            .al2|eQ`:0wR`|aC|;bR|.  // handle right edge behavior
+            :48nA;aM2sB             // convert from binary
+            " ### ## "`aA           // lookup "table"
+        ;aM
+        sp                // output
+        :32eQnO;aM0`wRaC  // convert back to 0's and 1's, prepend 0
+        |*                // discard previous iteration
+        "
+    "sP                   // output newline
+    ;:1;bW
