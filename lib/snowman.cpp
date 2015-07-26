@@ -391,7 +391,7 @@ void Snowman::evalToken(std::string token) {
 
     /// Permavar operators
     case HSH1('*'): /// retrieve a value, set the current permavar's value to this
-        vec = retrieve(-1, 1, true, -1);
+        vec = retrieve(-1, 1, true, -1, true);
         permavars[activePermavar] = vec[0];
         break;
     case HSH1('#'): /// store the current permavar's value
@@ -669,7 +669,7 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : vec) {
             store(v);
             run(b);
-            v2->push_back(retrieve(-1, 1, consume, -1)[0]);
+            v2->push_back(retrieve(-1, 1, consume, -1, true)[0]);
         }
         store(Variable(v2));
         break;
@@ -930,7 +930,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable((double)(!Snowman::toBool(vec[0]))));
         break;
     case HSH2('w','r'): { /// (*) -> a: wrap in array
-        vec = retrieve(-1, 1, consume);
+        vec = retrieve(-1, 1, consume, 0, true);
         auto wrapped = new std::vector<Variable>(1);
         (*wrapped)[0] = vec[0];
         store(Variable(wrapped));
@@ -974,7 +974,7 @@ void Snowman::evalToken(std::string token) {
         }
         break;
     case HSH2('d','u'): /// (*) -> **: duplicate
-        vec = retrieve(-1, 1, consume);
+        vec = retrieve(-1, 1, consume, 0, true);
         store(vec[0]);
         store(vec[0]);
         break;
@@ -1002,6 +1002,29 @@ void Snowman::evalToken(std::string token) {
         throw SnowmanException("at evalToken: unrecognized token?", true);
 
     }
+
+    // free up memory
+    if (consume) {
+        for (Variable v : gc) {
+            // don't GC things that are still stored in permavars
+            bool found = false;
+            for (auto x : permavars) {
+                if (v.type == x.second.type) {
+                    switch (v.type) {
+                    case Variable::ARRAY:
+                        if (v.arrayVal == x.second.arrayVal) found = true;
+                        break;
+                    case Variable::BLOCK:
+                        if (v.blockVal == x.second.blockVal) found = true;
+                        break;
+                    default: break;
+                    }
+                }
+            }
+            if (!found) v.mm();
+        }
+        gc = std::vector<Variable>();
+    }
 }
 
 void Snowman::store(Variable val) {
@@ -1014,14 +1037,17 @@ void Snowman::store(Variable val) {
     }
 }
 
-std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int skip) {
+std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume,
+        int skip, bool doNotDelete) {
     // for definition of "retrieve", see doc/snowman.md
     // (also used for gathering letter operator arguments)
     // default value of count is 1
     // default value of consume is true
     // default value of skip is 0
+    // default value of doNotDelete is false
     // if skip is -1, any amount of variables will be skipped (ex. retrieve(-1,
     //   1, false, -1) will get you the first non-undefined variable)
+    // doNotDelete is used for the "GC"
     std::vector<Variable> vec;
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i]) {
@@ -1032,7 +1058,10 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume, int s
             if ((vars[i].type != Variable::UNDEFINED) &&
                     (type == -1 || vars[i].type == type)) {
                 vec.push_back(vars[i]);
-                if (consume) vars[i] = Variable();  // set to undefined
+                if (consume) {
+                    if (!doNotDelete) gc.push_back(vars[i]);  // mark for GC
+                    vars[i] = Variable();  // set to undefined
+                }
                 if (vec.size() == count) return vec;
             } else if (skip == -1) {
                 continue;

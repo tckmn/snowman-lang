@@ -85,7 +85,7 @@ class Snowman {
         void evalToken(std::string token);
         void store(Variable v);
         std::vector<Variable> retrieve(int type, vvs count = 1, bool consume =
-            true, int skip = 0);
+            true, int skip = 0, bool doNotDelete = false);
 
         // utility methods having to do with the language itself
         static std::string arrToString(Variable arr);
@@ -103,6 +103,9 @@ class Snowman {
         std::map<int, Variable> permavars;
         int activePermavar;
         bool savedActiveState[8];
+
+        // ugly, ugly "garbage collector"
+        std::vector<Variable> gc;
 
     public:
         // constructor / destructor
