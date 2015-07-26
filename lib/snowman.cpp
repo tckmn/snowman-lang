@@ -999,7 +999,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable((double)time(nullptr)));
         break;
     case HSH2('v','a'): /// (-) -> a: get command line args
-        store(Variable(&args));
+        store(Variable(new std::vector<Variable>(args)));
         break;
 
     default:
