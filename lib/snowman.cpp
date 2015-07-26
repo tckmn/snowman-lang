@@ -594,6 +594,7 @@ void Snowman::evalToken(std::string token) {
     case HSH2('a','r'): { /// (an) -> a: array repeat
         vec = *retrieve(Variable::ARRAY, 1, consume)[0].arrayVal;
         int count = round(retrieve(Variable::NUM, 1, consume, 1)[0].numVal);
+        if (count < 0) count = 0;
         auto arr = new std::vector<Variable>(vec.size() * count);
         for (vvs i = 0; i < vec.size() * count; ++i) {
             (*arr)[i] = vec[i % vec.size()];
