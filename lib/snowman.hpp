@@ -8,8 +8,11 @@
 
 struct Variable;
 
-typedef std::vector<Variable>::size_type vvs;
-typedef std::string::size_type ss;
+typedef std::vector<Variable> tArray;
+typedef std::string tBlock;
+
+typedef tArray::size_type vvs;
+typedef tBlock::size_type ss;
 
 class SnowmanException: public std::runtime_error {
     public:
@@ -23,8 +26,8 @@ struct Variable {
     Variable(): undefinedVal(true) { type = UNDEFINED; }
     Variable(bool x): undefinedVal(x) { type = UNDEFINED; }
     Variable(double x): numVal(x) { type = NUM; }
-    Variable(std::vector<Variable>* x): arrayVal(x) { type = ARRAY; }
-    Variable(std::string* x): blockVal(x) { type = BLOCK; }
+    Variable(tArray* x): arrayVal(x) { type = ARRAY; }
+    Variable(tBlock* x): blockVal(x) { type = BLOCK; }
 
     // destructor
     ~Variable() {}
@@ -34,8 +37,8 @@ struct Variable {
         switch (v.type) {
         case UNDEFINED: type = UNDEFINED; undefinedVal = false; break;
         case NUM: type = NUM; numVal = v.numVal; break;
-        case ARRAY: type = ARRAY; arrayVal = new std::vector<Variable>(*v.arrayVal); break;
-        case BLOCK: type = BLOCK; blockVal = new std::string(*v.blockVal); break;
+        case ARRAY: type = ARRAY; arrayVal = new tArray(*v.arrayVal); break;
+        case BLOCK: type = BLOCK; blockVal = new tBlock(*v.blockVal); break;
         }
     }
 
@@ -78,8 +81,8 @@ struct Variable {
     union {
         bool undefinedVal;
         double numVal;
-        std::vector<Variable>* arrayVal;
-        std::string* blockVal;
+        tArray* arrayVal;
+        tBlock* blockVal;
     };
 };
 
@@ -100,13 +103,13 @@ class Snowman {
             typename W = bool> class Retrieval{};
 
         // utility methods having to do with the language itself
-        static std::string arrToString(std::vector<Variable> arr);
+        static std::string arrToString(tArray arr);
         static Variable stringToArr(std::string str);
         static std::string inspect(Variable str);
         static bool toBool(Variable v);
 
         // command line args
-        std::vector<Variable> args;
+        tArray args;
 
         // variables and permavars
         Variable vars[8];

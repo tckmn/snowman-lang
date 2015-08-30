@@ -274,7 +274,7 @@ void Snowman::evalToken(std::string token) {
         // handled further below
     } else if (token.length() >= 2 && token[0] == '"') {
         // store literal string-array
-        auto vec = new std::vector<Variable>(token.length() - 2);
+        auto vec = new tArray(token.length() - 2);
         for (vvs i = 1; i < token.length() - 1; ++i) {
             (*vec)[i-1] = Variable((double)token[i]);
         }
@@ -486,7 +486,7 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('n','r'): { /// (nn) -> n: range
         Retrieval<double, double> r(this, consume);
-        auto vrng = new std::vector<Variable>;
+        auto vrng = new tArray;
         bool rev = (r.a > r.b);
         for (double i = r.a; rev ? (i > r.b) : (i < r.b); i += (rev ? -1 : 1)) {
             vrng->push_back(Variable(i));
@@ -533,13 +533,13 @@ void Snowman::evalToken(std::string token) {
 
     /// Array operators
     case HSH3('A','S','O'): { /// (a) -> a: sort
-        Retrieval<std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*> r(this, consume);
         std::sort(r.a->begin(), r.a->end());
-        store(Variable(new std::vector<Variable>(*r.a)));
+        store(Variable(new tArray(*r.a)));
         break;
     }
     case HSH3('A','S','B'): { /// (ab) -> a: sort by
-        Retrieval<std::vector<Variable>*, std::string*> r(this, consume);
+        Retrieval<tArray*, std::string*> r(this, consume);
         std::sort(r.a->begin(), r.a->end(),
             [&] (Variable const& a, Variable const& b) {
                 store(a);
@@ -547,11 +547,11 @@ void Snowman::evalToken(std::string token) {
                 run(*r.b);
                 return Snowman::toBool(retrieve(-1, true, -1));
             });
-        store(Variable(new std::vector<Variable>(*r.a)));
+        store(Variable(new tArray(*r.a)));
         break;
     }
     case HSH2('a','f'): { /// (ab) -> *: fold
-        Retrieval<std::vector<Variable>*, std::string*> r(this, consume);
+        Retrieval<tArray*, std::string*> r(this, consume);
         if (r.a->size() == 0) {
             store(Variable(0.0));  // this is just arbitrary
         } else {
@@ -564,17 +564,17 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','c'): { /// (aa) -> a: concatenate arrays
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*, tArray*> r(this, consume);
         int s1 = r.a->size(), s2 = r.b->size();
-        auto arr = new std::vector<Variable>(s1 + s2);
+        auto arr = new tArray(s1 + s2);
         for (int i = 0; i < s1; ++i) (*arr)[i] = (*r.a)[i];
         for (int i = 0; i < s2; ++i) (*arr)[s1+i] = (*r.b)[i];
         store(Variable(arr));
         break;
     }
     case HSH2('a','d'): { /// (aa) -> a: array/set difference
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
-        auto arr = new std::vector<Variable>;
+        Retrieval<tArray*, tArray*> r(this, consume);
+        auto arr = new tArray;
         for (vvs i = 0; i < r.a->size(); ++i) {
             if (std::find(r.b->begin(), r.b->end(), (*r.a)[i]) == r.b->end()) {
                 arr->push_back((*r.a)[i]);
@@ -584,8 +584,8 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('A','O','R'): { /// (aa) -> a: setwise or
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
-        auto arr = new std::vector<Variable>;
+        Retrieval<tArray*, tArray*> r(this, consume);
+        auto arr = new tArray;
         for (Variable v : *r.a) {
             if (std::find(arr->begin(), arr->end(), v) == arr->end()) {
                 arr->push_back(v);
@@ -600,8 +600,8 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('A','A','N'): { /// (aa) -> a: setwise and
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
-        auto arr = new std::vector<Variable>;
+        Retrieval<tArray*, tArray*> r(this, consume);
+        auto arr = new tArray;
         for (vvs i = 0; i < r.a->size(); ++i) {
             if (std::find(r.b->begin(), r.b->end(), (*r.a)[i]) != r.b->end() &&
                     std::find(arr->begin(), arr->end(), (*r.a)[i]) ==
@@ -613,9 +613,9 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','r'): { /// (an) -> a: array repeat
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         if (r.b < 0) r.b = 0;
-        auto arr = new std::vector<Variable>(r.a->size() * r.b);
+        auto arr = new tArray(r.a->size() * r.b);
         for (vvs i = 0; i < r.a->size() * r.b; ++i) {
             (*arr)[i] = (*r.a)[i % r.a->size()];
         }
@@ -623,11 +623,11 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','j'): { /// (aa) -> a: array join
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*, tArray*> r(this, consume);
         if (r.a->size() < 2) {
-            store(new std::vector<Variable>(*r.a));
+            store(new tArray(*r.a));
         } else {
-            auto arr = new std::vector<Variable>;
+            auto arr = new tArray;
             for (auto it = r.a->begin(); it != std::prev(r.a->end()); ++it) {
                 arr->push_back(*it);
                 arr->insert(arr->end(), r.b->begin(), r.b->end());
@@ -638,13 +638,13 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','s'): { /// (aa) -> a: split
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
-        auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
+        Retrieval<tArray*, tArray*> r(this, consume);
+        auto arr = new tArray, tmp = new tArray;
         for (vvs i = 0; i < r.a->size(); ++i) {
-            if ((*r.b) == std::vector<Variable>(r.a->begin() + i,
+            if ((*r.b) == tArray(r.a->begin() + i,
                     r.a->begin() + i + r.b->size())) {
                 arr->push_back(Variable(tmp));
-                tmp = new std::vector<Variable>;
+                tmp = new tArray;
                 i += r.b->size() - 1;
             } else {
                 tmp->push_back((*r.a)[i]);
@@ -655,18 +655,18 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','g'): { /// (an) -> a: split array in groups of size
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         vvs n = round(r.b);
         if (n <= 0) {
             throw SnowmanException("at ag: negative or 0 n, stopping "
                 "execution of az", false);
         }
-        auto arr = new std::vector<Variable>, tmp = new std::vector<Variable>;
+        auto arr = new tArray, tmp = new tArray;
         for (vvs i = 0; i < r.a->size(); ++i) {
             tmp->push_back((*r.a)[i]);
             if (i % n == (n-1)) {
                 arr->push_back(Variable(tmp));
-                tmp = new std::vector<Variable>;
+                tmp = new tArray;
             }
         }
         if (tmp->size()) arr->push_back(Variable(tmp));
@@ -675,7 +675,7 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','e'): { /// (ab) -> -: each
-        Retrieval<std::vector<Variable>*, std::string*> r(this, consume);
+        Retrieval<tArray*, std::string*> r(this, consume);
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
@@ -683,8 +683,8 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','m'): { /// (ab) -> a: map
-        Retrieval<std::vector<Variable>*, std::string*> r(this, consume);
-        auto v2 = new std::vector<Variable>;
+        Retrieval<tArray*, std::string*> r(this, consume);
+        auto v2 = new tArray;
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
@@ -694,10 +694,10 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','n'): { /// (an) -> a: every nth element (negative n = reverse)
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         int n = round(r.b);
         bool rev = n < 0;
-        auto v2 = new std::vector<Variable>;
+        auto v2 = new tArray;
         for (int i = (rev ? (r.a->size()-1) : 0); rev ? (i >= 0) :
                 (((vvs)i) < r.a->size()); i += n) {
             v2->push_back((*r.a)[(vvs)i]);
@@ -706,8 +706,8 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('A','S','E'): { /// (ab) -> a: select
-        Retrieval<std::vector<Variable>*, std::string*> r(this, consume);
-        auto v2 = new std::vector<Variable>;
+        Retrieval<tArray*, std::string*> r(this, consume);
+        auto v2 = new tArray;
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
@@ -719,8 +719,8 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('A','S','I'): { /// (ab) -> a: select by index / index of / find index
-        Retrieval<std::vector<Variable>*, std::string*> r(this, consume);
-        auto v2 = new std::vector<Variable>;
+        Retrieval<tArray*, std::string*> r(this, consume);
+        auto v2 = new tArray;
         for (vvs i = 0; i < r.a->size(); ++i) {
             Variable v = (*r.a)[i];
             store(v);
@@ -733,23 +733,23 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('A','A','L'): { /// (an) -> a: elements at indeces less than n
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         vvs n = round(r.b);
-        auto v2 = new std::vector<Variable>;
+        auto v2 = new tArray;
         for (vvs i = 0; i < r.a->size() && i < n; ++i) v2->push_back((*r.a)[i]);
         store(Variable(v2));
         break;
     }
     case HSH3('A','A','G'): { /// (an) -> a: elements at indeces greater than n
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         int n = round(r.b);
-        auto v2 = new std::vector<Variable>;
+        auto v2 = new tArray;
         for (vvs i = n + 1; i < r.a->size(); ++i) v2->push_back((*r.a)[i]);
         store(Variable(v2));
         break;
     }
     case HSH2('a','a'): { /// (an) -> *: element at index
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         try {
             store(r.a->at((int)r.b));
         } catch (std::out_of_range& oor) {
@@ -758,13 +758,13 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('a','l'): { /// (a) -> n: array length
-        Retrieval<std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*> r(this, consume);
         store(Variable((double)r.a->size()));
         break;
     }
     case HSH2('a','z'): { /// (a) -> a: zip/transpose
-        Retrieval<std::vector<Variable>*> r(this, consume);
-        auto vec2 = new std::vector<Variable>;
+        Retrieval<tArray*> r(this, consume);
+        auto vec2 = new tArray;
         // sanity check, also get max size
         vvs maxSize = 0;
         for (vvs i = 0; i < r.a->size(); ++i) {
@@ -778,7 +778,7 @@ void Snowman::evalToken(std::string token) {
         }
         // fill vec2 now
         for (vvs j = 0; j < maxSize; ++j) {
-            auto tmp = new std::vector<Variable>;
+            auto tmp = new tArray;
             for (vvs i = 0; i < r.a->size(); ++i) {
                 if ((*r.a)[i].arrayVal->size() > j) {
                     tmp->push_back((*(*r.a)[i].arrayVal)[j]);
@@ -790,9 +790,9 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('A','S','P'): { /// (anna) -> a: splice (first argument is array to splice, second is start index, third is length, fourth is what to replace with)
-        Retrieval<std::vector<Variable>*, double, double, std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*, double, double, tArray*> r(this, consume);
         vvs idx = round(r.b), len = round(r.c);
-        auto result = new std::vector<Variable>;
+        auto result = new tArray;
         for (vvs i = 0; i < idx && i < r.a->size(); ++i) {
             result->push_back((*r.a)[i]);
         }
@@ -804,12 +804,12 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('A','F','L'): { /// (an) -> a: flatten (number is how many "layers" to flatten; 0 means completely flatten the array)
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         int count = round(r.b);
         bool infinite = (count == 0), changed = true;
         while ((changed) && (infinite || count--)) {
             changed = false;
-            std::vector<Variable> arr;
+            tArray arr;
             for (Variable v : *r.a) {
                 if (v.type == Variable::ARRAY) {
                     changed = true;
@@ -822,19 +822,19 @@ void Snowman::evalToken(std::string token) {
             }
             *r.a = arr;
         }
-        store(Variable(new std::vector<Variable>(*r.a)));
+        store(Variable(new tArray(*r.a)));
         break;
     }
     case HSH3('A','S','H'): { /// (a) -> a: shuffle array
-        Retrieval<std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*> r(this, consume);
         std::random_shuffle(r.a->begin(), r.a->end());
-        store(Variable(new std::vector<Variable>(*r.a)));
+        store(Variable(new tArray(*r.a)));
         break;
     }
 
     /// "String" operators
     case HSH2('s','b'): { /// (an) -> n: from-base from array-"string"
-        Retrieval<std::vector<Variable>*, double> r(this, consume);
+        Retrieval<tArray*, double> r(this, consume);
         std::string str = arrToString(*r.a);
         int base = round(r.b);
         double num = 0;
@@ -864,12 +864,12 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('s','p'): { /// (a) -> -: print an array-"string"
-        Retrieval<std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*> r(this, consume);
         std::cout << arrToString(*r.a);
         break;
     }
     case HSH2('s','m'): { /// (aa) -> a: regex match; first array-"string" is search text, second array-"string" is regex
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*, tArray*> r(this, consume);
         std::string str = arrToString(*r.a);
         std::regex rgx;
         try {
@@ -880,7 +880,7 @@ void Snowman::evalToken(std::string token) {
         }
         auto mb = std::sregex_iterator(str.begin(), str.end(), rgx),
              me = std::sregex_iterator();
-        auto results = new std::vector<Variable>;
+        auto results = new tArray;
         for (auto it = mb; it != me; ++it) {
             results->push_back(stringToArr(it->str()));
         }
@@ -888,7 +888,7 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH2('s','r'): { /// (aaa) -> a: regex replace; first array-"string" is string to operate on, second array-"string" is rege, third is replacement text
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*, std::vector<Variable>*> r(this, consume);
+        Retrieval<tArray*, tArray*, tArray*> r(this, consume);
         std::string str = arrToString(*r.a);
         std::regex rgx;
         try {
@@ -902,7 +902,7 @@ void Snowman::evalToken(std::string token) {
         break;
     }
     case HSH3('S','R','B'): { /// (aab) -> a: same as `sr` but with a block instead of array-"string"
-        Retrieval<std::vector<Variable>*, std::vector<Variable>*, std::string*> r(this, consume);
+        Retrieval<tArray*, tArray*, std::string*> r(this, consume);
         std::string str = arrToString(*r.a);
         std::regex rgx;
         try {
@@ -920,7 +920,7 @@ void Snowman::evalToken(std::string token) {
             if (isMatch) {
                 store(stringToArr(*it));
                 run(repl);
-                Retrieval<std::vector<Variable>*> r2(this, true);
+                Retrieval<tArray*> r2(this, true);
                 result += arrToString(*r2.a);
             } else {
                 result += *it;
@@ -973,7 +973,7 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('w','r'): { /// (*) -> a: wrap in array
         Retrieval<Variable> r(this, consume);
-        auto wrapped = new std::vector<Variable>(1);
+        auto wrapped = new tArray(1);
         (*wrapped)[0] = r.a;
         store(Variable(wrapped));
         break;
@@ -1038,7 +1038,7 @@ void Snowman::evalToken(std::string token) {
         store(Variable((double)time(nullptr)));
         break;
     case HSH2('v','a'): /// (-) -> a: get command line args
-        store(Variable(new std::vector<Variable>(args)));
+        store(Variable(new tArray(args)));
         break;
 
     default:
@@ -1089,7 +1089,7 @@ Variable Snowman::retrieve(int type, bool consume, int skip) {
         "execution of operator", true);
 }
 
-std::string Snowman::arrToString(std::vector<Variable> arr) {
+std::string Snowman::arrToString(tArray arr) {
     // convert std::vector<Variable[.type==Variable::NUM]> to std::string
     std::string s;
     for (Variable v : arr) {
@@ -1103,7 +1103,7 @@ std::string Snowman::arrToString(std::vector<Variable> arr) {
 }
 
 Variable Snowman::stringToArr(std::string str) {
-    auto vec = new std::vector<Variable>;
+    auto vec = new tArray;
     for (char& c : str) {
         vec->push_back(Variable((double)c));
     }
