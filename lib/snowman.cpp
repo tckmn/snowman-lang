@@ -488,8 +488,7 @@ void Snowman::evalToken(std::string token) {
         Retrieval<double, double> r(this, consume);
         auto vrng = new std::vector<Variable>;
         bool rev = (r.a > r.b);
-        for (double i = r.a; rev ? (i > r.b) : (i < r.a);
-                i += (rev ? -1 : 1)) {
+        for (double i = r.a; rev ? (i > r.b) : (i < r.b); i += (rev ? -1 : 1)) {
             vrng->push_back(Variable(i));
         }
         store(Variable(vrng));
