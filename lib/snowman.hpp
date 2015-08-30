@@ -94,8 +94,7 @@ class Snowman {
         // internal evaluation methods
         void evalToken(std::string token);
         void store(Variable v);
-        std::vector<Variable> retrieve(int type, vvs count = 1, bool consume =
-            true, int skip = 0);
+        Variable retrieve(int type, bool consume = true, int skip = 0);
 
         template<typename T = bool, typename U = bool, typename V = bool,
             typename W = bool> class Retrieval{};

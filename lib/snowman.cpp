@@ -392,8 +392,7 @@ void Snowman::evalToken(std::string token) {
 
     /// Permavar operators
     case HSH1('*'): /// retrieve a value, set the current permavar's value to this
-        vec = retrieve(-1, 1, true, -1);
-        permavars[activePermavar] = vec[0];
+        permavars[activePermavar] = retrieve(-1, true, -1);
         break;
     case HSH1('#'): /// store the current permavar's value
         store(Variable(permavars[activePermavar]));
@@ -547,7 +546,7 @@ void Snowman::evalToken(std::string token) {
                 store(a);
                 store(b);
                 run(*r.b);
-                return Snowman::toBool(retrieve(-1, 1, true, -1)[0]);
+                return Snowman::toBool(retrieve(-1, true, -1));
             });
         store(Variable(new std::vector<Variable>(*r.a)));
         break;
@@ -690,7 +689,7 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
-            v2->push_back(Variable(retrieve(-1, 1, consume, -1)[0]));
+            v2->push_back(Variable(retrieve(-1, consume, -1)));
         }
         store(Variable(v2));
         break;
@@ -713,7 +712,7 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
-            if (Snowman::toBool(retrieve(-1, 1, consume, -1)[0])) {
+            if (Snowman::toBool(retrieve(-1, consume, -1))) {
                 v2->push_back(v);
             }
         }
@@ -727,7 +726,7 @@ void Snowman::evalToken(std::string token) {
             Variable v = (*r.a)[i];
             store(v);
             run(*r.b);
-            if (Snowman::toBool(retrieve(-1, 1, consume, -1)[0])) {
+            if (Snowman::toBool(retrieve(-1, consume, -1))) {
                 v2->push_back(Variable((double)i));
             }
         }
@@ -943,7 +942,7 @@ void Snowman::evalToken(std::string token) {
         Retrieval<std::string*, std::string*> r(this, consume);
         while (1) {
             run(*r.b);
-            if (!Snowman::toBool(retrieve(-1, 1, true, -1)[0])) break;
+            if (!Snowman::toBool(retrieve(-1, true, -1))) break;
             run(*r.a);
         }
         break;
@@ -958,7 +957,7 @@ void Snowman::evalToken(std::string token) {
         Retrieval<std::string*> r(this, consume);
         do {
             run(*r.a);
-        } while (Snowman::toBool(retrieve(-1, 1, true, -1)[0]));
+        } while (Snowman::toBool(retrieve(-1, true, -1)));
         break;
     }
     case HSH2('b','e'): { /// (b) -> -: execute / evaluate
@@ -1059,17 +1058,13 @@ void Snowman::store(Variable val) {
     }
 }
 
-std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume,
-        int skip) {
+Variable Snowman::retrieve(int type, bool consume, int skip) {
     // for definition of "retrieve", see doc/snowman.md
     // (also used for gathering letter operator arguments)
-    // default value of count is 1
     // default value of consume is true
     // default value of skip is 0
-    // default value of doNotDelete is false
     // if skip is -1, any amount of variables will be skipped (ex. retrieve(-1,
     //   1, false, -1) will get you the first non-undefined variable)
-    std::vector<Variable> vec;
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i]) {
             if (skip > 0) {
@@ -1078,11 +1073,11 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume,
             }
             if ((vars[i].type != Variable::UNDEFINED) &&
                     (type == -1 || vars[i].type == type)) {
-                vec.push_back(vars[i]);
+                Variable v = vars[i];
                 if (consume) {
                     vars[i] = Variable();  // set to undefined
                 }
-                if (vec.size() == count) return vec;
+                return v;
             } else if (skip == -1) {
                 continue;
             } else {
@@ -1091,11 +1086,8 @@ std::vector<Variable> Snowman::retrieve(int type, vvs count, bool consume,
             }
         }
     }
-    if (vec.size() < count) {
-        throw SnowmanException("at retrieve: not enough variables, stopping "
-            "execution of operator", true);
-    }
-    return vec;
+    throw SnowmanException("at retrieve: not enough variables, stopping "
+        "execution of operator", true);
 }
 
 std::string Snowman::arrToString(std::vector<Variable> arr) {
