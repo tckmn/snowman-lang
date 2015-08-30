@@ -8,6 +8,8 @@
 
 struct Variable;
 
+typedef bool tUndefined;
+typedef double tNum;
 typedef std::vector<Variable> tArray;
 typedef std::string tBlock;
 
@@ -24,8 +26,8 @@ class SnowmanException: public std::runtime_error {
 struct Variable {
     // constructors
     Variable(): undefinedVal(true) { type = UNDEFINED; }
-    Variable(bool x): undefinedVal(x) { type = UNDEFINED; }
-    Variable(double x): numVal(x) { type = NUM; }
+    Variable(tUndefined x): undefinedVal(x) { type = UNDEFINED; }
+    Variable(tNum x): numVal(x) { type = NUM; }
     Variable(tArray* x): arrayVal(x) { type = ARRAY; }
     Variable(tBlock* x): blockVal(x) { type = BLOCK; }
 
@@ -79,8 +81,8 @@ struct Variable {
     // the actual data
     enum { UNDEFINED, NUM, ARRAY, BLOCK } type;
     union {
-        bool undefinedVal;
-        double numVal;
+        tUndefined undefinedVal;
+        tNum numVal;
         tArray* arrayVal;
         tBlock* blockVal;
     };
@@ -99,8 +101,8 @@ class Snowman {
         void store(Variable v);
         Variable retrieve(int type, bool consume = true, int skip = 0);
 
-        template<typename T = bool, typename U = bool, typename V = bool,
-            typename W = bool> class Retrieval{};
+        template<typename T = tUndefined, typename U = tUndefined,
+            typename V = tUndefined, typename W = tUndefined> class Retrieval{};
 
         // utility methods having to do with the language itself
         static std::string arrToString(tArray arr);
