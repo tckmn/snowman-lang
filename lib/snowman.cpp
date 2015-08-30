@@ -274,11 +274,11 @@ void Snowman::evalToken(std::string token) {
         // handled further below
     } else if (token.length() >= 2 && token[0] == '"') {
         // store literal string-array
-        auto vec = new tArray(token.length() - 2);
+        auto arr = new tArray(token.length() - 2);
         for (vvs i = 1; i < token.length() - 1; ++i) {
-            (*vec)[i-1] = Variable((tNum)token[i]);
+            (*arr)[i-1] = Variable((tNum)token[i]);
         }
-        store(Variable(vec));
+        store(Variable(arr));
         return;
     } else if (token.length() >= 2 && token[0] == ':') {
         // store literal block
@@ -326,7 +326,6 @@ void Snowman::evalToken(std::string token) {
     // THE HUGE SWITCH STATEMENT! (this contains all operators, letter or
     //   otherwise)
 
-    std::vector<Variable> vec; // for convenience with retrieve()
     Variable v; // for variable operators (ROT2, ROT3)
     bool b; // for active variable rotation operators (ROT_ACT)
 
@@ -486,12 +485,12 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('n','r'): { /// (nn) -> n: range
         Retrieval<tNum, tNum> r(this, consume);
-        auto vrng = new tArray;
+        auto arr = new tArray;
         bool rev = (r.a > r.b);
         for (tNum i = r.a; rev ? (i > r.b) : (i < r.b); i += (rev ? -1 : 1)) {
-            vrng->push_back(Variable(i));
+            arr->push_back(Variable(i));
         }
-        store(Variable(vrng));
+        store(Variable(arr));
         break;
     }
     case HSH2('n','p'): { /// (nn) -> n: power
@@ -684,68 +683,68 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('a','m'): { /// (ab) -> a: map
         Retrieval<tArray*, std::string*> r(this, consume);
-        auto v2 = new tArray;
+        auto arr = new tArray;
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
-            v2->push_back(Variable(retrieve(-1, consume, -1)));
+            arr->push_back(Variable(retrieve(-1, consume, -1)));
         }
-        store(Variable(v2));
+        store(Variable(arr));
         break;
     }
     case HSH2('a','n'): { /// (an) -> a: every nth element (negative n = reverse)
         Retrieval<tArray*, tNum> r(this, consume);
         int n = round(r.b);
         bool rev = n < 0;
-        auto v2 = new tArray;
+        auto arr = new tArray;
         for (int i = (rev ? (r.a->size()-1) : 0); rev ? (i >= 0) :
                 (((vvs)i) < r.a->size()); i += n) {
-            v2->push_back((*r.a)[(vvs)i]);
+            arr->push_back((*r.a)[(vvs)i]);
         }
-        store(Variable(v2));
+        store(Variable(arr));
         break;
     }
     case HSH3('A','S','E'): { /// (ab) -> a: select
         Retrieval<tArray*, std::string*> r(this, consume);
-        auto v2 = new tArray;
+        auto arr = new tArray;
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
             if (Snowman::toBool(retrieve(-1, consume, -1))) {
-                v2->push_back(v);
+                arr->push_back(v);
             }
         }
-        store(Variable(v2));
+        store(Variable(arr));
         break;
     }
     case HSH3('A','S','I'): { /// (ab) -> a: select by index / index of / find index
         Retrieval<tArray*, std::string*> r(this, consume);
-        auto v2 = new tArray;
+        auto arr = new tArray;
         for (vvs i = 0; i < r.a->size(); ++i) {
             Variable v = (*r.a)[i];
             store(v);
             run(*r.b);
             if (Snowman::toBool(retrieve(-1, consume, -1))) {
-                v2->push_back(Variable((tNum)i));
+                arr->push_back(Variable((tNum)i));
             }
         }
-        store(Variable(v2));
+        store(Variable(arr));
         break;
     }
     case HSH3('A','A','L'): { /// (an) -> a: elements at indeces less than n
         Retrieval<tArray*, tNum> r(this, consume);
         vvs n = round(r.b);
-        auto v2 = new tArray;
-        for (vvs i = 0; i < r.a->size() && i < n; ++i) v2->push_back((*r.a)[i]);
-        store(Variable(v2));
+        auto arr = new tArray;
+        for (vvs i = 0; i < r.a->size() && i < n; ++i) arr->push_back((*r.a)[i]);
+        store(Variable(arr));
         break;
     }
     case HSH3('A','A','G'): { /// (an) -> a: elements at indeces greater than n
         Retrieval<tArray*, tNum> r(this, consume);
         int n = round(r.b);
-        auto v2 = new tArray;
-        for (vvs i = n + 1; i < r.a->size(); ++i) v2->push_back((*r.a)[i]);
-        store(Variable(v2));
+        auto arr = new tArray;
+        for (vvs i = n + 1; i < r.a->size(); ++i) arr->push_back((*r.a)[i]);
+        store(Variable(arr));
         break;
     }
     case HSH2('a','a'): { /// (an) -> *: element at index
@@ -764,7 +763,7 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('a','z'): { /// (a) -> a: zip/transpose
         Retrieval<tArray*> r(this, consume);
-        auto vec2 = new tArray;
+        auto arr = new tArray;
         // sanity check, also get max size
         vvs maxSize = 0;
         for (vvs i = 0; i < r.a->size(); ++i) {
@@ -776,7 +775,7 @@ void Snowman::evalToken(std::string token) {
                 maxSize = (*r.a)[i].arrayVal->size();
             }
         }
-        // fill vec2 now
+        // fill arr now
         for (vvs j = 0; j < maxSize; ++j) {
             auto tmp = new tArray;
             for (vvs i = 0; i < r.a->size(); ++i) {
@@ -784,23 +783,23 @@ void Snowman::evalToken(std::string token) {
                     tmp->push_back((*(*r.a)[i].arrayVal)[j]);
                 }
             }
-            vec2->push_back(Variable(tmp));
+            arr->push_back(Variable(tmp));
         }
-        store(Variable(vec2));
+        store(Variable(arr));
         break;
     }
     case HSH3('A','S','P'): { /// (anna) -> a: splice (first argument is array to splice, second is start index, third is length, fourth is what to replace with)
         Retrieval<tArray*, tNum, tNum, tArray*> r(this, consume);
         vvs idx = round(r.b), len = round(r.c);
-        auto result = new tArray;
+        auto arr = new tArray;
         for (vvs i = 0; i < idx && i < r.a->size(); ++i) {
-            result->push_back((*r.a)[i]);
+            arr->push_back((*r.a)[i]);
         }
-        result->insert(result->end(), r.d->begin(), r.d->end());
+        arr->insert(arr->end(), r.d->begin(), r.d->end());
         for (vvs i = idx + len; i < r.a->size(); ++i) {
-            result->push_back((*r.a)[i]);
+            arr->push_back((*r.a)[i]);
         }
-        store(Variable(result));
+        store(Variable(arr));
         break;
     }
     case HSH3('A','F','L'): { /// (an) -> a: flatten (number is how many "layers" to flatten; 0 means completely flatten the array)
@@ -880,11 +879,11 @@ void Snowman::evalToken(std::string token) {
         }
         auto mb = std::sregex_iterator(str.begin(), str.end(), rgx),
              me = std::sregex_iterator();
-        auto results = new tArray;
+        auto arr = new tArray;
         for (auto it = mb; it != me; ++it) {
-            results->push_back(stringToArr(it->str()));
+            arr->push_back(stringToArr(it->str()));
         }
-        store(Variable(results));
+        store(Variable(arr));
         break;
     }
     case HSH2('s','r'): { /// (aaa) -> a: regex replace; first array-"string" is string to operate on, second array-"string" is rege, third is replacement text
@@ -973,9 +972,9 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('w','r'): { /// (*) -> a: wrap in array
         Retrieval<Variable> r(this, consume);
-        auto wrapped = new tArray(1);
-        (*wrapped)[0] = r.a;
-        store(Variable(wrapped));
+        auto arr = new tArray(1);
+        (*arr)[0] = r.a;
+        store(Variable(arr));
         break;
     }
     case HSH2('t','s'): { /// (*) -> a: to array-"string"
@@ -1103,11 +1102,11 @@ std::string Snowman::arrToString(tArray arr) {
 }
 
 Variable Snowman::stringToArr(std::string str) {
-    auto vec = new tArray;
+    auto arr = new tArray;
     for (char& c : str) {
-        vec->push_back(Variable((tNum)c));
+        arr->push_back(Variable((tNum)c));
     }
-    return Variable(vec);
+    return Variable(arr);
 }
 
 std::string Snowman::inspect(Variable v) {
