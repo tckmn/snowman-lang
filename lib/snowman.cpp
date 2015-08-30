@@ -544,7 +544,7 @@ void Snowman::evalToken(std::string token) {
                 store(a);
                 store(b);
                 run(*r.b);
-                return Snowman::toBool(retrieve(-1, true, -1));
+                return Retrieval<bool>(this).b;
             });
         store(Variable(new tArray(*r.a)));
         break;
@@ -687,7 +687,8 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
-            arr->push_back(Variable(retrieve(-1, consume, -1)));
+            Retrieval<tArray*> r2(this, true);
+            arr->push_back(Variable(r2.a));
         }
         store(Variable(arr));
         break;
@@ -710,9 +711,8 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
-            if (Snowman::toBool(retrieve(-1, consume, -1))) {
-                arr->push_back(v);
-            }
+            if (Retrieval<bool>(this).b) arr->push_back(v);
+
         }
         store(Variable(arr));
         break;
@@ -724,9 +724,8 @@ void Snowman::evalToken(std::string token) {
             Variable v = (*r.a)[i];
             store(v);
             run(*r.b);
-            if (Snowman::toBool(retrieve(-1, consume, -1))) {
-                arr->push_back(Variable((tNum)i));
-            }
+            if (Retrieval<bool>(this).b) arr->push_back(Variable((tNum)i));
+
         }
         store(Variable(arr));
         break;
@@ -940,7 +939,7 @@ void Snowman::evalToken(std::string token) {
         Retrieval<std::string*, std::string*> r(this, consume);
         while (1) {
             run(*r.b);
-            if (!Snowman::toBool(retrieve(-1, true, -1))) break;
+            if (!Retrieval<bool>(this).b) break;
             run(*r.a);
         }
         break;
@@ -955,7 +954,7 @@ void Snowman::evalToken(std::string token) {
         Retrieval<std::string*> r(this, consume);
         do {
             run(*r.a);
-        } while (Snowman::toBool(retrieve(-1, true, -1)));
+        } while (Retrieval<bool>(this).b);
         break;
     }
     case HSH2('b','e'): { /// (b) -> -: execute / evaluate
@@ -1062,7 +1061,7 @@ Variable Snowman::retrieve(int type, bool consume, int skip) {
     // default value of consume is true
     // default value of skip is 0
     // if skip is -1, any amount of variables will be skipped (ex. retrieve(-1,
-    //   1, false, -1) will get you the first non-undefined variable)
+    //   false, -1) will get you the first non-undefined variable)
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i]) {
             if (skip > 0) {
