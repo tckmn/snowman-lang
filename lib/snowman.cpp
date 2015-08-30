@@ -1053,6 +1053,7 @@ void Snowman::store(Variable val) {
             return;
         }
     }
+    val.mm();
 }
 
 Variable Snowman::retrieve(int type, bool consume, int skip) {
