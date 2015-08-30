@@ -95,10 +95,13 @@ class Snowman {
         void evalToken(std::string token);
         void store(Variable v);
         std::vector<Variable> retrieve(int type, vvs count = 1, bool consume =
-            true, int skip = 0, bool doNotDelete = false);
+            true, int skip = 0);
+
+        template<typename T = bool, typename U = bool, typename V = bool,
+            typename W = bool> class Retrieval{};
 
         // utility methods having to do with the language itself
-        static std::string arrToString(Variable arr);
+        static std::string arrToString(std::vector<Variable> arr);
         static Variable stringToArr(std::string str);
         static std::string inspect(Variable str);
         static bool toBool(Variable v);
@@ -113,9 +116,6 @@ class Snowman {
         std::map<int, Variable> permavars;
         int activePermavar;
         bool savedActiveState[8];
-
-        // ugly, ugly "garbage collector"
-        std::vector<Variable> gc;
 
     public:
         // constructor / destructor
