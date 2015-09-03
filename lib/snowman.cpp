@@ -146,27 +146,6 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                     escaping = true;
                 }
             } else if (escaping) escaping = false;
-        } else if (token[0] == ':') {
-            // block literal in progress
-            token += c;
-            int nest_depth = 0;
-            bool string_mode = false, escaping = false;
-            for (char& tc : token) {
-                if (tc == ':' && !string_mode) ++nest_depth;
-                else if (tc == ';' && !string_mode) {
-                    if (nest_depth == 0) {
-                        throw SnowmanException("at tokenize: invalid block "
-                            "nesting?", true);
-                    } else --nest_depth;
-                } else if (tc == '"' && !escaping) {
-                    string_mode = !string_mode;
-                }
-                escaping = (tc == '\\' && string_mode);
-            }
-            if (nest_depth == 0) {
-                tokens.push_back(token);
-                token = "";
-            }
         } else if (token[0] == '=') {
             // permavar switch in progress
             token += c;
@@ -180,8 +159,7 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
         } else if (token.length() == 0) {
             // nothing currently in progress; start new token
             if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
-                    (c >= 'A' && c <= 'Z') || (c == '"') || (c == ':') ||
-                    (c == '=')) {
+                    (c >= 'A' && c <= 'Z') || (c == '"') || (c == '=')) {
                 // some token that is longer than one character
                 token += c;
                 // allow token to continue to be added to
@@ -209,6 +187,18 @@ std::vector<std::string> Snowman::tokenize(std::string code) {
                     // subroutine end
                     tokens.pop_back();
                     tokens.push_back("))");
+                } else if (c == ';') {
+                    // end block literal
+                    std::string blk = ";", t;
+                    while ((t = tokens.back()) != ":") {
+                        blk = t + blk;
+                        tokens.pop_back();
+                        if (tokens.size() == 0) {
+                            throw SnowmanException("at tokenize: invalid "
+                                "block nesting?", true);
+                        }
+                    }
+                    tokens[tokens.size()-1] += blk;
                 } else {
                     token += c;
                     tokens.push_back(token);
