@@ -14,5 +14,6 @@ program:
     bO,oR|:#13nA;:#109nG|#123nL,bO|#77nG
     '(#91nL('>bO,oR|:#13nS;:#;bI;bI;aMsP
 
-C++ interpreter is inside `lib`. To compile, `cd lib` and either `make` or
-`g++ main.cpp snowman.cpp snowman.hpp -o snowman -std=c++11`.
+C++ interpreter is inside `lib`. To compile, `cd lib` and `make release` (or
+just `make` for the debug build, which will be the default until the first
+non-beta version).
