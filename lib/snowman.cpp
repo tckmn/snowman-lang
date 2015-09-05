@@ -384,7 +384,7 @@ void Snowman::evalToken(std::string token) {
         permavars[activePermavar] = retrieve(-1, true, -1);
         break;
     case HSH1('#'): /// store the current permavar's value
-        store(Variable(permavars[activePermavar]));
+        store(permavars[activePermavar].copy());
         break;
 
     /// Number operators
@@ -1005,8 +1005,8 @@ void Snowman::evalToken(std::string token) {
     }
     case HSH2('d','u'): { /// (*) -> **: duplicate
         Retrieval<Variable> r(this, consume);
-        store(Variable(r.a));
-        store(Variable(r.a));
+        store(r.a.copy());
+        store(r.a.copy());
         break;
     }
 
@@ -1039,7 +1039,7 @@ void Snowman::store(Variable val) {
     // for definition of "store", see doc/snowman.md
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i] && vars[i].type == Variable::UNDEFINED) {
-            vars[i].copy(val);
+            vars[i] = val;
             return;
         }
     }
@@ -1062,8 +1062,7 @@ Variable Snowman::retrieve(int type, bool consume, int skip) {
             if ((vars[i].type != Variable::UNDEFINED) &&
                     (type == -1 || vars[i].type == type)) {
                 if (consume) {
-                    Variable v;
-                    v.copy(vars[i]);
+                    Variable v = vars[i];
                     vars[i].type = Variable::UNDEFINED;
                     return v;
                 }

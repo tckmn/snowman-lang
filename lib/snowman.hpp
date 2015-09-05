@@ -36,24 +36,27 @@ struct Variable {
 
     // copy constructor
     Variable(const Variable& v) {
-        switch (v.type) {
-        case UNDEFINED: type = UNDEFINED; undefinedVal = false; break;
-        case NUM: type = NUM; numVal = v.numVal; break;
-        case ARRAY: type = ARRAY; arrayVal = new tArray(*v.arrayVal); break;
-        case BLOCK: type = BLOCK; blockVal = new tBlock(*v.blockVal); break;
-        }
-    }
-
-    // hacky function, basically same as copy ctor / assignment operator but
-    //   does NOT create new array/block pointers
-    void copy(const Variable& v) {
         type = v.type;
         switch (v.type) {
-        case UNDEFINED: undefinedVal = v.undefinedVal; break;
+        case UNDEFINED: undefinedVal = false; break;
         case NUM: numVal = v.numVal; break;
         case ARRAY: arrayVal = v.arrayVal; break;
         case BLOCK: blockVal = v.blockVal; break;
         }
+    }
+
+    // hacky function, basically same as copy ctor but creates new array/block
+    //   pointers
+    Variable copy() {
+        Variable v;
+        v.type = type;
+        switch (type) {
+        case UNDEFINED: v.undefinedVal = undefinedVal; break;
+        case NUM: v.numVal = numVal; break;
+        case ARRAY: v.arrayVal = new tArray(*arrayVal); break;
+        case BLOCK: v.blockVal = new tBlock(*blockVal); break;
+        }
+        return v;
     }
 
     // operators
