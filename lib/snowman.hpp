@@ -44,17 +44,6 @@ struct Variable {
         }
     }
 
-    // assignment operator
-    Variable& operator=(const Variable& v) {
-        switch (v.type) {
-        case UNDEFINED: type = UNDEFINED; undefinedVal = false; break;
-        case NUM: type = NUM; numVal = v.numVal; break;
-        case ARRAY: type = ARRAY; arrayVal = new tArray(*v.arrayVal); break;
-        case BLOCK: type = BLOCK; blockVal = new tBlock(*v.blockVal); break;
-        }
-        return *this;
-    }
-
     // hacky function, basically same as copy ctor / assignment operator but
     //   does NOT create new array/block pointers
     void copy(const Variable& v) {
