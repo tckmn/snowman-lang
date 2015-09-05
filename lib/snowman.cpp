@@ -1039,7 +1039,14 @@ void Snowman::store(Variable val) {
     // for definition of "store", see doc/snowman.md
     for (int i = 0; i < 8; ++i) {
         if (activeVars[i] && vars[i].type == Variable::UNDEFINED) {
-            vars[i] = val;
+            // FIXME
+            vars[i].type = val.type;
+            switch (val.type) {
+            case Variable::UNDEFINED: vars[i].undefinedVal = false; break;
+            case Variable::NUM: vars[i].numVal = val.numVal; break;
+            case Variable::ARRAY: vars[i].arrayVal = val.arrayVal; break;
+            case Variable::BLOCK: vars[i].blockVal = val.blockVal; break;
+            }
             return;
         }
     }
