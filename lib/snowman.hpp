@@ -55,6 +55,18 @@ struct Variable {
         return *this;
     }
 
+    // hacky function, basically same as copy ctor / assignment operator but
+    //   does NOT create new array/block pointers
+    void copy(const Variable& v) {
+        type = v.type;
+        switch (v.type) {
+        case UNDEFINED: undefinedVal = v.undefinedVal; break;
+        case NUM: numVal = v.numVal; break;
+        case ARRAY: arrayVal = v.arrayVal; break;
+        case BLOCK: blockVal = v.blockVal; break;
+        }
+    }
+
     // operators
     bool operator==(const Variable& v) const {
         if (type != v.type) return false;
