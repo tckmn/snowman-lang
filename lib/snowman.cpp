@@ -1064,7 +1064,7 @@ Variable Snowman::retrieve(int type, bool consume, int skip) {
                 if (consume) {
                     Variable v;
                     v.copy(vars[i]);
-                    vars[i] = Variable();  // set to undefined
+                    vars[i].type = Variable::UNDEFINED;
                     return v;
                 }
                 return vars[i];
