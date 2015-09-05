@@ -1,0 +1,18 @@
+}vg:32eQnO;aM  // get input, transform to array of 0's and 1's
+0`wRaC         // prepend a 0 (this is padding for left edge behavior)
+// infinite loop the following:
+|:
+    |al|1nR    // range [1..input.length)
+    // map / transform function
+    :
+        2nA|,AAl|`)4nS)`AaG     // get 3 surrounding elements of index
+        .al2|eQ`:0wR`|aC|;bR|.  // handle right edge behavior
+        :48nA;aM2sB             // convert from binary
+        " ### ## "`aA           // lookup "table"
+    ;aM
+    sp                // output
+    :32eQnO;aM0`wRaC  // convert back to 0's and 1's, prepend 0
+    |*                // discard previous iteration
+    "
+"sP                   // output newline
+;:1;bW
