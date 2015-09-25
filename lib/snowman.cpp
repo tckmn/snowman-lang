@@ -701,8 +701,17 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
-            if (Retrieval<bool>(this).b) arr->push_back(v);
-
+            std::cout << Snowman::inspect(v) << std::endl;
+            // WARNING: do *not* try to "optimize" this into
+            //   if (Retrieval<bool>(this).b) ...
+            // that fails on some edge-cases, such as
+            //   ("test":2nB;aM:;AsE
+            // where the predicate returns its own argument that is of a
+            // pointer type. If the Retrieval is within the if parens, its
+            // destructor gets called *before* v.copy() is run, and the pointer
+            // that v refers to has already been delete'd
+            Retrieval<bool> r2(this);
+            if (r2.b) arr->push_back(v.copy());
         }
         store(Variable(arr));
         break;
@@ -715,7 +724,6 @@ void Snowman::evalToken(std::string token) {
             store(v);
             run(*r.b);
             if (Retrieval<bool>(this).b) arr->push_back(Variable((tNum)i));
-
         }
         store(Variable(arr));
         break;
