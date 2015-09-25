@@ -962,7 +962,7 @@ void Snowman::evalToken(std::string token) {
     case HSH2('w','r'): { /// (*) -> a: wrap in array
         Retrieval<Variable> r(this, consume);
         auto arr = new tArray(1);
-        (*arr)[0] = r.a;
+        (*arr)[0] = r.a.copy();
         store(Variable(arr));
         break;
     }
