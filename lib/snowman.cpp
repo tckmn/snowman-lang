@@ -678,7 +678,7 @@ void Snowman::evalToken(std::string token) {
             store(v);
             run(*r.b);
             Retrieval<Variable> r2(this, true);
-            arr->push_back(Variable(r2.a));
+            arr->push_back(r2.a.copy());
         }
         store(Variable(arr));
         break;
