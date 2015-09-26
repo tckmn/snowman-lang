@@ -17,3 +17,16 @@ program:
 C++ interpreter is inside `lib`. To compile, `cd lib` and `make release` (or
 just `make` for the debug build, which will be the default until the first
 non-beta version).
+
+## TODO
+
+- write tests!
+
+- return something other than empty string for EOF (with `vg`)
+
+- add an option to suppress STDERR output (or do it by default and require it
+  to be explicitly enabled)
+
+- higher resolution than seconds for `vt`
+
+- put these TODO items in a better place than the README
