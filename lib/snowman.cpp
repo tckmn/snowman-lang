@@ -1,7 +1,7 @@
 #include "snowman.hpp"
 #include "retrieval.hpp"
 #include <iostream>   // std::cout, std::cerr, std::endl
-#include <ctime>      // time (for seeding RNG)
+#include <chrono>     // time stuffs
 #include <cstdlib>    // rand, srand
 #include <cmath>      // abs, fmod, pow, ceil, floor, round
 #include <algorithm>  // find
@@ -32,7 +32,8 @@ const double TOBASE_EPSILON = 0.00001; // if the decimal part is less than
 // constructor/destructor
 Snowman::Snowman(): activeVars{false}, activePermavar(0),
         savedActiveState{false}, debugOutput(false) {
-    srand(time(nullptr));
+    srand(std::chrono::duration_cast<std::chrono::milliseconds>
+        (std::chrono::system_clock::now().time_since_epoch()).count());
 }
 Snowman::~Snowman() {}
 
@@ -1030,8 +1031,10 @@ void Snowman::evalToken(std::string token) {
     case HSH2('v','r'): /// (-) -> n: random number [0,1)
         store(Variable((tNum)rand() / RAND_MAX));
         break;
-    case HSH2('v','t'): /// (-) -> n: time (seconds since epoch)
-        store(Variable((tNum)time(nullptr)));
+    case HSH2('v','t'): /// (-) -> n: time (milliseconds since epoch)
+        store(Variable((tNum)std::chrono::duration_cast
+            <std::chrono::milliseconds>(std::chrono::system_clock::now()
+                .time_since_epoch()).count()));
         break;
     case HSH2('v','a'): /// (-) -> a: get command line args
         store(Variable(new tArray(args)));

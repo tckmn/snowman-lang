@@ -27,6 +27,4 @@ non-beta version).
 - add an option to suppress STDERR output (or do it by default and require it
   to be explicitly enabled)
 
-- higher resolution than seconds for `vt`
-
 - put these TODO items in a better place than the README
