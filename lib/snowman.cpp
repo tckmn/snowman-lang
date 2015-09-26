@@ -505,6 +505,7 @@ void Snowman::evalToken(std::string token) {
             n /= base;
         }
         if (neg) nb = '-' + nb;
+        if (nb.empty()) nb = "0";
         // convert decimal part
         tNum decimalPart = r.a - floor(r.a);
         if (decimalPart > TOBASE_EPSILON) {
