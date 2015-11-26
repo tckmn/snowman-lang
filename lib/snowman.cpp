@@ -283,8 +283,8 @@ void Snowman::evalToken(std::string token) {
         return;
     } else if (token == "((") {
         VarState vs;
-        memcpy(vs.vars, vars, sizeof(Variable)*8);
-        memcpy(vs.activeVars, activeVars, sizeof(bool)*8);
+        std::memcpy(vs.vars, vars, sizeof(Variable)*8);
+        std::memcpy(vs.activeVars, activeVars, sizeof(bool)*8);
         std::fill(std::begin(vars), std::end(vars), Variable());
         std::fill(std::begin(activeVars), std::end(activeVars), false);
         subroutines.push_back(vs);
@@ -295,8 +295,8 @@ void Snowman::evalToken(std::string token) {
                 "stack, ignoring `))' instruction", false);
         }
         VarState vs = subroutines.back();
-        memcpy(vars, vs.vars, sizeof(Variable)*8);
-        memcpy(activeVars, vs.activeVars, sizeof(bool)*8);
+        std::memcpy(vars, vs.vars, sizeof(Variable)*8);
+        std::memcpy(activeVars, vs.activeVars, sizeof(bool)*8);
         subroutines.pop_back();
         return;
     } else if (token.length() == 1 && token[0] >= '!' && token[0] <= '~') {
@@ -374,10 +374,10 @@ void Snowman::evalToken(std::string token) {
             false; break;
     case HSH1('$'): /// save current state
         // woo, C-like memory management
-        memcpy(savedActiveState, activeVars, sizeof(bool)*8);
+        std::memcpy(savedActiveState, activeVars, sizeof(bool)*8);
         break;
     case HSH1('&'): /// restore saved state
-        memcpy(activeVars, savedActiveState, sizeof(bool)*8);
+        std::memcpy(activeVars, savedActiveState, sizeof(bool)*8);
         break;
 
     /// Permavar operators
