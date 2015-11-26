@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 #include <vector>
-#include <string>
+#include <cstring>
 #include <map>
 
 struct Variable;
