@@ -866,6 +866,7 @@ void Snowman::evalToken(std::string token) {
         std::cout << arrToString(*r.a);
         break;
     }
+#ifndef OMIT_REGEX
     case HSH2('s','m'): { /// (aa) -> a: regex match; first array-"string" is search text, second array-"string" is regex
         Retrieval<tArray*, tArray*> r(this, consume);
         std::string str = arrToString(*r.a);
@@ -928,6 +929,7 @@ void Snowman::evalToken(std::string token) {
         store(stringToArr(result));
         break;
     }
+#endif
 
     /// Block operators
     case HSH2('b','r'): { /// (bn) -> -: repeat
