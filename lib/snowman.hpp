@@ -67,7 +67,7 @@ struct Variable {
         case NUM: return numVal == v.numVal;
         case ARRAY: return arrayVal == v.arrayVal;
         case BLOCK: return blockVal == v.blockVal;
-        default: throw SnowmanException("at Variable::operator==: impossible"
+        default: throw SnowmanException("at Variable::operator==: impossible "
                     "type?", true);
         }
     }
@@ -78,7 +78,7 @@ struct Variable {
         case NUM: return numVal < v.numVal;
         case ARRAY: return arrayVal < v.arrayVal;
         case BLOCK: return blockVal < v.blockVal;
-        default: throw SnowmanException("at Variable::operator<: impossible"
+        default: throw SnowmanException("at Variable::operator<: impossible "
                      "type?", true);
         }
     }
