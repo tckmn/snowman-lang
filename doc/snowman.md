@@ -112,7 +112,7 @@ The following operators have to do with literals:
   codes; use `\"` to include quotes within string literals)
 - (one or more digits): store literal number
 
-Literal arrays don't exist. You can create empty arrays with `""` and push to
+Literal arrays don't exist. You can create empty arrays with `""` and append to
 them with letter operators.
 
 ## Letter operators
