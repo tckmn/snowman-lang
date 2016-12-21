@@ -703,7 +703,6 @@ void Snowman::evalToken(std::string token) {
         for (Variable v : *r.a) {
             store(v);
             run(*r.b);
-            std::cout << Snowman::inspect(v) << std::endl;
             // WARNING: do *not* try to "optimize" this into
             //   if (Retrieval<bool>(this).b) ...
             // that fails on some edge-cases, such as
